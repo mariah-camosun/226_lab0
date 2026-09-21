@@ -1,20 +1,23 @@
 #class Board
 class Board:
     # assuming these are supposed to be class variables
-    # param size
-    # param numBarriers
-    # param numTreasures
-    size = '' #class variables
-    numBarriers = ''
-    numTreasures = ''
+    # size = '' #class variables
+    # numBarriers = ''
+    # numTreasures = ''
+    # looks like probably not supposed to be class variables
 
-    def __init__(self):
-        self.value = 10 #instance variable
+    def __init__(self, size, numBarriers, numTreasures):
+        self.size = size
+        self.numBarriers = numBarriers
+        self.numTreasures = numTreasures        
 
     def changeBoard(size, numBarriers, numTreasures):
-        Board.size = size
-        Board.numBarriers = numBarriers
-        Board.numTreasures = numTreasures
+        pass
+        # clear old board
+        # init new board
+        # Board(self, size, numBarriers, numTreasures)
+        # doesnt like reassinging to self.value
+        # nor the self in the abv Board() call
 
     #validate params (no given funcNames)
         #if invalid param: "ValueError exception" (too many trips this same error)
