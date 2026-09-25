@@ -1,7 +1,10 @@
 class Barrier:
-    def __init__(self, posn):
+    def __init__(self, isOrigin: bool):
         self.symbol = 'X'
-        self.posn = posn # 'TL' = top left - 'marker' position
+        self.isOrigin = isOrigin # 'origin' is top left, 'initial' point of the barrier
 
     def __str__(self):
-        return f'{self.symbol}'
+        if (self.isOrigin==True):
+            return f'O' 
+        else:
+            return f'{self.symbol}'
