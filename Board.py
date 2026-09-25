@@ -1,5 +1,6 @@
 #class Board
 from Tile import Tile
+import random
 
 class Board:
     def __init__(self, size, numBarriers, numTreasures):
@@ -7,8 +8,8 @@ class Board:
         self.numBarriers = numBarriers
         self.numTreasures = numTreasures
         self.makeEmptyBoard( size )
-        self.makeBarriers( numBarriers )
-        self.makeTreasures( numTreasures )
+        self.makeBarriers( numBarriers, size )
+        self.makeTreasures( numTreasures, size )
 
     def __str__(self):
         output = ''
@@ -35,11 +36,24 @@ class Board:
         row = [Tile()] * size # shallow copies?
         self.grid = [row] * size # shallow copies of array row?
     
-    def makeBarriers( self, numBarriers ):
+    def makeBarriers( self, numBarriers, BoardSize ):
+        self.makeOneBarrier( BoardSize )
+
+    def makeOneBarrier( self, BoardSize ):
+        x = random.randint(0, BoardSize-1)
+        y = random.randint(0, BoardSize-1)
+        self.grid[y][x].addBarrierToTile( True )        
+        self.grid[y+1][x].addBarrierToTile( False )        
+        self.grid[y][x+1].addBarrierToTile( False )        
+        self.grid[y+1][x+1].addBarrierToTile( False )
         # create numBarriers - randomly placed 2x2 block, wraps edges of board, 
         # can overlap (but not completely). 'X' rep
-        pass
 
-    def makeTreasures( self, numTreasures ):
+    def makeTreasures( self, numTreasures, BoardSize ):
+        self.makeOneTreasure( BoardSize )
+
+    def makeOneTreasure( self, BoardSize ):
+        x = random.randint(0, BoardSize-1)
+        y = random.randint(0, BoardSize-1)
+        self.grid[y][x].addTreasureToTile( 10 )
         # creates numTreasures - randomly placed, on empty tiles. '$' rep
-        pass
