@@ -40,9 +40,9 @@ class Board:
     def makeBarriers():
         # create numBarriers - randomly placed 2x2 block, wraps edges of board, can overlap (but not completely). 'X' rep
         # Board.numBarriers
-        print('')
+        pass
 
     def makeTreasures():
         # creates numTreasures - randomly placed, on empty tiles. '$' rep
         # Board.numTreasures
-        print('')
+        pass
