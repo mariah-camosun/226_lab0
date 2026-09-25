@@ -29,9 +29,12 @@ class Board:
         Board.makeBarriers()
         Board.makeTreasures()
 
-    def makeEmptyBoard():
+    def makeEmptyBoard(size):
         # create size x size collection of Tiles; ea empty (initially) '_' representation
         # Board.size x Board.size
+        row = makeTile() * size # I believe this will make array of shallow copies
+        grid = row * size # this will make shallow copies of array, in an array
+
         print('')
     
     def makeBarriers():
