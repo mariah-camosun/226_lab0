@@ -43,10 +43,18 @@ class Board:
     def makeOneBarrier( self, BoardSize ):
         x = random.randint(0, BoardSize-1)
         y = random.randint(0, BoardSize-1)
-        self.grid[y][x].addBarrierToTile( True )        
-        self.grid[y+1][x].addBarrierToTile( False )        
-        self.grid[y][x+1].addBarrierToTile( False )        
-        self.grid[y+1][x+1].addBarrierToTile( False )
+        self.grid[y][x].addBarrierToTile( True )
+        if ( x+1 == BoardSize ):
+            x2 = 0
+        else:
+            x2 = x+1
+        if ( y+1 == BoardSize ):
+            y2 = 0
+        else:
+            y2 = y+1
+        self.grid[y2][x].addBarrierToTile( False )        
+        self.grid[y][x2].addBarrierToTile( False )        
+        self.grid[y2][x2].addBarrierToTile( False )
         # create numBarriers - randomly placed 2x2 block, wraps edges of board, 
         # can overlap (but not completely). 'X' rep
 
