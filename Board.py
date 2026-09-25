@@ -9,7 +9,12 @@ class Board:
     def __init__(self, size, numBarriers, numTreasures):
         self.size = size
         self.numBarriers = numBarriers
-        self.numTreasures = numTreasures        
+        self.numTreasures = numTreasures
+        self.makeEmptyBoard( size )
+        self.makeBarriers( numBarriers )
+        self.makeTreasures( numTreasures )
+        # self.grid = []
+
 
     def changeBoard(size, numBarriers, numTreasures):
         pass
@@ -24,10 +29,6 @@ class Board:
         #barriers must be <= 20% of board
         #treasures must be <= 5% of board
 
-    def makeBoard():
-        Board.makeEmptyBoard()
-        Board.makeBarriers()
-        Board.makeTreasures()
 
     def makeEmptyBoard(self, size):
         # create size x size collection of Tiles; ea empty (initially) '_' representation
