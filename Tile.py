@@ -69,12 +69,3 @@ class Tile:
         # if tile = treasure, add points, change contents to player
         # if tile = other player ??? treat like barrier?
         pass
-
-    # def findCoords():
-    #     '''
-    #     get position of this Tile
-    #     :return: array of [x,y] position coordinates [int, int]
-    #     '''
-    #     return [self.xcoord, self.ycoord]
-# should teh tile track xy coords or the board?
-# can i have multiple init statements?
