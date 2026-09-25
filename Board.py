@@ -1,4 +1,6 @@
 #class Board
+from Tile import Tile
+
 class Board:
     # assuming these are supposed to be class variables
     # size = '' #class variables
