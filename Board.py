@@ -8,8 +8,6 @@ class Board:
         self.numBarriers = numBarriers
         self.numTreasures = numTreasures
         self.makeEmptyBoard( size )
-        # if ( self.validateBarrierCount()==False or self.validateTreasureCount()==False):
-            # validation error
         self.makeBarriers( numBarriers, size )
         self.makeTreasures( numTreasures, size )
 
@@ -33,20 +31,18 @@ class Board:
             raise TypeError
         
     def validateBarrierCount (self, numBarriers):
-        pass
-        # if not isinstance(numBarriers, int ):
-        #     raise TypeError            
-        # # barriers must be <= 20% of board; each barrier takes (up to) 4 tiles
-        # if ( numBarriers*4 > (self.tileCount * .2) ):
-        #     raise ValueError
+        if not isinstance(numBarriers, int ):
+            raise TypeError            
+        # barriers must be <= 20% of board; each barrier takes (up to) 4 tiles
+        if ( numBarriers*4 > (self.tileCount * .2) ):
+            raise ValueError
 
     def validateTreasureCount (self, numTreasures):
-        pass
-        # if not isinstance(numTreasures, int ):
-        #     raise TypeError
-        # # treasures must be <= 5% of board
-        # if ( numTreasures > self.tileCount * .05 ):
-        #     raise ValueError
+        if not isinstance(numTreasures, int ):
+            raise TypeError
+        # treasures must be <= 5% of board
+        if ( numTreasures > self.tileCount * .05 ):
+            raise ValueError
 
     def makeEmptyBoard(self, size):
         # create size x size collection of Tiles; ea empty (initially)
@@ -128,6 +124,16 @@ class Board:
             pass
 
     def makeTreasures( self, numTreasures, BoardSize ):
+        try: 
+            self.validateTreasureCount(numTreasures)
+        except ValueError:
+            print("Too many treasures for board size")
+            print("increase board size, or decrease number of treasures")
+            return False
+        except TypeError:
+            print(numTreasures + "is not a number")
+            return False
+        else:            
             for i in range( numTreasures ):
                 self.makeOneTreasure( BoardSize )
 
