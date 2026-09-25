@@ -2,10 +2,10 @@ class Tile:
     def __init__(self):
         self.contents="empty"
 
-    def __init__(self, xcoord: int, ycoord: int):
-        self.contents="empty"
-        self.xcoord=xcoord
-        self.ycoord=ycoord
+    # def __init__(self, xcoord: int, ycoord: int):
+    #     self.contents="empty"
+    #     self.xcoord=xcoord
+    #     self.ycoord=ycoord
 
     def __str__(self):
         '''
@@ -29,11 +29,11 @@ class Tile:
         '''
         self.contents=content
 
-    def findCoords():
-        '''
-        get position of this Tile
-        :return: array of [x,y] position coordinates [int, int]
-        '''
-        return [self.xcoord, self.ycoord]
+    # def findCoords():
+    #     '''
+    #     get position of this Tile
+    #     :return: array of [x,y] position coordinates [int, int]
+    #     '''
+    #     return [self.xcoord, self.ycoord]
 # should teh tile track xy coords or the board?
 # can i have multiple init statements?
