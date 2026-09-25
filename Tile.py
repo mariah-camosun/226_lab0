@@ -22,12 +22,12 @@ class Tile:
         self.contents = None
         self.symbol = '_'
 
-    def addBarrierToTile( barrier: Barrier ):
+    def addBarrierToTile( self, isOrigin ):
         '''
         Add or change tile contents to Barrier (1 tile of the barrier only)
         '''
-        self.contents = barrier
-        self.symbol = 'X'
+        self.contents = Barrier( isOrigin )
+        self.symbol = self.contents.symbol
         # do checks go here or in the board?
         pass
 
