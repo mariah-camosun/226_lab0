@@ -1,7 +1,7 @@
 class Tile:
 #keeps track of own contents
     def __init__(self):
-        self.contents="empty"
+        self.contents = None 
 
     # def __init__(self, xcoord: int, ycoord: int):
     #     self.contents="empty"
@@ -15,7 +15,10 @@ class Tile:
 
         :return self.contents.name: the 'name' of the contents item
         '''
-        return f'{self.contents.name}'
+        if self.contents == None:
+            return "_"
+        else:
+            return f'{self.contents.name}'
 
     # def changeTile( content: enumOrClass? ):
     #     ''' 
