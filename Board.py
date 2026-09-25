@@ -33,8 +33,9 @@ class Board:
 
     def makeEmptyBoard(self, size):
         # create size x size collection of Tiles; ea empty (initially) '_' representation
-        row = [Tile()] * size # shallow copies?
-        self.grid = [row] * size # shallow copies of array row?
+        self.grid = []
+        for item in range( size ):
+            self.grid.append( [ Tile() for _ in range (size) ] )
     
     def makeBarriers( self, numBarriers, BoardSize ):
         self.makeOneBarrier( BoardSize )
