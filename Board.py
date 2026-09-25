@@ -18,10 +18,12 @@ class Board:
         # self.grid = []
 
     def __str__(self):
+        output = ''
         for row in self.grid:
             for tile in row:
-                print(tile, end="")
-            print()
+                output += tile.__str__()
+            output += "\n"
+        return output
 
     def changeBoard(size, numBarriers, numTreasures):
         pass
