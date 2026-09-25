@@ -15,6 +15,7 @@ class Board:
         for row in self.grid:
             for tile in row:
                 output += tile.__str__()
+                output += "  "
             output += "\n"
         return output
 

@@ -19,10 +19,7 @@ class Tile:
 
         :return self.contents.name: the 'name' of the contents item
         '''
-        if self.contents == None:
-            return "_  "
-        else:
-            return f'{self.contents.symbol}'
+        return f'{self.symbol}'
 
     # def changeTile( content: enumOrClass? ):
     #     ''' 
@@ -36,14 +33,15 @@ class Tile:
         '''
         Empty the Contents of the tile
         '''
-        self.contents = None        
+        self.contents = None
+        self.symbol = '_'
 
     def addBarrierToTile( barrier: Barrier ):
         '''
         Add or change tile contents to Barrier
         '''
         self.contents = barrier
-        # and adjacent squares (ref corner, topLeft)
+        self.symbol = 'X'
         # do checks go here or in the board?
         # if self.contents (before) == barrier.topLeft then do not place
         # re-randomize?
@@ -54,6 +52,7 @@ class Tile:
         Add or change tile contents to Treasure
         '''
         self.contents = treasure
+        self.symbol = '$'
         # do checks go here or in the board?
         # no treasure if barrier or treasure
         # re-randomize?
@@ -61,9 +60,10 @@ class Tile:
 
     def addPlayerToTile( player: Player ):
         '''
-        Move player into tile
+        Move player into tile (add player to tile component)
         '''
         self.contents = player
+        self.symbol = player.number
         # do checks go here or in the board?
         # if tile = barrier, cannot place here
         # if tile = treasure, add points, change contents to player
