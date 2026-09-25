@@ -81,8 +81,14 @@ class Board:
                 self.makeOneTreasure( BoardSize )
 
     def makeOneTreasure( self, BoardSize ):
-        x = random.randint(0, BoardSize-1)
-        y = random.randint(0, BoardSize-1)
-        self.grid[y][x].addTreasureToTile( 10 )
-        self.treasureCount += 1
         # creates numTreasures - randomly placed, on empty tiles. '$' rep
+        while(True):
+            x = random.randint(0, BoardSize-1)
+            y = random.randint(0, BoardSize-1)
+            treasureTile = self.grid[y][x]
+            isDuplicate = treasureTile.addTreasureToTile( 10 )
+            if ( not isDuplicate ):
+                break
+               
+        #once successfull treasure, add 1 to treasureCount
+        self.treasureCount += 1

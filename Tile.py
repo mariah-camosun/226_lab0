@@ -50,13 +50,17 @@ class Tile:
     def addTreasureToTile( self, treasureValue):
         '''
         Add or change tile contents to Treasure
+        Includes checks for previous tile contents
         '''
-        self.contents = Treasure( treasureValue )
-        self.symbol = '$'
+        if ( self.contents == None ):
+            self.contents = Treasure( treasureValue )
+            self.symbol = '$'
+            return False
+        else:
+            return True
         # do checks go here or in the board?
         # no treasure if barrier or treasure
         # re-randomize?
-        pass
 
     def addPlayerToTile( player: Player ):
         '''
