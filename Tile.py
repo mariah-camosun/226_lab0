@@ -16,9 +16,9 @@ class Tile:
         :return self.contents.name: the 'name' of the contents item
         '''
         if self.contents == None:
-            return "_"
+            return "_  "
         else:
-            return f'{self.contents.name}'
+            return f'{self.contents.symbol}'
 
     # def changeTile( content: enumOrClass? ):
     #     ''' 
