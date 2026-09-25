@@ -1,3 +1,7 @@
+from Barrier import Barrier
+from Treasure import Treasure
+from Player import Player
+
 class Tile:
 #keeps track of own contents
     def __init__(self):
