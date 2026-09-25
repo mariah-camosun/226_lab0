@@ -25,11 +25,27 @@ class Tile:
     def addBarrierToTile( self, isOrigin ):
         '''
         Add or change tile contents to Barrier (1 tile of the barrier only)
+        Inclues checks for previous tile contents
         '''
-        self.contents = Barrier( isOrigin )
-        self.symbol = self.contents.symbol
-        # do checks go here or in the board?
-        pass
+        if (isOrigin==True):
+            if (self.contents != None):
+                if (self.contents.isOrigin==True):
+                    print("duplicate barrier")
+                    return True
+                else:
+                    self.contents = Barrier( isOrigin )
+                    self.symbol = self.contents.symbol
+                    return False
+            else:
+                self.contents = Barrier( isOrigin )
+                self.symbol = self.contents.symbol
+                return False
+        elif (self.contents == None):
+            self.contents = Barrier( isOrigin )
+            self.symbol = self.contents.symbol
+            return False
+        else:
+            return False
 
     def addTreasureToTile( self, treasureValue):
         '''
