@@ -31,11 +31,11 @@ class Tile:
         # do checks go here or in the board?
         pass
 
-    def addTreasureToTile( treasure: Treasure):
+    def addTreasureToTile( self, treasureValue):
         '''
         Add or change tile contents to Treasure
         '''
-        self.contents = treasure
+        self.contents = Treasure( treasureValue )
         self.symbol = '$'
         # do checks go here or in the board?
         # no treasure if barrier or treasure
