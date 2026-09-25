@@ -38,7 +38,7 @@ class Tile:
         '''
         self.contents = None        
 
-    def addBarrier( barrier: Barrier ):
+    def addBarrierToTile( barrier: Barrier ):
         '''
         Add or change tile contents to Barrier
         '''
@@ -49,7 +49,7 @@ class Tile:
         # re-randomize?
         pass
 
-    def addTreasure( treasure: Treasure):
+    def addTreasureToTile( treasure: Treasure):
         '''
         Add or change tile contents to Treasure
         '''
@@ -59,7 +59,7 @@ class Tile:
         # re-randomize?
         pass
 
-    def addPlayer( player: Player ):
+    def addPlayerToTile( player: Player ):
         '''
         Move player into tile
         '''
