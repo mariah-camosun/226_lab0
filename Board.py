@@ -17,6 +17,11 @@ class Board:
         self.makeTreasures( numTreasures )
         # self.grid = []
 
+    def __str__(self):
+        for row in self.grid:
+            for tile in row:
+                print(tile, end="")
+            print()
 
     def changeBoard(size, numBarriers, numTreasures):
         pass
