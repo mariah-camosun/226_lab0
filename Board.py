@@ -33,10 +33,8 @@ class Board:
     def makeEmptyBoard(self, size):
         # create size x size collection of Tiles; ea empty (initially) '_' representation
         # Board.size x Board.size
-        row = makeTile() * size # I believe this will make array of shallow copies
-        grid = row * size # this will make shallow copies of array, in an array
-
-        print('')
+        row = [Tile()] * size # I believe this will make array of shallow copies
+        self.grid = [row] * size # this will make shallow copies of array, in an array
     
     def makeBarriers( self, numBarriers ):
         # create numBarriers - randomly placed 2x2 block, wraps edges of board, can overlap (but not completely). 'X' rep
