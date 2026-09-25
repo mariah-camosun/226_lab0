@@ -29,7 +29,7 @@ class Board:
         Board.makeBarriers()
         Board.makeTreasures()
 
-    def makeEmptyBoard(size):
+    def makeEmptyBoard(self, size):
         # create size x size collection of Tiles; ea empty (initially) '_' representation
         # Board.size x Board.size
         row = makeTile() * size # I believe this will make array of shallow copies
@@ -37,12 +37,12 @@ class Board:
 
         print('')
     
-    def makeBarriers():
+    def makeBarriers( self, numBarriers ):
         # create numBarriers - randomly placed 2x2 block, wraps edges of board, can overlap (but not completely). 'X' rep
         # Board.numBarriers
         pass
 
-    def makeTreasures():
+    def makeTreasures( self, numTreasures ):
         # creates numTreasures - randomly placed, on empty tiles. '$' rep
         # Board.numTreasures
         pass
