@@ -3,7 +3,14 @@ from Tile import Tile
 import random
 
 class Board:
-    def __init__(self, size, numBarriers, numTreasures):
+    def __init__(self, size: int, numBarriers: int, numTreasures: int)->None:
+        '''
+        Creates new board
+
+        :param size: number of tiles per side of board
+        :param numBarriers: number of barrier blocks to generate (multiple tiles per block)
+        :param numTreasures: number of treasures to generate
+        '''
         self.size = size
         self.numBarriers = numBarriers
         self.numTreasures = numTreasures
@@ -21,25 +28,37 @@ class Board:
         output += "\n num tiles: " + (str)(self.tileCount) + " num barriers: " + (str)(self.barrierCount) + " num treasures: " + (str)(self.treasureCount) + "\n"
         return output
 
-    def changeBoard(size, numBarriers, numTreasures):
-        pass
-        # clear old board
-        # init new board: Board(size, numBarriers, numTreasures)
-
-    def validateSize(self, size):
+    def validateSize(self, size: int)->None:
+        '''
+        Validates size parameter is an integer > 0 and <= 30
+        '''
         if not isinstance(size, int):
             raise TypeError
+        elif ( 30 < size <= 0 ):
+            raise ValueError
         
-    def validateBarrierCount (self, numBarriers):
+    def validateBarrierCount (self, numBarriers: int)->None:
+        '''
+        Validates numBarriers parameter is an integer > 0, and
+        Does not occupy > 20% of the board
+        '''
         if not isinstance(numBarriers, int ):
             raise TypeError            
+        elif ( numBarriers <= 0 ):
+            raise ValueError
         # barriers must be <= 20% of board; each barrier takes (up to) 4 tiles
-        if ( numBarriers*4 > ( self.getTileCount() * .2 ) ):
+        elif ( numBarriers*4 > ( self.getTileCount() * .2 ) ):
             raise ValueError
 
-    def validateTreasureCount (self, numTreasures):
+    def validateTreasureCount (self, numTreasures: int)->None:
+        '''
+        Validates numTreasures parameter is an integer > 0, and
+        Does not occupy > 5% of the board
+        '''
         if not isinstance(numTreasures, int ):
             raise TypeError
+        elif ( numTreasures <= 0 ):
+            raise ValueError
         # treasures must be <= 5% of board
         if ( numTreasures > self.getTileCount() * .05 ):
             raise ValueError
@@ -47,13 +66,19 @@ class Board:
     def makeEmptyBoard(self, size):
         # create size x size collection of Tiles; ea empty (initially)
         self.grid = []
-        # self.validateSize( size )
-        self.setTileCount( size*size )
-        self.setTreasureCount( 0 )
-        self.setBarrierCount( 0 )
+        try:
+            self.validateSize( size )
+        except TypeError:
+            print( "size = ", size, " is not an integer")
+        except ValueError:
+            print( "size must be an integer in [1-30]" )
+        else:
+            self.setTileCount( size*size )
+            self.setTreasureCount( 0 )
+            self.setBarrierCount( 0 )
 
-        for item in range( size ):
-            self.grid.append( [ Tile() for _ in range (size) ] )
+            for item in range( size ):
+                self.grid.append( [ Tile() for _ in range (size) ] )
 
     def getBoard( self ):
         return self.grid
@@ -74,19 +99,30 @@ class Board:
     def getBarrierCount( self ):
         return self.barrierCount
 
-    def makeBarriers( self, numBarriers, BoardSize ):
+    def makeBarriers( self, numBarriers: int, boardSize: int )->bool:
+        '''
+        generate board barriers
+
+        :param numBarriers: number of barrier blocks to make
+        :param boardSize: size of 1 side of the board
+        :return: bool isValid
+        '''         
         try: 
             self.validateBarrierCount(numBarriers)
         except ValueError:
-            print("Too many barriers for board size")
-            print("increase board size, or decrease number of barriers")
+            maxBlocks = (boardSize*boardSize)*.2/4
+            if numBarriers <= 0:
+                print( "must have at least 1 barrier block, and no more than ", maxBlocks)
+            else: 
+                print("Too many barriers for board size, at current size, generate no more than ", maxBlocks)
+                print("increase board size, or decrease number of barriers")
             return False
         except TypeError:
             print(numBarriers + "is not a number")
             return False
         else:            
             for i in range( numBarriers ): 
-                self.makeOneBarrier( BoardSize )
+                self.makeOneBarrier( boardSize )
 
     def makeOneBarrier( self, BoardSize ):
         # if barrier would completely overlap another barrier, re-generate coords
@@ -119,19 +155,30 @@ class Board:
         self.getCoordContents(x,y2).setBarrierTile( False )        
 
 
-    def makeTreasures( self, numTreasures, BoardSize ):
+    def makeTreasures( self, numTreasures, boardSize ):
+        '''
+        generate board treasures
+
+        :param numTreasures: number of treasures to make
+        :param boardSize: size of 1 side of the board
+        :return: bool isValid
+        '''                    
         try: 
             self.validateTreasureCount(numTreasures)
         except ValueError:
-            print("Too many treasures for board size")
-            print("increase board size, or decrease number of treasures")
+            maxBlocks = (boardSize*boardSize)*.05
+            if numTreasures <= 0:
+                print( "must have at least 1 treasures, and no more than ", maxBlocks)
+            else: 
+                print("Too many treasures for board size, at current size, generate no more than ", maxBlocks)
+                print("increase board size, or decrease number of treasures")
             return False
         except TypeError:
             print(numTreasures + "is not a number")
             return False
         else:            
             for i in range( numTreasures ):
-                self.makeOneTreasure( BoardSize )
+                self.makeOneTreasure( boardSize )
 
     def makeOneTreasure( self, BoardSize ):
         # creates numTreasures - randomly placed, on empty tiles. '$' rep
