@@ -5,62 +5,80 @@ from Player import Player
 class Tile:
 #keeps track of own contents
     def __init__(self):
-        self.contents = None
-        self.symbol = '_'
+        self.setTileContents( None )
+        self.setTileSymbol( '_' )
 
     def __str__(self):
         '''
-        Display the Contents of the tile.
+        Display the (symbol of) Contents of the tile.
         :return tile symbol: self.symbol of the instance
         '''
-        return f'{self.symbol}'
+        return f'{ self.getTileSymbol() }'
 
-    def clearTile():
-        '''
-        Empty the Contents of the tile
-        '''
-        self.contents = None
-        self.symbol = '_'
+    def setTileContents( self, item ):
+        self.contents = item
 
-    def addBarrierToTile( self, isOrigin ):
-        '''
-        Add or change tile contents to Barrier (1 tile of the barrier only)
-        Inclues checks for previous tile contents
-        '''
-        if (isOrigin==True):
-            if (self.contents != None):
-                if (self.contents.isOrigin==True):
-                    print("duplicate barrier")
-                    return True
-                else:
-                    self.contents = Barrier( isOrigin )
-                    self.symbol = self.contents.symbol
-                    return False
-            else:
-                self.contents = Barrier( isOrigin )
-                self.symbol = self.contents.symbol
-                return False
-        elif (self.contents == None):
-            self.contents = Barrier( isOrigin )
-            self.symbol = self.contents.symbol
-            return False
-        else:
-            return False
+    def getTileContents( self ):
+        return self.contents
 
-    def addTreasureToTile( self, treasureValue):
+    def setTileSymbol(self, symbol):
+        self.symbol = symbol
+
+    def getTileSymbol( self ):
+        return self.symbol
+
+    def clearTile(self):
+        '''
+        Empty the Contents of the tile & change symbol to empty symbol
+        '''
+        self.setTileContents( None )
+        self.setTileSymbol( '_' )
+
+    def setTreasureTile( self, treasureValue: int )->bool:
         '''
         Add or change tile contents to Treasure
         Includes checks for previous tile contents
+        :return: bool, isDuplicate
         '''
-        if ( self.contents == None ):
-            self.contents = Treasure( treasureValue )
-            self.symbol = '$'
+        if ( self.getTileContents() == None ):
+            tTile = Treasure( treasureValue )
+            self.setTileContents( tTile )
+            self.setTileSymbol( tTile.getSymbol() )
             return False
         else:
             return True
-        # do checks go here or in the board?
-        # no treasure if barrier or treasure
-        # re-randomize?
+
+    def setBarrierTile(self, isOrigin: bool ):
+        '''
+        Add or change tile contents to Barrier
+        Includes checks for previous tile contents
+        :return: bool, isDuplicate
+        '''
+        bTile = Barrier( isOrigin )
+        prevContents = self.getTileContents()
+        # rework if statement for less duplication
+
+        if ( isOrigin == True ):
+            if ( prevContents != None):
+                # barriers are first non-empy generated. 
+                # Contents should only be empty or barrier
+                if ( prevContents.getIsOrigin() == True ): 
+                    # print("duplicate barrier")
+                    return True
+                else:
+                    self.setTileContents( bTile )
+                    self.setTileSymbol( bTile.getSymbol() )
+                    return False
+            else:
+                self.setTileContents( bTile )
+                self.setTileSymbol( bTile.getSymbol() )
+                return False
+        elif (self.contents == None):
+            self.setTileContents( bTile )
+            self.setTileSymbol( bTile.getSymbol() )
+            return False
+        else:
+            return False
 
     def addPlayerToTile( player: Player ):
         '''
