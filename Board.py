@@ -18,7 +18,12 @@ class Board:
         self.makeBarriers( numBarriers, size )
         self.makeTreasures( numTreasures, size )
 
-    def __str__(self):
+    def __str__(self)->str:
+        '''
+        returns a sting representing the current state of the board
+
+        :return: str, current board state
+        '''
         output = ''
         for row in self.grid:
             for tile in row:
@@ -31,6 +36,8 @@ class Board:
     def validateSize(self, size: int)->None:
         '''
         Validates size parameter is an integer > 0 and <= 30
+
+        :param size: int between [1,30], size of each side of the board (board is size x size)
         '''
         if not isinstance(size, int):
             raise TypeError
@@ -41,6 +48,8 @@ class Board:
         '''
         Validates numBarriers parameter is an integer > 0, and
         Does not occupy > 20% of the board
+
+        :param numBarriers: int > 0 and < 20% of board, number of barrier blocks to make
         '''
         if not isinstance(numBarriers, int ):
             raise TypeError            
@@ -54,6 +63,8 @@ class Board:
         '''
         Validates numTreasures parameter is an integer > 0, and
         Does not occupy > 5% of the board
+
+        :param numTreasures: int > 0 and < 5% of board, number of treasures to make
         '''
         if not isinstance(numTreasures, int ):
             raise TypeError
@@ -64,6 +75,12 @@ class Board:
             raise ValueError
 
     def makeEmptyBoard(self, size):
+        '''
+        make an empty board of size x size tiles
+        sets tile count to size**2, clears treasure and barrier counts
+
+        :param size: int > 0 and < 30 that is the number of tiles per side of board
+        '''
         # create size x size collection of Tiles; ea empty (initially)
         self.grid = []
         try:
@@ -80,23 +97,70 @@ class Board:
             for item in range( size ):
                 self.grid.append( [ Tile() for _ in range (size) ] )
 
-    def getBoard( self ):
+    def getBoard( self )->list[list[Tile]]:
+        '''
+        returns the 2D array of board tiles
+
+        :return: 2D array of tiles 
+        '''
         return self.grid
+    
     def getCoordContents( self, x: int, y: int )->Tile:
+        '''
+        returns tile for a specific 2D array position[y][x]
+
+        :param y: index of row in board array
+        :param x: index of tile in row array
+        :return: Tile
+        '''
         return self.getBoard()[y][x]
 
-    def setTileCount( self, count ):
+    def setTileCount( self, count: int )->None:
+        '''
+        set tileCount to value count
+
+        :param count: number of tiles in the board
+        '''
         self.tileCount = count
-    def setTreasureCount( self, count ):
+
+    def setTreasureCount( self, count: int )->None:
+        '''
+        set treasureCount to value count
+
+        :param count: number of treasures on the board
+        '''
         self.treasureCount = count
-    def setBarrierCount( self, count ):
+
+    def setBarrierCount( self, count: int )->None:
+        '''
+        set barrierCount to value count
+
+        :param count: number of barrier blocks (not tiles) on the board
+        '''        
         self.barrierCount = count
 
-    def getTileCount( self ):
+    def getTileCount( self )->int:
+        '''
+        get number of tiles on the board
+
+        :return: number of tiles in the board
+        '''        
         return self.tileCount
-    def getTreasureCount( self ):
+
+    def getTreasureCount( self )->int:
+        '''
+        get number of treasures on the board
+
+        :return: number of treasures on the board
+        ''' 
         return self.treasureCount
-    def getBarrierCount( self ):
+    
+    def getBarrierCount( self )->int:
+        '''
+        get number of barrier blocks on the board
+
+        :return: number of barrier blocks on the board
+        '''         
         return self.barrierCount
 
     def makeBarriers( self, numBarriers: int, boardSize: int )->bool:
@@ -124,13 +188,17 @@ class Board:
             for i in range( numBarriers ): 
                 self.makeOneBarrier( boardSize )
 
-    def makeOneBarrier( self, BoardSize ):
-        # if barrier would completely overlap another barrier, re-generate coords
-        # create numBarriers - randomly placed 2x2 block, wraps edges of board, 
-        # can overlap (but not completely). 'X' rep
+    def makeOneBarrier( self, boardSize: int )->None:
+        '''
+        create 1 'block' of barriers (2x2 tiles) at a random position
+        includes check for complete overlap and increments barrierCound on success
+
+        # NOTE realized I can eleminate this parameter wherever it is used
+        :param boardsize: int, size of board
+        '''
         while(True):
-            x = random.randint(0, BoardSize-1)
-            y = random.randint(0, BoardSize-1)
+            x = random.randint(0, boardSize-1)
+            y = random.randint(0, boardSize-1)
             originTile = self.getCoordContents(x,y)
             isDuplicate = originTile.setBarrierTile( True )
             if ( not isDuplicate ):
@@ -140,11 +208,11 @@ class Board:
         self.setBarrierCount( self.getBarrierCount()+1 )
 
         # if barrier would overflow an edge, wrap overflow barrier tiles (set coord value = 0)
-        if ( x+1 == BoardSize ):
+        if ( x+1 == boardSize ):
             x2 = 0
         else:
             x2 = x+1
-        if ( y+1 == BoardSize ):
+        if ( y+1 == boardSize ):
             y2 = 0
         else:
             y2 = y+1
@@ -155,7 +223,7 @@ class Board:
         self.getCoordContents(x,y2).setBarrierTile( False )        
 
 
-    def makeTreasures( self, numTreasures, boardSize ):
+    def makeTreasures( self, numTreasures: int, boardSize: int )->bool:
         '''
         generate board treasures
 
@@ -180,11 +248,17 @@ class Board:
             for i in range( numTreasures ):
                 self.makeOneTreasure( boardSize )
 
-    def makeOneTreasure( self, BoardSize ):
-        # creates numTreasures - randomly placed, on empty tiles. '$' rep
+    def makeOneTreasure( self, boardSize: int )->None:
+        '''
+        create 1 treasure at a random position
+        includes check for previous tile contents and increments treasureCount on success
+
+        # NOTE realized I can eleminate boardSize parameter wherever it is used
+        :param boardsize: int, size of board
+        '''
         while(True):
-            x = random.randint(0, BoardSize-1)
-            y = random.randint(0, BoardSize-1)
+            x = random.randint(0, boardSize-1)
+            y = random.randint(0, boardSize-1)
             treasureTile = self.getCoordContents(x,y)
             isDuplicate = treasureTile.setTreasureTile( 10 )
             if ( not isDuplicate ):
