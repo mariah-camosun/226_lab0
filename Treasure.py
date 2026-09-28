@@ -1,9 +1,13 @@
 class Treasure:
     symbol = '$'
-    def __init__(self, treasureValue: int):
+    def __init__(self, treasureValue: int)->None:
+        '''
+        initialize new treasure item, set value to treasureValue
+        :param treasureValue: int, point value of treasure item
+        '''
         self.setValue( treasureValue )
 
-    def __str__(self):
+    def __str__(self)->None:
         '''
         Returns the Treasure's symbol and value as a string
         :return: (str)(Treasure.symbol (self.value)) 
@@ -13,12 +17,12 @@ class Treasure:
     def getSymbol( cls )->str:
         '''
         Returns the Treasure symbol
-        :return: Treasure.symbol 
+        :return: str, Treasure.symbol 
         '''
         return cls.symbol
 
     @classmethod
-    def setSymbol( cls, symbol: str ):
+    def setSymbol( cls, symbol: str )->None:
         '''
         set the symbol for Treasure class
         NOTE: symbol is for class, NOT per instance
@@ -28,14 +32,14 @@ class Treasure:
 
     def getValue( self )->int:
         '''
-        get value of treasure item
-        :return: self.value: int
+        get point value of treasure item
+        :return: self.value: int, point value of treasure
         '''        
         return self.value
     
-    def setValue( self, value: int ):
+    def setValue( self, value: int )->None:
         '''
-        set the value of a treasure object
+        set the point value of a treasure object
         :param value: int, point value of treasure
         '''
         self.value = value
