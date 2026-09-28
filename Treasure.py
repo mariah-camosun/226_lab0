@@ -7,7 +7,7 @@ class Treasure:
         '''
         self.setValue( treasureValue )
 
-    def __str__(self)->None:
+    def __str__(self)->str:
         '''
         Returns the Treasure's symbol and value as a string
         :return: (str)(Treasure.symbol (self.value)) 
