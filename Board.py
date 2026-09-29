@@ -194,9 +194,9 @@ class Board:
         loops until successfully placed in empty tile
         '''
         while True:
-            boardSize = self.getBoardSize()
-            tileContents = self.randomizePosition( boardSize )
-            if tileContents == None:
+            tile, _, _ = self.randomizePosition()
+            if tile.getTileContents() == None:
+                tile.setTileContents( itemToPlace )
                 # place item into contents
                 break
 
