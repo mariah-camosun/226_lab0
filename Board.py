@@ -1,5 +1,6 @@
 #class Board
 from Tile import Tile
+from Player import Player
 import random
 
 class Board:
@@ -17,6 +18,7 @@ class Board:
         self.makeEmptyBoard( size )
         self.makeBarriers( numBarriers, size )
         self.makeTreasures( numTreasures, size )
+        self.makeNewPlayer()
 
     def __str__(self)->str:
         '''
@@ -183,19 +185,19 @@ class Board:
         # if tile@x,y != empty, return False
         x = random.randint(0, boardSize-1)
         y = random.randint(0, boardSize-1)
-        prevTile = self.getCoordContents()
+        prevTile = self.getCoordContents( x, y )
         return prevTile.getTileContents()
 
-    # def placeInRandomEmpty( self, itemToPlace ):
-    #     '''
-    #     loops until successfully placed in empty tile
-    #     '''
-    #     while True:
-    #         boardSize = self.getBoardSize()
-    #         tileContents = self.randomizePosition( boardSize )
-    #         if tileContents == None:
-    #             # place item into contents
-    #             break
+    def placeInRandomEmpty( self, itemToPlace ):
+        '''
+        loops until successfully placed in empty tile
+        '''
+        while True:
+            boardSize = self.getBoardSize()
+            tileContents = self.randomizePosition( boardSize )
+            if tileContents == None:
+                # place item into contents
+                break
 
     # def placeBarrierOrigin( self, tileContents, itemToPlace):
     #     if tileContents == None:
@@ -308,3 +310,7 @@ class Board:
 
         #once successfull treasure, add 1 to treasureCount
         self.setTreasureCount( self.getTreasureCount() + 1 )
+
+    def makeNewPlayer( self, ):
+        newPlayer = Player()
+        self.placeInRandomEmpty( newPlayer )
