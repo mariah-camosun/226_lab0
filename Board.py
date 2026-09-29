@@ -212,7 +212,7 @@ class Board:
         :param numBarriers: number of barrier blocks to make
         :param boardSize: size of 1 side of the board
         :return: bool isValid
-        '''         
+        '''
         try: 
             self.validateBarrierCount(numBarriers)
         except ValueError:
@@ -242,6 +242,7 @@ class Board:
             x = random.randint(0, boardSize-1)
             y = random.randint(0, boardSize-1)
             originTile = self.getCoordContents(x,y)
+            # originTile = self.randomizePosition() # AS IS NOW - need to get one level up, to pass on to next segment. Re-factoring will take more work than intended
             isDuplicate = originTile.setBarrierTile( True )
             if ( not isDuplicate ):
                 break
@@ -263,7 +264,6 @@ class Board:
         self.getCoordContents(x2,y).setBarrierTile( False )        
         self.getCoordContents(x2,y2).setBarrierTile( False )        
         self.getCoordContents(x,y2).setBarrierTile( False )        
-
 
     def makeTreasures( self, numTreasures: int, boardSize: int )->bool:
         '''
