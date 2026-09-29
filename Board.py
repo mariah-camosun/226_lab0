@@ -139,6 +139,15 @@ class Board:
         '''        
         self.barrierCount = count
 
+    def getBoardSize( self )->int:
+        '''
+        get the number of tiles per side of the board
+        Note: no setter, as changing would require re-generating the board
+
+        :return: int, number of tiles per side
+        '''
+        return self.size
+
     def getTileCount( self )->int:
         '''
         get number of tiles on the board
@@ -162,6 +171,39 @@ class Board:
         :return: number of barrier blocks on the board
         '''         
         return self.barrierCount
+
+    def randomizePosition(self, boardSize):
+        '''
+        get a random board position and return contents of tile, if any
+
+        :return: tile.contents; 
+        '''
+        #if tile occupied, re-roll
+        #if tile@ x, y = empty, return Tur
+        # if tile@x,y != empty, return False
+        x = random.randint(0, boardSize-1)
+        y = random.randint(0, boardSize-1)
+        prevTile = self.getCoordContents()
+        return prevTile.getTileContents()
+
+    # def placeInRandomEmpty( self, itemToPlace ):
+    #     '''
+    #     loops until successfully placed in empty tile
+    #     '''
+    #     while True:
+    #         boardSize = self.getBoardSize()
+    #         tileContents = self.randomizePosition( boardSize )
+    #         if tileContents == None:
+    #             # place item into contents
+    #             break
+
+    # def placeBarrierOrigin( self, tileContents, itemToPlace):
+    #     if tileContents == None:
+    #         # place
+    #     elif tileContents.isOrigin == False:
+    #         # place
+    #     else: 
+    #         reroll
 
     def makeBarriers( self, numBarriers: int, boardSize: int )->bool:
         '''
