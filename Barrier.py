@@ -12,22 +12,10 @@ class Barrier:
         Returns the Barrier's symbol as a string
         :return: (str)(Barrier.symbol)
         '''
-        return f'{ self.getBarrierSymbol() }'
+        return f'{ self.getSymbol() }'
 
-    def getIsOrigin( self )->bool:
-        '''
-        get value of param: isOrigin
-        :return: isOrigin: bool, is this barrier tile the origin point for a barrier block
-        '''
-        return self.isOrigin
-
-    def setIsOrigin( self, isOrigin: bool )->None:
-        '''
-        set value of param: isOrigin
-        :param isOrigin: bool, is this tile the origin point for a barrier block
-        '''
-        self.isOrigin = isOrigin
-
+# Getters and Setters
+# class variables
     @classmethod
     def getSymbol(cls)->str:
         '''
@@ -44,3 +32,18 @@ class Barrier:
         :param symbol: str, the symbol to represent a barrier tile 
         '''
         cls.symbol = symbol
+
+# instance variables
+    def getIsOrigin( self )->bool:
+        '''
+        get value of param: isOrigin
+        :return: isOrigin: bool, is this barrier tile the origin point for a barrier block
+        '''
+        return self.isOrigin
+
+    def setIsOrigin( self, isOrigin: bool )->None:
+        '''
+        set value of param: isOrigin
+        :param isOrigin: bool, is this tile the origin point for a barrier block
+        '''
+        self.isOrigin = isOrigin

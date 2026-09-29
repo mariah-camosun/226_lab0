@@ -13,7 +13,7 @@ class Player:
     # [x] __str__ methd
     # [x] add_score method, 
     # [x] get_score methods
-    # [ ] move methd, takes a dir (UDLR) to chg player location if poss (otherwise ignored)
+    # [~] move methd, takes a dir (UDLR) to chg player location if poss (otherwise ignored)
     # [ ] value error on: row, col, score negative; row col outside board
     def __init__(self, x, y, gameBoard):
         self.num = 1 # TO BE auto-incremented, for now this will hold place
@@ -32,35 +32,56 @@ class Player:
 # Getters & Setters
     # Class variables: (player count)
     @classmethod
-    def incrementPlayerCount( cls ):
-        cls.playerCount += 1
-
-    @classmethod
     def getTotalPlayerCount( cls ):
         return cls.playerCount
-
     @classmethod
     def setTotalPlayerCount( cls, count ):
         cls.playerCount = count
 
-    # 
+    # Instance Variables: (num, symbol, score, xCoord, yCoord, gameBoard)
     def getPlayerNumber(self):
         return self.num
+    # no setPlayerNumber() - only done at init
+
+    def getPlayerSymbol(self):
+        return self.symbol
+    # no setPlayerSymbol() - only done at init
 
     def get_score( self ):
         return self.score
-    
+    def set_score( self, score ):
+        self.score = score
+
+    def get_coords( self ):
+        return self.xCoord, self.yCoord
+    def set_coords( self, x, y):
+        self.xCoord = x
+        self.yCoord = y
+
+    def get_board( self ):
+        return self.gameBoard
+    # no set_board() - only done at init
+
+# Modification of Setters
+    @classmethod
+    def incrementPlayerCount( cls ):
+        cls.playerCount += 1
+     
     def add_score( self, addScore ):
         score = self.get_score()
         score += addScore
         return score
 
-    def get_coords( self ):
-        return self.xCoord, self.yCoord
+# Validation
+    def validateDirection( self, direction ):
+        if not isinstance( direction, str ):
+            raise TypeError
+        elif ( direction == "U" or direction == "D" or direction == "L" or direction == "R" ):
+            return True
+        else:
+            raise ValueError
 
-    def get_board( self ):
-        return self.gameBoard
-    
+# Move
     def move( self ): # direction not a param, as includes user prompt
         from Treasure import Treasure
         direction = input("Enter a direction (U-up D-down L-left R-right) to move")
@@ -94,11 +115,4 @@ class Player:
                 targetTile.addPlayerToTile( self )
                 prevTile.clearTile()
             # print(board)
-
-    def validateDirection( self, direction ):
-        if not isinstance( direction, str ):
-            raise TypeError
-        elif ( direction == "U" or direction == "D" or direction == "L" or direction == "R" ):
-            return True
-        else:
-            raise ValueError
+    

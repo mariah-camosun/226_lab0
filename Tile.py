@@ -18,21 +18,26 @@ class Tile:
         '''
         return f'{ self.getTileSymbol() }'
 
+# Getters & Setters
+    # No Class Variables
+    # Instance Variables ( contents, symbol )
     def setTileContents( self, item )->None: #HOW TO HINT? should be one of a list of custom classes
         '''
         set the contents of the tile
+        includes subsequent symbol change
         :param item: set to a barrier, treasure, or player instance
         '''
         self.contents = item
         if item != None:
             self.setTileSymbol( item.symbol )
             return item
+        else:
+            self.setTileSymbol( "_" )
+            return item     
         # match type(item):
         #     case Treasure:
         #         self.setTreasureTile( 1 )
         #     case Barrier:
-
-
     def getTileContents( self ): #HOW TO HINT? as abv meth'd
         '''
         get the item contained in the tile
@@ -46,7 +51,6 @@ class Tile:
         :param symbol: str, symbol for the tile.
         '''
         self.symbol = symbol
-
     def getTileSymbol( self )->str:
         '''
         get the symbol for the tile
@@ -54,12 +58,58 @@ class Tile:
         '''
         return self.symbol
 
+# expanded setters
     def clearTile(self)->None:
         '''
         Empty the Contents of the tile & change symbol to empty symbol
         '''
         self.setTileContents( None )
         self.setTileSymbol( '_' )
+
+# Validation and Checks
+    def checkTileContents(self): # not actually written yet - just cursory idea
+        isEmpty = self.checkTileEmpty()
+        isBarrier, isBarrierOrigin = self.checkTileBarrier()
+        treasureValue = self.checkTileTreasure()
+
+        if ( isEmpty ):
+            return "isEmpty"
+        elif ( isBarrierOrigin ):
+            return "isBarrierOrigin"
+        elif ( isBarrier ):
+            return "isBarrierNon-Origin"
+        elif ( treasureValue ): #0 evals to false
+            return "isTreasure", treasureValue
+        else:
+            return "isAnotherPlayer"
+
+    def checkTileEmpty(self)->bool:
+        if ( self.getTileContents() == None ):
+            return True
+        else:
+            return False
+
+    def checkTileBarrier(self)->tuple[bool, bool]:
+        '''
+        :return: tuple[ isBarrier, isBarrierOrigin ]
+        '''
+        contents = self.getTileContents()
+        isBarrier = isinstance( contents, Barrier)
+        if isBarrier:
+            return True, contents.getIsOrigin()
+        else:
+            return False, False
+
+    def checkTileTreasure(self)->int:
+        '''
+        :return: value of treasure. Value of 0 is no treasure!
+        '''
+        contents = self.getTileContents()
+        isTreasure = isinstance( contents, Treasure)
+        if isTreasure:
+            return contents.getValue()
+        else:
+            return 0
 
     def setTreasureTile( self, treasureValue: int )->bool:
         '''
@@ -68,7 +118,8 @@ class Tile:
         :param treasureValue: the point value for the treasure item
         :return: bool, isBlocked - true if tile already full
         '''
-        if ( self.getTileContents() == None ):
+        isEmpty = self.checkTileEmpty()
+        if ( isEmpty ):
             tTile = Treasure( treasureValue )
             self.setTileContents( tTile )
             self.setTileSymbol( tTile.getSymbol() )

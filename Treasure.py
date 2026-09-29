@@ -13,7 +13,9 @@ class Treasure:
         :return: (str)(Treasure.symbol (self.value)) 
         '''        
         return f'{ self.getSymbol() } ({ self.getValue() })'
-    
+
+# setters and getters
+# Class variables
     @classmethod
     def getSymbol( cls )->str:
         '''
@@ -31,6 +33,7 @@ class Treasure:
         '''        
         cls.symbol = symbol
 
+# instance variables
     def getValue( self )->int:
         '''
         get point value of treasure item
@@ -43,4 +46,20 @@ class Treasure:
         set the point value of a treasure object
         :param value: int, point value of treasure
         '''
-        self.value = value
+        try: 
+            self.validateTreasureValue( value )
+        except TypeError as details:
+            print(f"{value} is not a valid integer")
+        except ValueError as details:
+            print(f"Value {value} is not valid. Must be integer > 0")
+        else:
+            self.value = value
+
+# Validation and Checks
+    def validateTreasureValue(self, value)->bool:
+        if type( value ):
+            raise TypeError
+        elif ( value <= 0):
+            raise ValueError
+        else:
+            return True
