@@ -2,13 +2,14 @@ import random
 
 class Player:
     playerCount = 0
-    # auto-increment name as player number
-    # contain coors of player
-    # contains player score
-    # __str__ methd
-    # add_score, get_score methods
-    # move methd, takes a dir (UDLR) to chg player location if poss (otherwise ignored)
-    # value error on: row, col, score negative; row col outside board
+    # [ ] auto-increment name as player number
+    # [x] contain coors of player
+    # [~] contains player score
+    # [x] __str__ methd
+    # [ ] add_score method, 
+    # [ ] get_score methods
+    # [ ] move methd, takes a dir (UDLR) to chg player location if poss (otherwise ignored)
+    # [ ] value error on: row, col, score negative; row col outside board
     def __init__(self, x, y):
         self.num = 1 # TO BE auto-incremented, for now this will hold place
         self.symbol = (str)(self.num)
@@ -24,8 +25,6 @@ class Player:
     def getPlayerNumber(self):
         return self.num
 
-
-
     def incrementPlayerCount( cls ):
         cls.playerCount += 1
 
@@ -35,6 +34,13 @@ class Player:
     def setTotalPlayerCount( cls, count ):
         cls.playerCount = count
 
+    def getPlayerScore( self ):
+        return self.score
+    
+    def addToPlayerScore( self, addScore ):
+        score = self.getPlayerScore()
+        score += addScore
+        return score
 
     # def makeTreasures( self, numTreasures: int, boardSize: int )->bool:
     #     '''

@@ -13,6 +13,7 @@ class Treasure:
         :return: (str)(Treasure.symbol (self.value)) 
         '''        
         return f'{ self.getSymbol() } ({ self.getValue() })'
+    
     @classmethod
     def getSymbol( cls )->str:
         '''
