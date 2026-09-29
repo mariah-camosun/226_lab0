@@ -125,6 +125,9 @@ class Board:
         '''
         self.tileCount = count
 
+    def decrementTreasureCount( self ):
+        self.treasureCount -= 1
+    
     def setTreasureCount( self, count: int )->None:
         '''
         set treasureCount to value count
@@ -313,10 +316,21 @@ class Board:
         #once successfull treasure, add 1 to treasureCount
         self.setTreasureCount( self.getTreasureCount() + 1 )
 
-    def makeNewPlayer( self, ):
+    def makeNewPlayer( self )->Player:
         while True:
             tile, x, y = self.randomizePosition()
             if tile.getTileContents() == None:
-                tile.setTileContents( Player( x, y ) )
+                newPlayer = tile.setTileContents( Player( x, y ) )
                 # place item into contents
                 break
+
+
+    def collectTreasure( self, tile:Tile, player:Player ):
+        tileContents = tile.getTileContents()
+        self.addToPlayerScore( tileContents.getValue() )
+        tile.clearTile()
+        self.decrementTreasureCount()
+        print(f"remaining treasures: {self.getTreasureCount()}")
+        print(f"player{player.getPlayerNumber()} score: {player.getPlayerScore()}")
+        tile.addPlayerToTile( player )
+        # print(board)
