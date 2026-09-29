@@ -18,7 +18,11 @@ class Board:
         self.makeEmptyBoard( size )
         self.makeBarriers( numBarriers, size )
         self.makeTreasures( numTreasures, size )
-        self.makeNewPlayer()
+        # For now, treating as single entry for simplicity
+        # self.players = []
+        # self.players.append( self.makeNewPlayer() ) 
+        self.players = self.makeNewPlayer()
+        print(f"players (in init): {self.players}")
 
     def __str__(self)->str:
         '''
@@ -117,6 +121,10 @@ class Board:
         '''
         return self.getBoard()[y][x]
 
+    def getPlayers( self )->Player:
+        print(f"players in getPlayers(): {self.players}")
+        return self.players
+    
     def setTileCount( self, count: int )->None:
         '''
         set tileCount to value count
@@ -202,15 +210,6 @@ class Board:
                 tile.setTileContents( itemToPlace )
                 # place item into contents
                 break
-
-            
-    # def placeBarrierOrigin( self, tileContents, itemToPlace):
-    #     if tileContents == None:
-    #         # place
-    #     elif tileContents.isOrigin == False:
-    #         # place
-    #     else: 
-    #         reroll
 
     def makeBarriers( self, numBarriers: int, boardSize: int )->bool:
         '''
@@ -319,10 +318,14 @@ class Board:
     def makeNewPlayer( self )->Player:
         while True:
             tile, x, y = self.randomizePosition()
+            i = 0
             if tile.getTileContents() == None:
-                newPlayer = tile.setTileContents( Player( x, y ) )
+                i += 1
+                print(f"make new player try { i }: Tile Contents: { tile.getTileContents() }")
+                newPlayer = tile.setTileContents( Player( x, y, self ) )
                 # place item into contents
                 break
+        print(f"new player: {newPlayer}")
         return newPlayer
 
     def collectTreasure( self, tile:Tile, player:Player ):

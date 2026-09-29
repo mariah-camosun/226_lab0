@@ -1,4 +1,9 @@
 import random
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from Board import Board
+    
 
 class Player:
     playerCount = 0
@@ -6,11 +11,11 @@ class Player:
     # [x] contain coors of player
     # [~] contains player score
     # [x] __str__ methd
-    # [ ] add_score method, 
-    # [ ] get_score methods
+    # [x] add_score method, 
+    # [x] get_score methods
     # [ ] move methd, takes a dir (UDLR) to chg player location if poss (otherwise ignored)
     # [ ] value error on: row, col, score negative; row col outside board
-    def __init__(self, x, y):
+    def __init__(self, x, y, gameBoard):
         self.num = 1 # TO BE auto-incremented, for now this will hold place
         self.symbol = (str)(self.num)
         print(f"player number {self.symbol} created")
@@ -18,84 +23,82 @@ class Player:
         self.xCoord = x
         self.yCoord = y
         print(f"player coords: {x}, {y}.")
+        self.gameBoard = gameBoard
+        type(self).incrementPlayerCount()
 
     def __str__(self):
         return f'{self.symbol}'
 
-    def getPlayerNumber(self):
-        return self.num
-
+# Getters & Setters
+    # Class variables: (player count)
+    @classmethod
     def incrementPlayerCount( cls ):
         cls.playerCount += 1
 
+    @classmethod
     def getTotalPlayerCount( cls ):
         return cls.playerCount
 
+    @classmethod
     def setTotalPlayerCount( cls, count ):
         cls.playerCount = count
 
-    def getPlayerScore( self ):
+    # 
+    def getPlayerNumber(self):
+        return self.num
+
+    def get_score( self ):
         return self.score
     
-    def addToPlayerScore( self, addScore ):
-        score = self.getPlayerScore()
+    def add_score( self, addScore ):
+        score = self.get_score()
         score += addScore
         return score
 
-    # def makeTreasures( self, numTreasures: int, boardSize: int )->bool:
-    #     '''
-    #     generate board treasures
+    def get_coords( self ):
+        return self.xCoord, self.yCoord
 
-    #     :param numTreasures: number of treasures to make
-    #     :param boardSize: size of 1 side of the board
-    #     :return: bool isValid
-    #     '''                    
-    #     try: 
-    #         self.validateTreasureCount(numTreasures)
-    #     except ValueError:
-    #         maxBlocks = (boardSize*boardSize)*.05
-    #         if numTreasures <= 0:
-    #             print( "must have at least 1 treasures, and no more than ", maxBlocks)
-    #         else: 
-    #             print("Too many treasures for board size, at current size, generate no more than ", maxBlocks)
-    #             print("increase board size, or decrease number of treasures")
-    #         return False
-    #     except TypeError:
-    #         print(numTreasures + "is not a number")
-    #         return False
-    #     else:            
-    #         for i in range( numTreasures ):
-    #             self.makeOneTreasure( boardSize )
+    def get_board( self ):
+        return self.gameBoard
+    
+    def move( self ): # direction not a param, as includes user prompt
+        from Treasure import Treasure
+        direction = input("Enter a direction (U-up D-down L-left R-right) to move")
+        direction = direction.upper()
+        isValid = self.validateDirection( direction )
+        if isValid==True:
+            board = self.get_board()
+            x,y = self.get_coords()
+            match direction:
+                case "D":
+                    x2 = x
+                    y2 = y + 1
+                case "U":
+                    x2 = x
+                    y2 = y - 1
+                case "L":
+                    x2 = x - 1
+                    y2 = y
+                case "R":
+                    x2 = x + 1
+                    y2 = y
+            prevTile = board.getCoordContents( x,y )
+            targetTile = board.getCoordContents( x2,y2 )
+            targetContents = targetTile.getTileContents()
+            if ( targetContents == None ):
+                targetTile.addPlayerToTile( self )
+                prevTile.clearTile()
+            elif ( isinstance(targetContents, Treasure) ):
+                treasureValue = targetContents.getValue()
+                self.add_score( treasureValue )
+                targetTile.addPlayerToTile( self )
+                prevTile.clearTile()
+            # print(board)
 
-    # def makeOneTreasure( self, boardSize: int )->None:
-    #     '''
-    #     create 1 treasure at a random position
-    #     includes check for previous tile contents and increments treasureCount on success
-
-    #     # NOTE realized I can eleminate boardSize parameter wherever it is used
-    #     :param boardsize: int, size of board
-    #     '''
-    #     while(True):
-            
-    #         y = random.randint(0, boardSize-1)
-    #         treasureTile = self.getCoordContents(x,y)
-    #         isDuplicate = treasureTile.setTreasureTile( 10 )
-    #         if ( not isDuplicate ):
-    #             break
-
-    #     #once successfull treasure, add 1 to treasureCount
-    #     self.setTreasureCount( self.getTreasureCount() + 1 )        
-    # def setTreasureTile( self, treasureValue: int )->bool:
-    #     '''
-    #     Add or change tile contents to Treasure
-    #     Includes checks for previous tile contents
-    #     :param treasureValue: the point value for the treasure item
-    #     :return: bool, isBlocked - true if tile already full
-    #     '''
-    #     if ( self.getTileContents() == None ):
-    #         tTile = Treasure( treasureValue )
-    #         self.setTileContents( tTile )
-    #         self.setTileSymbol( tTile.getSymbol() )
-    #         return False
-    #     else:
-    #         return True
+    def validateDirection( self, direction ):
+        if not isinstance( direction, str ):
+            raise TypeError
+        elif ( direction == "U" or direction == "D" or direction == "L" or direction == "R" ):
+            return True
+        else:
+            raise ValueError

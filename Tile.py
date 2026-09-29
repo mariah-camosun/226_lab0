@@ -26,6 +26,7 @@ class Tile:
         self.contents = item
         if item != None:
             self.setTileSymbol( item.symbol )
+            return item
         # match type(item):
         #     case Treasure:
         #         self.setTreasureTile( 1 )
@@ -113,7 +114,7 @@ class Tile:
         Move player into tile (add player to tile component)
         '''
         self.contents = player
-        self.symbol = player.number
+        self.symbol = player.num
         # do checks go here or in the board?
         # if tile = barrier, cannot place here
         # if tile = treasure, add points, change contents to player
