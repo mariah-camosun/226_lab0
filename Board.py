@@ -200,6 +200,7 @@ class Board:
                 # place item into contents
                 break
 
+            
     # def placeBarrierOrigin( self, tileContents, itemToPlace):
     #     if tileContents == None:
     #         # place

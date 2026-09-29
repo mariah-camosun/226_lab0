@@ -82,7 +82,7 @@ class Tile:
         :param isOrigin: is this barrier tile the origin of its barrier block
         :return: bool, isDuplicate - true if tile already contains barrier origin
         '''
-        bTile = Barrier( isOrigin )
+        bTile = Barrier( isOrigin ) #instanciate barrier
         prevContents = self.getTileContents()
         # rework if statement for less duplication
 
