@@ -24,6 +24,13 @@ class Tile:
         :param item: set to a barrier, treasure, or player instance
         '''
         self.contents = item
+        if item != None:
+            self.setTileSymbol( item.symbol )
+        # match type(item):
+        #     case Treasure:
+        #         self.setTreasureTile( 1 )
+        #     case Barrier:
+
 
     def getTileContents( self ): #HOW TO HINT? as abv meth'd
         '''
@@ -101,7 +108,7 @@ class Tile:
         else:
             return False
 
-    def addPlayerToTile( player: Player ): # NOT properly commented yet - player class still WIP
+    def addPlayerToTile( self, player: Player ): # NOT properly commented yet - player class still WIP
         '''
         Move player into tile (add player to tile component)
         '''

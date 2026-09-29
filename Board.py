@@ -313,5 +313,9 @@ class Board:
         self.setTreasureCount( self.getTreasureCount() + 1 )
 
     def makeNewPlayer( self, ):
-        newPlayer = Player()
-        self.placeInRandomEmpty( newPlayer )
+        while True:
+            tile, x, y = self.randomizePosition()
+            if tile.getTileContents() == None:
+                tile.setTileContents( Player( x, y ) )
+                # place item into contents
+                break
