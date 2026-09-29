@@ -323,7 +323,7 @@ class Board:
                 newPlayer = tile.setTileContents( Player( x, y ) )
                 # place item into contents
                 break
-
+        return newPlayer
 
     def collectTreasure( self, tile:Tile, player:Player ):
         tileContents = tile.getTileContents()
