@@ -174,19 +174,20 @@ class Board:
         '''         
         return self.barrierCount
 
-    def randomizePosition(self, boardSize):
+    def randomizePosition(self):
         '''
-        get a random board position and return contents of tile, if any
+        get a random board position and return tile, if any
 
-        :return: tile.contents; 
+        :return: tile instance: Tile, x-coordinate: int, y-coordinate: int
         '''
         #if tile occupied, re-roll
         #if tile@ x, y = empty, return Tur
         # if tile@x,y != empty, return False
+        boardSize = self.getBoardSize()
         x = random.randint(0, boardSize-1)
         y = random.randint(0, boardSize-1)
         prevTile = self.getCoordContents( x, y )
-        return prevTile.getTileContents()
+        return prevTile, x, y
 
     def placeInRandomEmpty( self, itemToPlace ):
         '''
@@ -241,10 +242,10 @@ class Board:
         :param boardsize: int, size of board
         '''
         while(True):
-            x = random.randint(0, boardSize-1)
-            y = random.randint(0, boardSize-1)
-            originTile = self.getCoordContents(x,y)
-            # originTile = self.randomizePosition() # AS IS NOW - need to get one level up, to pass on to next segment. Re-factoring will take more work than intended
+            # x = random.randint(0, boardSize-1)
+            # y = random.randint(0, boardSize-1)
+            # originTile = self.getCoordContents(x,y)
+            originTile, x, y = self.randomizePosition()
             isDuplicate = originTile.setBarrierTile( True )
             if ( not isDuplicate ):
                 break
