@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from Board import Board
     from Tile import Tile
-    
+    from Treasure import Treasure    
 
 class Player:
     playerCount = 0
@@ -84,7 +84,7 @@ class Player:
 
 # Move
     def move( self ): # direction not a param, as includes user prompt
-        from Treasure import Treasure
+        # from Treasure import Treasure
         direction = input("Enter a direction (U-up D-down L-left R-right) to move")
         direction = direction.upper()
         isValid = self.validateDirection( direction )
@@ -93,6 +93,7 @@ class Player:
             return
         else: 
             board = self.get_board()
+            boardSize = board.getBoardSize()
             x,y = self.get_coords()
             oldTile = board.getCoordContents( x,y )
             match direction:
@@ -108,20 +109,19 @@ class Player:
                 case "R":
                     x2 = x + 1
                     y2 = y
-            targetTile = board.getCoordContents( x2,y2 )
-            # targetContents = targetTile.getTileContents()
-            if targetTile.checkTileBarrier() or targetTile.addPlayerToTile():
+            if not board.checkOnBoard( x2, y2 ):
                 return
-            elif targetTile.checkTileTreasure():
-                treasureValue = targetTile.getTileContents().getValue()
-                self.add_score( treasureValue )
-            elif targetTile.checkTileEmpty(): # AND TREASURE SECTION ABV USES SAME
-                # targetTile.addPlayerToTile( self )
-                # oldTile.clearTile()
-            targetTile.addPlayerToTile( self )
-            oldTile.clearTile()
             else:
-                return
+                targetTile = board.getCoordContents( x2,y2 )
+                # targetContents = targetTile.getTileContents()
+                if targetTile.checkTileBarrier() or targetTile.checkTilePlayer(): #Second check doesnt actually exist yet
+                    return
+                elif targetTile.checkTileTreasure():
+                    treasureValue = targetTile.getTileContents().getValue()
+                    self.add_score( treasureValue )
+                # else empty is only alternative, only uses following code outside the if block
+                targetTile.addPlayerToTile( self )
+                oldTile.clearTile()
             
-            # print(board)
+            print(board)
     
