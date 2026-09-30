@@ -2,9 +2,7 @@
 import random
 from Tile import Tile
 from typing import TYPE_CHECKING
-
-if TYPE_CHECKING:
-    from Player import Player
+from Player import Player
 
 class Board:
     def __init__(self, size: int, numBarriers: int, numTreasures: int)->None:
