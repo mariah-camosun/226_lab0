@@ -20,11 +20,9 @@ class Player:
     def __init__(self, x, y, gameBoard):
         self.num = 1 # TO BE auto-incremented, for now this will hold place
         self.symbol = (str)(self.num)
-        print(f"player number {self.symbol} created")
         self.score = 0
         self.xCoord = x
         self.yCoord = y
-        print(f"player coords: {x}, {y}.")
         self.gameBoard = gameBoard
         type(self).incrementPlayerCount()
 
@@ -143,6 +141,4 @@ class Player:
             targetTile.addPlayerToTile( self )
             self.set_coords( x2, y2 )
             oldTile.clearTile()
-
-        print(board)
 

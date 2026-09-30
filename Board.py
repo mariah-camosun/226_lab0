@@ -23,7 +23,6 @@ class Board:
         # self.players = []
         # self.players.append( self.makeNewPlayer() ) 
         self.players = self.makeNewPlayer()
-        print(f"players (in init): {self.players}")
 
     def __str__(self)->str:
         '''
@@ -269,9 +268,6 @@ class Board:
 
         :return: tile instance: Tile, x-coordinate: int, y-coordinate: int
         '''
-        #if tile occupied, re-roll
-        #if tile@ x, y = empty, return Tur
-        # if tile@x,y != empty, return False
         boardSize = self.getBoardSize()
         x = random.randint(0, boardSize-1)
         y = random.randint(0, boardSize-1)
@@ -286,7 +282,6 @@ class Board:
             tile, _, _ = self.randomizePosition()
             if tile.getTileContents() == None:
                 tile.setTileContents( itemToPlace )
-                # place item into contents
                 break
 
 # Validation and checks
