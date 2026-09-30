@@ -7,6 +7,39 @@ if TYPE_CHECKING:
     from Treasure import Treasure    
 
 class Player:
+# Requirements
+# [ ] 'name' string
+#       [ ] auto-set, first = 1, increments for ea new player
+# [ ] row and column coordinates
+# [ ] score
+# [ ] ValueError if negative
+#       [ ] row, column
+#       [ ] score
+# [ ] ValueError if outside the board boundary
+#       [ ] row, column
+# [ ] add_score() methd: param: score to be added to existing score
+# [ ] get_score() methd: returns curr score
+# [ ] move() methd: takes direction 'UDLR' to change player location
+#       [ ] if move direction is not possible, nothing should happen
+#       [ ] throws ValueError if direction is invalid
+#               [ ] not one of 4 options
+#               [ ] if not *possible* but a valid UDLR, no ValueError, just nothing, CONFIRM
+# [ ] __str__() methd:
+
+# ~~~ ~~~ while in the 'main, repeatedly' section, look more like move rules ~~~ ~~~
+#       [ ] if given tile contains treasure, 
+#               [ ] replace treasure with blank
+#               [ ] add 1 to the Player's score
+#       [ ] if the player would move into a barrier or off the board, do not move
+
+# ~~~ Part C ~~~ 
+# general/copy to all [ ] copy reqts to ea class
+# [ ] add detailed header comments to ALL methods 
+# [ ] make sure ALL instance variables of classes not accessed directly by outside code
+# [ ] abv re-perspective. This class does NOT directly access any outside instance variables
+#          - eg. bad: board.player.row += 1
+#          - instead: board.move('D'), which will in turn call self.player.move('D')
+
     playerCount = 0
     # [ ] auto-increment name as player number
     # [x] contain coors of player

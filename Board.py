@@ -1,10 +1,30 @@
-#class Board
 import random
 from Tile import Tile
 from typing import TYPE_CHECKING
 from Player import Player
 
 class Board:
+# Requirements
+# [ ] parameters: size, numBarriers, numTreasures
+# [ ] validates abv (3) parameters:
+#       [ ] Value error on: invalid entry, barriers >20%*board, treasures > 5%*board
+# [ ] 'size x size collection' of Tiles. Each initially empty ('_')
+# [ ] creates 'numBarriers' randomly placed barriers.
+#       [ ] ea barrier is a 2x2 block of tiles
+#       [ ] may partially, but not completely overlap
+#       [ ] at edge of board should wrap edge
+# [ ] create 'numTreasures' randomly placed treasures ('$')
+#       [ ] must be placed on empty tiles only
+# ~~~AFTER CREATE PLAYER~~~
+# [ ] place one Player on a free Tile
+
+# ~~~ Part C ~~~ 
+# general/copy to all [ ] copy reqts to ea class
+# [ ] add detailed header comments to ALL methods 
+# [ ] make sure ALL instance variables of classes not accessed directly by outside code
+# [ ] abv re-perspective. This class does NOT directly access any outside instance variables
+#          - eg. bad: board.player.row += 1
+#          - instead: board.move('D'), which will in turn call self.player.move('D')
     def __init__(self, size: int, numBarriers: int, numTreasures: int)->None:
         '''
         Creates new board

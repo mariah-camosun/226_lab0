@@ -1,8 +1,17 @@
 class Barrier:
+# Requirements
+# 
+# ~~~ Part C ~~~ 
+# [ ] add detailed header comments to ALL methods 
+# [ ] make sure ALL instance variables of classes not accessed directly by outside code
+# [ ] abv re-perspective. This class does NOT directly access any outside instance variables
+#          - eg. bad: board.player.row += 1
+#          - instead: board.move('D'), which will in turn call self.player.move('D')
     symbol = 'X' # Symbol should be the same for 'origin' and 'non-origin' tiles
     def __init__( self, isOrigin: bool )->None:
         '''
         Creates a new barrier instance, occupies 1 tile
+
         :param isOrigin: bool, is this barrier segment the 'origin' or inital point of the barrier
         '''
         self.setIsOrigin( isOrigin ) # 'origin' is top left, 'initial' point of the barrier
