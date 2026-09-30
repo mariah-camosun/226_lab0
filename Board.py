@@ -173,13 +173,9 @@ class Board:
             tile, x, y = self.randomizePosition()
             i = 0
             if tile.getTileContents() == None:
-                i += 1
-                print(f"make new player try { i }: Tile Contents: { tile.getTileContents() }")
+                # place new player instance into contents
                 newPlayer = tile.setTileContents( Player( x, y, self ) )
-                # place item into contents
                 return newPlayer
-        print(f"new player: {newPlayer}")
-        return newPlayer
 
 # Setters and Getters
     def getBoard( self )->list[list[Tile]]:
