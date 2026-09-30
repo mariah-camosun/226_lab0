@@ -57,7 +57,7 @@ class Treasure:
 
 # Validation and Checks
     def validateTreasureValue(self, value)->bool:
-        if type( value ):
+        if type( value )!=int:
             raise TypeError
         elif ( value <= 0):
             raise ValueError
