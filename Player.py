@@ -84,55 +84,65 @@ class Player:
             raise ValueError
 
 # Move
+    def getMoveDirection( self ):
+        while True:
+            direction = input("Enter a direction (U-up D-down L-left R-right) to move: ")
+            direction = direction.upper()
+            print(f"direction value entered: {direction}")
+
+            try:
+                isValid = self.validateDirection( direction )
+            except TypeError as details:
+                print(f"{direction} is not a string, must enter one of U, D, L, R") # will also accept lower case
+            except ValueError as details:
+                print(f"{direction} is not a valid option. Choose one of: U, D, L, R") # will also accept lower case
+            else:
+                return direction
+
     def move( self ): # direction not a param, as includes user prompt
-        # from Treasure import Treasure
-        direction = input("Enter a direction (U-up D-down L-left R-right) to move: ")
-        direction = direction.upper()
-        print(f"direction value entered: {direction}")
-        try:
-            isValid = self.validateDirection( direction )
-        except TypeError as details:
-            print(f"{direction} is not a string, must enter one of U, D, L, R") # will also accept lower case
-        except ValueError as details:
-            print(f"{direction} is not a valid option. Choose one of: U, D, L, R") # will also accept lower case
+        direction = self.getMoveDirection() # direction moving
+
+        board = self.get_board()
+        x,y = self.get_coords() # coordinates of initial position
+        oldTile = board.getCoordContents( x,y ) # initial position tile
+
+        match direction:
+            case "D":
+                x2 = x
+                y2 = y + 1
+            case "U":
+                x2 = x
+                y2 = y - 1
+            case "L":
+                x2 = x - 1
+                y2 = y
+            case "R":
+                x2 = x + 1
+                y2 = y
+
+        # if x2 or y2 are outside the gameboard bounds, return, otherwise continue checking
+        if ( not board.checkOnBoard( x2, y2 ) ):
+            return
         else:
-            if ( not isValid ):
+            targetTile = board.getCoordContents( x2,y2 ) # tile to move to
+            isBarrier, _ = targetTile.checkTileBarrier()
+            isTreasure = targetTile.checkTileTreasure()
+            if isBarrier: 
+            # or targetTile.checkTilePlayer(): #Second check doesnt actually exist yet
+                print(f"entered tile is barrier or player: {targetTile.getTileContents()}")
                 return
-            else: 
-                board = self.get_board()
-                boardSize = board.getBoardSize()
-                x,y = self.get_coords()
-                oldTile = board.getCoordContents( x,y )
-                match direction:
-                    case "D":
-                        x2 = x
-                        y2 = y + 1
-                    case "U":
-                        x2 = x
-                        y2 = y - 1
-                    case "L":
-                        x2 = x - 1
-                        y2 = y
-                    case "R":
-                        x2 = x + 1
-                        y2 = y
-                if not board.checkOnBoard( x2, y2 ):
-                    return
-                else:
-                    targetTile = board.getCoordContents( x2,y2 )
-                    # targetContents = targetTile.getTileContents()
-                    isBarrier, isBarrierOrigin = targetTile.checkTileBarrier()
-                    if isBarrier: 
-                    # or targetTile.checkTilePlayer(): #Second check doesnt actually exist yet
-                        print(f"entered tile is barrier or player: {targetTile.getTileContents()}")
-                        return
-                    elif targetTile.checkTileTreasure():
-                        treasureValue = targetTile.getTileContents().getValue()
-                        self.add_score( treasureValue )
-                    # else empty is only alternative, only uses following code outside the if block
-                    targetTile.addPlayerToTile( self )
-                    self.set_coords( x2, y2 )
-                    oldTile.clearTile()
-                
-                print(board)
-    
+            elif ( isTreasure ): # 0 evals to false, 
+                # Board.collectTreasure()
+                treasure = targetTile.getTileContents()
+                treasure.collectTreasure( board, targetTile, self )
+                # treasureValue = targetTile.getTileContents().getValue()
+                # self.add_score( treasureValue )
+            # else empty is only alternative (unspecified), 
+            # no movement blocks then Given ALREADY PREVIOUSLY checked in bounds into
+            # all successful move intos use the following code hence outside the if block
+            targetTile.addPlayerToTile( self )
+            self.set_coords( x2, y2 )
+            oldTile.clearTile()
+
+        print(board)
+
