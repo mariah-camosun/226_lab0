@@ -85,48 +85,53 @@ class Player:
 # Move
     def move( self ): # direction not a param, as includes user prompt
         # from Treasure import Treasure
-        direction = input("Enter a direction (U-up D-down L-left R-right) to move")
+        direction = input("Enter a direction (U-up D-down L-left R-right) to move: ")
         direction = direction.upper()
         print(f"direction value entered: {direction}")
-        isValid = self.validateDirection( direction )
-
-        if ( not isValid ):
-            return
-        else: 
-            board = self.get_board()
-            boardSize = board.getBoardSize()
-            x,y = self.get_coords()
-            oldTile = board.getCoordContents( x,y )
-            match direction:
-                case "D":
-                    x2 = x
-                    y2 = y + 1
-                case "U":
-                    x2 = x
-                    y2 = y - 1
-                case "L":
-                    x2 = x - 1
-                    y2 = y
-                case "R":
-                    x2 = x + 1
-                    y2 = y
-            if not board.checkOnBoard( x2, y2 ):
+        try:
+            isValid = self.validateDirection( direction )
+        except TypeError as details:
+            print(f"{direction} is not a string, must enter one of U, D, L, R") # will also accept lower case
+        except ValueError as details:
+            print(f"{direction} is not a valid option. Choose one of: U, D, L, R") # will also accept lower case
+        else:
+            if ( not isValid ):
                 return
-            else:
-                targetTile = board.getCoordContents( x2,y2 )
-                # targetContents = targetTile.getTileContents()
-                isBarrier, isBarrierOrigin = targetTile.checkTileBarrier()
-                if isBarrier: 
-                # or targetTile.checkTilePlayer(): #Second check doesnt actually exist yet
-                    print(f"entered tile is barrier or player: {targetTile.getTileContents()}")
+            else: 
+                board = self.get_board()
+                boardSize = board.getBoardSize()
+                x,y = self.get_coords()
+                oldTile = board.getCoordContents( x,y )
+                match direction:
+                    case "D":
+                        x2 = x
+                        y2 = y + 1
+                    case "U":
+                        x2 = x
+                        y2 = y - 1
+                    case "L":
+                        x2 = x - 1
+                        y2 = y
+                    case "R":
+                        x2 = x + 1
+                        y2 = y
+                if not board.checkOnBoard( x2, y2 ):
                     return
-                elif targetTile.checkTileTreasure():
-                    treasureValue = targetTile.getTileContents().getValue()
-                    self.add_score( treasureValue )
-                # else empty is only alternative, only uses following code outside the if block
-                targetTile.addPlayerToTile( self )
-                self.set_coords( x2, y2 )
-                oldTile.clearTile()
-            
-            print(board)
+                else:
+                    targetTile = board.getCoordContents( x2,y2 )
+                    # targetContents = targetTile.getTileContents()
+                    isBarrier, isBarrierOrigin = targetTile.checkTileBarrier()
+                    if isBarrier: 
+                    # or targetTile.checkTilePlayer(): #Second check doesnt actually exist yet
+                        print(f"entered tile is barrier or player: {targetTile.getTileContents()}")
+                        return
+                    elif targetTile.checkTileTreasure():
+                        treasureValue = targetTile.getTileContents().getValue()
+                        self.add_score( treasureValue )
+                    # else empty is only alternative, only uses following code outside the if block
+                    targetTile.addPlayerToTile( self )
+                    self.set_coords( x2, y2 )
+                    oldTile.clearTile()
+                
+                print(board)
     
