@@ -49,11 +49,11 @@ class Treasure:
         try: 
             self.validateTreasureValue( value )
         except TypeError as details:
-            print(f"{value} is not a valid integer")
+            print(f"{value} is not an integer: {details}")
         except ValueError as details:
-            print(f"Value {value} is not valid. Must be integer > 0")
+            print(f"Treasure value {value} is not valid. Must be integer > 0: {details}")
         else:
-            self.value = value
+            self.value = value           
 
 # Validation and Checks
     def validateTreasureValue(self, value)->bool:

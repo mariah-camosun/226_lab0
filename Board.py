@@ -31,13 +31,13 @@ class Board:
 
         :return: str, current board state
         '''
-        output = ''
+        output = "\n"
         for row in self.grid:
             for tile in row:
                 output += tile.__str__()
                 output += "  "
             output += "\n"
-        output += "\n num tiles: " + (str)(self.tileCount) + " num barriers: " + (str)(self.barrierCount) + " num treasures: " + (str)(self.treasureCount) + "\n"
+        output += "\nnum tiles: " + (str)(self.tileCount) + " num barriers: " + (str)(self.barrierCount) + " num treasures: " + (str)(self.treasureCount) + "\n"
         return output
 
 # init functions
@@ -210,7 +210,7 @@ class Board:
     # no set_coord_contents() - only done at init
 
     def getPlayers( self )->Player:
-        print(f"players in getPlayers(): {self.players}")
+        print(f"Current players: {self.players}")
         return self.players
     #no set_players() - instead, makeNewPlayer()
 

@@ -15,6 +15,7 @@ class Player:
     # [x] add_score method, 
     # [x] get_score methods
     # [~] move methd, takes a dir (UDLR) to chg player location if poss (otherwise ignored)
+    #       [~] fix: collect treasure properly
     # [ ] value error on: row, col, score negative; row col outside board
     def __init__(self, x, y, gameBoard):
         self.num = 1 # TO BE auto-incremented, for now this will hold place
