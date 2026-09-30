@@ -209,7 +209,8 @@ class Board:
         :param x: index of tile in row array
         :return: Tile
         '''
-        return self.getBoard()[y][x]
+        if self.checkOnBoard( x,y ):
+            return self.getBoard()[y][x]
     # no set_coord_contents() - only done at init
 
     def getPlayers( self )->Player:
@@ -349,7 +350,7 @@ class Board:
         checks if coordinates are within the gameboard
         :return: bool, isOnGameboard
         '''
-        if ( 0 > x >= self.getBoardSize() or 0 > y >= self.getBoardSize() ):
-             return False
-        else:
+        if ( 0 <= x < self.getBoardSize() and 0 <= y < self.getBoardSize() ):
             return True        
+        else:
+            return False

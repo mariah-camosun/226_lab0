@@ -87,9 +87,10 @@ class Player:
         # from Treasure import Treasure
         direction = input("Enter a direction (U-up D-down L-left R-right) to move")
         direction = direction.upper()
+        print(f"direction value entered: {direction}")
         isValid = self.validateDirection( direction )
 
-        if ( not isValid ) :
+        if ( not isValid ):
             return
         else: 
             board = self.get_board()
