@@ -177,7 +177,7 @@ class Board:
                 print(f"make new player try { i }: Tile Contents: { tile.getTileContents() }")
                 newPlayer = tile.setTileContents( Player( x, y, self ) )
                 # place item into contents
-                break
+                return newPlayer
         print(f"new player: {newPlayer}")
         return newPlayer
 
