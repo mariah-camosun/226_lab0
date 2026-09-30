@@ -1,3 +1,10 @@
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from Board import Board
+    from Tile import Tile
+    from Player import Player  
+
 class Treasure:
     symbol = '$'
     def __init__(self, treasureValue: int)->None:
