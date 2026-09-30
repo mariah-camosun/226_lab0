@@ -3,6 +3,7 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from Board import Board
+    from Tile import Tile
     
 
 class Player:
@@ -87,9 +88,13 @@ class Player:
         direction = input("Enter a direction (U-up D-down L-left R-right) to move")
         direction = direction.upper()
         isValid = self.validateDirection( direction )
-        if isValid==True:
+
+        if ( not isValid ) :
+            return
+        else: 
             board = self.get_board()
             x,y = self.get_coords()
+            oldTile = board.getCoordContents( x,y )
             match direction:
                 case "D":
                     x2 = x
@@ -103,16 +108,20 @@ class Player:
                 case "R":
                     x2 = x + 1
                     y2 = y
-            prevTile = board.getCoordContents( x,y )
             targetTile = board.getCoordContents( x2,y2 )
-            targetContents = targetTile.getTileContents()
-            if ( targetContents == None ):
-                targetTile.addPlayerToTile( self )
-                prevTile.clearTile()
-            elif ( isinstance(targetContents, Treasure) ):
-                treasureValue = targetContents.getValue()
+            # targetContents = targetTile.getTileContents()
+            if targetTile.checkTileBarrier() or targetTile.addPlayerToTile():
+                return
+            elif targetTile.checkTileTreasure():
+                treasureValue = targetTile.getTileContents().getValue()
                 self.add_score( treasureValue )
-                targetTile.addPlayerToTile( self )
-                prevTile.clearTile()
+            elif targetTile.checkTileEmpty(): # AND TREASURE SECTION ABV USES SAME
+                # targetTile.addPlayerToTile( self )
+                # oldTile.clearTile()
+            targetTile.addPlayerToTile( self )
+            oldTile.clearTile()
+            else:
+                return
+            
             # print(board)
     
