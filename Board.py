@@ -289,16 +289,6 @@ class Board:
                 # place item into contents
                 break
 
-    def collectTreasure( self, tile:Tile, player:Player ):
-        tileContents = tile.getTileContents()
-        self.addToPlayerScore( tileContents.getValue() )
-        tile.clearTile()
-        self.decrementTreasureCount()
-        print(f"remaining treasures: {self.getTreasureCount()}")
-        print(f"player{player.getPlayerNumber()} score: {player.getPlayerScore()}")
-        tile.addPlayerToTile( player )
-        # print(board)
-
 # Validation and checks
     def validateSize(self, size: int)->None:
         '''

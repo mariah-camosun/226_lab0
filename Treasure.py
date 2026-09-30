@@ -63,3 +63,13 @@ class Treasure:
             raise ValueError
         else:
             return True
+
+# utility
+    def collectTreasure( self, board:Board, tile:Tile, player:Player ):       
+        player.add_score( self.getValue() )
+        tile.clearTile()
+        board.decrementTreasureCount()
+        print(f"remaining treasures: {board.getTreasureCount()}")
+        print(f"player{player.getPlayerNumber()} score: {player.get_score()}")
+        # tile.addPlayerToTile( player )
+        # print(board)
