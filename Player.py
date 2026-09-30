@@ -114,13 +114,17 @@ class Player:
             else:
                 targetTile = board.getCoordContents( x2,y2 )
                 # targetContents = targetTile.getTileContents()
-                if targetTile.checkTileBarrier() or targetTile.checkTilePlayer(): #Second check doesnt actually exist yet
+                isBarrier, isBarrierOrigin = targetTile.checkTileBarrier()
+                if isBarrier: 
+                # or targetTile.checkTilePlayer(): #Second check doesnt actually exist yet
+                    print(f"entered tile is barrier or player: {targetTile.getTileContents()}")
                     return
                 elif targetTile.checkTileTreasure():
                     treasureValue = targetTile.getTileContents().getValue()
                     self.add_score( treasureValue )
                 # else empty is only alternative, only uses following code outside the if block
                 targetTile.addPlayerToTile( self )
+                self.set_coords( x2, y2 )
                 oldTile.clearTile()
             
             print(board)
