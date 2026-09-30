@@ -67,22 +67,6 @@ class Tile:
         self.setTileSymbol( '_' )
 
 # Validation and Checks
-    def checkTileContents(self): # not actually written yet - just cursory idea
-        isEmpty = self.checkTileEmpty()
-        isBarrier, isBarrierOrigin = self.checkTileBarrier()
-        treasureValue = self.checkTileTreasure()
-
-        if ( isEmpty ):
-            return "isEmpty"
-        elif ( isBarrierOrigin ):
-            return "isBarrierOrigin"
-        elif ( isBarrier ):
-            return "isBarrierNon-Origin"
-        elif ( treasureValue ): #0 evals to false
-            return "isTreasure", treasureValue
-        else:
-            return "isAnotherPlayer"
-
     def checkTileEmpty(self)->bool:
         if ( self.getTileContents() == None ):
             return True
