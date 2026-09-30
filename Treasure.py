@@ -72,11 +72,14 @@ class Treasure:
             return True
 
 # utility
-    def collectTreasure( self, board:Board, tile:Tile, player:Player ):       
-        player.add_score( self.getValue() )
+    def collectTreasure( self, board:Board, tile:Tile, player:Player ):
+        # print(f"value of treasure item instance: {self.getValue()}")
+        # print(f"value of current player score: {player.get_score()}")
+        treasureValue = self.getValue()
+        player.add_score( treasureValue )
         tile.clearTile()
         board.decrementTreasureCount()
         print(f"remaining treasures: {board.getTreasureCount()}")
-        print(f"player{player.getPlayerNumber()} score: {player.get_score()}")
+        print(f"player {player.getPlayerNumber()} collected: {treasureValue} treasure points.")
         # tile.addPlayerToTile( player )
         # print(board)

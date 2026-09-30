@@ -68,9 +68,8 @@ class Player:
         cls.playerCount += 1
      
     def add_score( self, addScore ):
-        score = self.get_score()
-        score += addScore
-        return score
+        self.score += addScore
+        return self.score
 
 # Validation
     def validateDirection( self, direction ):
@@ -84,7 +83,7 @@ class Player:
 # Move
     def getMoveDirection( self ):
         while True:
-            direction = input("Enter a direction (U-up D-down L-left R-right) to move: ")
+            direction = input(f"Move player {self.getPlayerSymbol()}: \nEnter a direction (U-up D-down L-left R-right) to move: ")
             direction = direction.upper()
             print(f"direction value entered: {direction}")
 
@@ -130,11 +129,8 @@ class Player:
                 print(f"entered tile is barrier or player: {targetTile.getTileContents()}")
                 return
             elif ( isTreasure ): # 0 evals to false, 
-                # Board.collectTreasure()
                 treasure = targetTile.getTileContents()
                 treasure.collectTreasure( board, targetTile, self )
-                # treasureValue = targetTile.getTileContents().getValue()
-                # self.add_score( treasureValue )
             # else empty is only alternative (unspecified), 
             # no movement blocks then Given ALREADY PREVIOUSLY checked in bounds into
             # all successful move intos use the following code hence outside the if block

@@ -22,7 +22,7 @@ class Board:
         # For now, treating as single entry for simplicity
         # self.players = []
         # self.players.append( self.makeNewPlayer() ) 
-        self.players = self.makeNewPlayer()
+        self.players = [self.makeNewPlayer()]
 
     def __str__(self)->str:
         '''
@@ -36,7 +36,8 @@ class Board:
                 output += tile.__str__()
                 output += "  "
             output += "\n"
-        output += "\nnum tiles: " + (str)(self.tileCount) + " num barriers: " + (str)(self.barrierCount) + " num treasures: " + (str)(self.treasureCount) + "\n"
+        output += "\nnum treasures remaining: " + (str)(self.treasureCount) + "\n"
+        self.reportPlayerScores()
         return output
 
 # init functions
@@ -209,7 +210,11 @@ class Board:
     # no set_coord_contents() - only done at init
 
     def getPlayers( self )->Player:
-        print(f"Current players: {self.players}")
+        output = "Current players: "
+        for player in self.players:
+            output += (str)(player)
+            output += ','
+        print(output)
         return self.players
     #no set_players() - instead, makeNewPlayer()
 
@@ -335,3 +340,9 @@ class Board:
             return True        
         else:
             return False
+
+# Utility
+    def reportPlayerScores(self):
+        players = self.getPlayers()
+        for player in players:
+            print(f"player {player.getPlayerNumber()}: score: {player.get_score()}")

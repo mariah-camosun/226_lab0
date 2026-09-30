@@ -154,4 +154,4 @@ class Tile:
         # if tile = barrier, cannot place here
         # if tile = treasure, add points, change contents to player
         # if tile = other player ??? treat like barrier?
-        pass
+        # pass

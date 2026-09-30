@@ -4,7 +4,9 @@ print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
 print(b)
 while ( b.getTreasureCount() > 0 ):
     players = b.getPlayers()
-    players.move( )
+    for player in players:
+        player.move( )
     print(b)
+    
 print("No more treasure to collect!")
 print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
