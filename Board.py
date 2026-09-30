@@ -345,3 +345,13 @@ class Board:
         # treasures must be <= 5% of board
         if ( numTreasures > self.getTileCount() * .05 ):
             raise ValueError
+
+    def checkOnBoard( self, x, y )->bool:
+        '''
+        checks if coordinates are within the gameboard
+        :return: bool, isOnGameboard
+        '''
+        if ( 0 > x >= self.getBoardSize() or 0 > y >= self.getBoardSize() ):
+             return False
+        else:
+            return True        
