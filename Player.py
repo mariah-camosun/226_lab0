@@ -51,13 +51,13 @@ class Player:
     # [~] move methd, takes a dir (UDLR) to chg player location if poss (otherwise ignored)
     #       [~] fix: collect treasure properly
     # [ ] value error on: row, col, score negative; row col outside board
-    def __init__(self, x, y, gameBoard):
+    def __init__(self, column, row, gameBoard):
         self.incrementPlayerCount()
         self.name = self.getTotalPlayerCount()
         self.symbol = (str)(self.name)
         self.score = 0
-        self.row = y
-        self.column = x
+        self.row = row
+        self.column = column
         self.gameBoard = gameBoard
         type(self).incrementPlayerCount()
 
@@ -89,9 +89,9 @@ class Player:
 
     def get_coords( self ):
         return self.column, self.row
-    def set_coords( self, x, y):
-        self.column = x
-        self.row = y
+    def set_coords( self, column, row):
+        self.column = column
+        self.row = row
 
     def get_board( self ):
         return self.gameBoard
