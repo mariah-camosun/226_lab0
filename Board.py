@@ -5,24 +5,24 @@ from Player import Player
 
 class Board:
 # Requirements
-# [ ] parameters: size, numBarriers, numTreasures
-# [ ] validates abv (3) parameters:
-#       [ ] Value error on: invalid entry, barriers >20%*board, treasures > 5%*board
-# [ ] 'size x size collection' of Tiles. Each initially empty ('_')
-# [ ] creates 'numBarriers' randomly placed barriers.
-#       [ ] ea barrier is a 2x2 block of tiles
-#       [ ] may partially, but not completely overlap
-#       [ ] at edge of board should wrap edge
-# [ ] create 'numTreasures' randomly placed treasures ('$')
-#       [ ] must be placed on empty tiles only
+# [x] parameters: size, numBarriers, numTreasures
+# [x] validates abv (3) parameters:
+#       [x] Value error* also typeError on: invalid entry, barriers >20%*board, treasures > 5%*board
+# [x] 'size x size collection' of Tiles. Each initially empty ('_')
+# [x] creates 'numBarriers' randomly placed barriers.
+#       [x] ea barrier is a 2x2 block of tiles
+#       [x] may partially, but not completely overlap
+#       [x] at edge of board should wrap edge
+# [x] create 'numTreasures' randomly placed treasures ('$')
+#       [x] must be placed on empty tiles only
 # ~~~AFTER CREATE PLAYER~~~
-# [ ] place one Player on a free Tile
+# [x] place one Player on a free Tile
 
 # ~~~ Part C ~~~ 
-# general/copy to all [ ] copy reqts to ea class
-# [ ] add detailed header comments to ALL methods 
+# general/copy to all [x] copy reqts to ea class
+# [x] add detailed header comments to ALL methods 
 # [ ] make sure ALL instance variables of classes not accessed directly by outside code
-# [ ] abv re-perspective. This class does NOT directly access any outside instance variables
+# [x] abv re-perspective. This class does NOT directly access any outside instance variables
 #          - eg. bad: board.player.row += 1
 #          - instead: board.move('D'), which will in turn call self.player.move('D')
     def __init__(self, size: int, numBarriers: int, numTreasures: int)->None:
@@ -116,13 +116,10 @@ class Board:
         create 1 'block' of barriers (2x2 tiles) at a random position
         includes check for complete overlap and increments barrierCound on success
 
-        # NOTE realized I can eleminate this parameter wherever it is used
-        :param boardsize: int, size of board
+        # NOTE realized I can eliminate this parameter wherever it is used
+        :param boardSize: int, size of board
         '''
         while(True):
-            # x = random.randint(0, boardSize-1)
-            # y = random.randint(0, boardSize-1)
-            # originTile = self.getCoordContents(x,y)
             originTile, x, y = self.randomizePosition()
             isDuplicate = originTile.setBarrierTile( True )
             if ( not isDuplicate ):
@@ -179,6 +176,7 @@ class Board:
         # NOTE realized I can eleminate boardSize parameter wherever it is used
         :param boardsize: int, size of board
         '''
+        # boardSize = self.getBoardSize()
         while(True):
             x = random.randint(0, boardSize-1)
             y = random.randint(0, boardSize-1)
@@ -191,9 +189,13 @@ class Board:
         self.setTreasureCount( self.getTreasureCount() + 1 )
 
     def makeNewPlayer( self )->Player:
+        '''
+        creates a new player and places it on a random empty tile
+
+        :return: Player, the new player
+        '''
         while True:
             tile, column, row = self.randomizePosition()
-            i = 0
             if tile.getTileContents() == None:
                 # place new player instance into contents
                 newPlayer = tile.setTileContents( Player( column, row, self ) )
@@ -231,7 +233,12 @@ class Board:
             return self.getBoard()[row][column]
     # no set_coord_contents() - only done at init
 
-    def getPlayers( self )->Player:
+    def getPlayers( self )->list[Player]:
+        '''
+        returns all current players as a list
+
+        :return: list[Player], list of all current players
+        '''
         output = "Current players: "
         for player in self.players:
             output += (str)(player)
@@ -303,7 +310,9 @@ class Board:
 
     def placeInRandomEmpty( self, itemToPlace ):
         '''
-        loops until successfully placed in empty tile
+        Places an item in a random empty tile. Loops until successfully placed.
+
+        :param itemToPlace: item to place into the game Tile. Acceptable classes: Player, Barrier, Treasure
         '''
         while True:
             tile, _, _ = self.randomizePosition()
@@ -365,6 +374,7 @@ class Board:
     def checkOnBoard( self, column, row )->bool:
         '''
         checks if coordinates are within the gameboard
+
         :return: bool, isOnGameboard
         '''
         if ( 0 <= column < self.getBoardSize() and 0 <= row < self.getBoardSize() ):
@@ -374,6 +384,9 @@ class Board:
 
 # Utility
     def reportPlayerScores(self):
+        '''
+        prints out the current player scores for all players
+        '''
         players = self.getPlayers()
         for player in players:
             print(f"player {player.getPlayerNumber()}: score: {player.get_score()}")
