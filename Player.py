@@ -9,7 +9,7 @@ if TYPE_CHECKING:
 class Player:
 # Requirements
 # [~] 'name' string ( renamed .num to .name; function names left alone )
-#       [ ] auto-set, first = 1, increments for ea new player
+#       [~] auto-set, first = 1, increments for ea new player: TEST
 #       [ ] should probably rename the get/set etc from number to name (not technically a req't)
 # [x] row and column coordinates ( renamed xCoord to row, yCoord to column; function names left alone)
 # [x] score
@@ -42,9 +42,9 @@ class Player:
 #          - instead: board.move('D'), which will in turn call self.player.move('D')
 
     playerCount = 0
-    # [ ] auto-increment name as player number
+    # [~] auto-increment name as player number
     # [x] contain coors of player
-    # [~] contains player score
+    # [x] contains player score
     # [x] __str__ methd
     # [x] add_score method, 
     # [x] get_score methods
@@ -56,8 +56,8 @@ class Player:
         self.name = self.getTotalPlayerCount()
         self.symbol = (str)(self.name)
         self.score = 0
-        self.row = x
-        self.column = y
+        self.row = y
+        self.column = x
         self.gameBoard = gameBoard
         type(self).incrementPlayerCount()
 
@@ -73,7 +73,7 @@ class Player:
     def setTotalPlayerCount( cls, count ):
         cls.playerCount = count
 
-    # Instance Variables: (name, symbol, score, row, column, gameBoard)
+    # Instance Variables: (name, symbol, score, column, row, gameBoard)
     def getPlayerNumber(self):
         return self.name
     # no setPlayerNumber() - only done at init
@@ -88,10 +88,10 @@ class Player:
         self.score = score
 
     def get_coords( self ):
-        return self.row, self.column
+        return self.column, self.row
     def set_coords( self, x, y):
-        self.row = x
-        self.column = y
+        self.column = x
+        self.row = y
 
     def get_board( self ):
         return self.gameBoard
