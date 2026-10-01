@@ -8,10 +8,11 @@ if TYPE_CHECKING:
 
 class Player:
 # Requirements
-# [ ] 'name' string
+# [~] 'name' string ( renamed .num to .name; function names left alone )
 #       [ ] auto-set, first = 1, increments for ea new player
-# [ ] row and column coordinates
-# [ ] score
+#       [ ] should probably rename the get/set etc from number to name (not technically a req't)
+# [x] row and column coordinates ( renamed xCoord to row, yCoord to column; function names left alone)
+# [x] score
 # [ ] ValueError if negative
 #       [ ] row, column
 #       [ ] score
@@ -51,11 +52,12 @@ class Player:
     #       [~] fix: collect treasure properly
     # [ ] value error on: row, col, score negative; row col outside board
     def __init__(self, x, y, gameBoard):
-        self.num = 1 # TO BE auto-incremented, for now this will hold place
-        self.symbol = (str)(self.num)
+        self.incrementPlayerCount()
+        self.name = self.getTotalPlayerCount()
+        self.symbol = (str)(self.name)
         self.score = 0
-        self.xCoord = x
-        self.yCoord = y
+        self.row = x
+        self.column = y
         self.gameBoard = gameBoard
         type(self).incrementPlayerCount()
 
@@ -71,9 +73,9 @@ class Player:
     def setTotalPlayerCount( cls, count ):
         cls.playerCount = count
 
-    # Instance Variables: (num, symbol, score, xCoord, yCoord, gameBoard)
+    # Instance Variables: (name, symbol, score, row, column, gameBoard)
     def getPlayerNumber(self):
-        return self.num
+        return self.name
     # no setPlayerNumber() - only done at init
 
     def getPlayerSymbol(self):
@@ -86,10 +88,10 @@ class Player:
         self.score = score
 
     def get_coords( self ):
-        return self.xCoord, self.yCoord
+        return self.row, self.column
     def set_coords( self, x, y):
-        self.xCoord = x
-        self.yCoord = y
+        self.row = x
+        self.column = y
 
     def get_board( self ):
         return self.gameBoard
