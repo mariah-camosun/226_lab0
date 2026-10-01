@@ -319,7 +319,7 @@ class Board:
         '''
         if not isinstance(size, int):
             raise TypeError
-        elif ( 0 < size <= 30 ):
+        elif ( not( 0 < size <= 30) ):
             raise ValueError
         
     def validateBarrierCount (self, numBarriers: int)->None:
