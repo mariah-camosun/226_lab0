@@ -179,9 +179,6 @@ class Player:
         except ValueError as details:
             print(f"Coordinates [{x2},{y2}] are outside the game board")
             return
-        
-        if ( not self.validateCoords( x2, y2 ) ):
-            return
         else:
             targetTile = board.getCoordContents( x2,y2 ) # tile to move to
             isBarrier, _ = targetTile.checkTileBarrier()
