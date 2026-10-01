@@ -158,7 +158,7 @@ class Tile:
         Move player into tile (add player to tile component)
         '''
         self.contents = player
-        self.symbol = player.num
+        self.symbol = player.getPlayerNumber()
         # do checks go here or in the board?
         # if tile = barrier, cannot place here
         # if tile = treasure, add points, change contents to player
