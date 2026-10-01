@@ -37,6 +37,7 @@ class Board:
         self.numBarriers = numBarriers
         self.numTreasures = numTreasures
         self.tileCount = 0
+        print(f"to make: {size}*{size}, {numBarriers} barriers, {numTreasures} treasures")
         self.makeEmptyBoard( size )
         self.makeBarriers( numBarriers, size )
         self.makeTreasures( numTreasures, size )
@@ -67,7 +68,7 @@ class Board:
         make an empty board of size x size tiles
         sets tile count to size**2, clears treasure and barrier counts
 
-        :param size: int > 0 and < 30 that is the number of tiles per side of board
+        :param size: 30 >= int > 0, the number of tiles per side of board
         '''
         # create size x size collection of Tiles; ea empty (initially)
         self.grid = []
@@ -76,7 +77,7 @@ class Board:
         except TypeError:
             print( "size = ", size, " is not an integer")
         except ValueError:
-            print( "size must be an integer in [1-30]" )
+            print( f"size must be an integer in [1-30]; entered size is {size}" )
         else:
             self.setTileCount( size*size )
             self.setTreasureCount( 0 )
@@ -100,7 +101,7 @@ class Board:
             if numBarriers <= 0:
                 print( "must have at least 1 barrier block, and no more than ", maxBlocks)
             else: 
-                print("Too many barriers for board size, at current size, generate no more than ", maxBlocks)
+                print(f"{numBarriers} is too many barriers for board size, at current size, generate no more than ", maxBlocks)
                 print("increase board size, or decrease number of barriers")
             return False
         except TypeError:
