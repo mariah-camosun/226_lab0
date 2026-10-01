@@ -37,7 +37,7 @@ class Player:
 # general/copy to all [x] copy reqts to ea class
 # [x] add detailed header comments to ALL methods 
 # [ ] make sure ALL instance variables of classes not accessed directly by outside code
-# [ ] abv re-perspective. This class does NOT directly access any outside instance variables
+# [x] abv re-perspective. This class does NOT directly access any outside instance variables
 #          - eg. bad: board.player.row += 1
 #          - instead: board.move('D'), which will in turn call self.player.move('D')
 
