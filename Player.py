@@ -22,7 +22,7 @@ class Player:
 # [ ] get_score() methd: returns curr score
 # [ ] move() methd: takes direction 'UDLR' to change player location
 #       [ ] if move direction is not possible, nothing should happen
-#       [ ] throws ValueError if direction is invalid
+#       [ ] ValueError thrown if direction is invalid
 #               [ ] not one of 4 options
 #               [ ] if not *possible* but a valid UDLR, no ValueError, just nothing, CONFIRM
 # [ ] __str__() methd:
@@ -107,13 +107,32 @@ class Player:
         return self.score
 
 # Validation
+# [ ] ValueError if negative
+#       [ ] row, column
+#       [ ] score
+# [ ] ValueError if outside the board boundary
+#       [ ] row, column
+# [ ] ValueError thrown if move() direction is invalid
+
     def validateDirection( self, direction ):
-        if not isinstance( direction, str ):
-            raise TypeError
-        elif ( direction == "U" or direction == "D" or direction == "L" or direction == "R" ):
+        if ( direction == "U" or direction == "D" or direction == "L" or direction == "R" ):
             return True
         else:
             raise ValueError
+
+    def validateCoords( self, row:int, column:int)->bool:
+        '''
+        validates that coordinates (row and column) are both within the valid range (above 0, less than board size)
+
+        :return: bool, isValid for BOTH row and column coordinates
+        '''
+        boardSize = self.get_board().getBoardSize()
+        if ( 0 <= row < boardSize and 0 <= column < boardSize ):
+            return True
+        else: 
+            raise ValueError
+        
+    # def checkOnBoard( self, x, y )->bool:
 
 # Move
     def getMoveDirection( self ):
@@ -153,7 +172,13 @@ class Player:
                 y2 = y
 
         # if x2 or y2 are outside the gameboard bounds, return, otherwise continue checking
-        if ( not board.checkOnBoard( x2, y2 ) ):
+        try:
+            areCoordsValid = self.validateCoords( x2, y2 )
+        except ValueError as details:
+            print(f"Coordinates [{x2},{y2}] are outside the game board")
+            return
+        
+        if ( not self.validateCoords( x2, y2 ) ):
             return
         else:
             targetTile = board.getCoordContents( x2,y2 ) # tile to move to
