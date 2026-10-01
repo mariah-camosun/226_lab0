@@ -15,7 +15,7 @@ class Tile:
 #          - instead: board.move('D'), which will in turn call self.player.move('D')
     def __init__(self)->None:
         '''
-        initialize a new tile & set contents to empty, symbol to match
+        Initialize a new tile & set contents to empty, symbol to match
         '''
         self.setTileContents( None )
         self.setTileSymbol( '_' )
@@ -23,6 +23,7 @@ class Tile:
     def __str__(self)->str:
         '''
         Display the (symbol of) Contents of the tile.
+
         :return self.symbol: str, symbol for the tile instance
         '''
         return f'{ self.getTileSymbol() }'
@@ -34,6 +35,7 @@ class Tile:
         '''
         set the contents of the tile
         includes subsequent symbol change
+
         :param item: set to a barrier, treasure, or player instance
         '''
         self.contents = item
@@ -43,13 +45,10 @@ class Tile:
         else:
             self.setTileSymbol( "_" )
             return item     
-        # match type(item):
-        #     case Treasure:
-        #         self.setTreasureTile( 1 )
-        #     case Barrier:
     def getTileContents( self ): #HOW TO HINT? as abv meth'd
         '''
         get the item contained in the tile
+
         :return: the item in 'self.contents' the barrier, treasure, player instance, or if empty, None
         '''
         return self.contents
@@ -57,12 +56,14 @@ class Tile:
     def setTileSymbol(self, symbol: str)->None:
         '''
         set the symbol for the tile
+
         :param symbol: str, symbol for the tile.
         '''
         self.symbol = symbol
     def getTileSymbol( self )->str:
         '''
         get the symbol for the tile
+
         :return: str, symbol to display for the tile
         '''
         return self.symbol
@@ -77,6 +78,11 @@ class Tile:
 
 # Validation and Checks
     def checkTileEmpty(self)->bool:
+        '''
+        check if the tile is empty
+
+        :return: bool, isEmpty
+        '''
         if ( self.getTileContents() == None ):
             return True
         else:
@@ -84,6 +90,8 @@ class Tile:
 
     def checkTileBarrier(self)->tuple[bool, bool]:
         '''
+        check if the tile contains a barrier, and if it is the origin of the barrier block
+
         :return: tuple[ isBarrier, isBarrierOrigin ]
         '''
         contents = self.getTileContents()
@@ -95,6 +103,8 @@ class Tile:
 
     def checkTileTreasure(self)->int:
         '''
+        Find the value of a treasure. Returns 0 if no treasure.
+        
         :return: value of treasure. Value of 0 is no treasure!
         '''
         contents = self.getTileContents()
@@ -108,6 +118,7 @@ class Tile:
         '''
         Add or change tile contents to Treasure
         Includes checks for previous tile contents
+
         :param treasureValue: the point value for the treasure item
         :return: bool, isBlocked - true if tile already full
         '''
@@ -124,11 +135,13 @@ class Tile:
         '''
         Add or change tile contents to Barrier
         Includes checks for previous tile contents
+
         :param isOrigin: is this barrier tile the origin of its barrier block
         :return: bool, isDuplicate - true if tile already contains barrier origin
         '''
         bTile = Barrier( isOrigin ) #instanciate barrier
         prevContents = self.getTileContents()
+
         # rework if statement for less duplication
 
         if ( isOrigin == True ):
@@ -153,14 +166,11 @@ class Tile:
         else:
             return False
 
-    def addPlayerToTile( self, player: Player ): # NOT properly commented yet - player class still WIP
+    def addPlayerToTile( self, player: Player )->None: # NOT properly commented yet - player class still WIP
         '''
         Move player into tile (add player to tile component)
+
+        :param player: Player, the player being moved
         '''
         self.contents = player
         self.symbol = player.getPlayerNumber()
-        # do checks go here or in the board?
-        # if tile = barrier, cannot place here
-        # if tile = treasure, add points, change contents to player
-        # if tile = other player ??? treat like barrier?
-        # pass
