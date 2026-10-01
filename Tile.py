@@ -8,9 +8,9 @@ class Tile:
 
 # ~~~ Part C ~~~ 
 # general/copy to all [ ] copy reqts to ea class
-# [ ] add detailed header comments to ALL methods 
+# [x] add detailed header comments to ALL methods 
 # [ ] make sure ALL instance variables of classes not accessed directly by outside code
-# [ ] abv re-perspective. This class does NOT directly access any outside instance variables
+# [x] abv re-perspective. This class does NOT directly access any outside instance variables
 #          - eg. bad: board.player.row += 1
 #          - instead: board.move('D'), which will in turn call self.player.move('D')
     def __init__(self)->None:
@@ -40,7 +40,7 @@ class Tile:
         '''
         self.contents = item
         if item != None:
-            self.setTileSymbol( item.symbol )
+            self.setTileSymbol( item.getSymbol() )
             return item
         else:
             self.setTileSymbol( "_" )

@@ -81,6 +81,8 @@ class Player:
     def getPlayerSymbol(self):
         return self.symbol
     # no setPlayerSymbol() - only done at init
+    def getSymbol(self): # temporarily have both until all refs fixed
+        return self.symbol
 
     def get_score( self ):
         return self.score
