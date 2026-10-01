@@ -192,11 +192,11 @@ class Board:
 
     def makeNewPlayer( self )->Player:
         while True:
-            tile, x, y = self.randomizePosition()
+            tile, column, row = self.randomizePosition()
             i = 0
             if tile.getTileContents() == None:
                 # place new player instance into contents
-                newPlayer = tile.setTileContents( Player( x, y, self ) )
+                newPlayer = tile.setTileContents( Player( column, row, self ) )
                 return newPlayer
 
 # Setters and Getters
@@ -219,16 +219,16 @@ class Board:
         return self.size    
     # no set_board_size() - only done at init
 
-    def getCoordContents( self, x: int, y: int )->Tile:
+    def getCoordContents( self, column: int, row: int )->Tile:
         '''
-        returns tile for a specific 2D array position[y][x]
+        returns tile for a specific 2D array position[row][column]
 
-        :param y: index of row in board array
-        :param x: index of tile in row array
+        :param row: index of row in board array
+        :param column: index of tile in row array
         :return: Tile
         '''
-        if self.checkOnBoard( x,y ):
-            return self.getBoard()[y][x]
+        if self.checkOnBoard( column,row ):
+            return self.getBoard()[row][column]
     # no set_coord_contents() - only done at init
 
     def getPlayers( self )->Player:
@@ -296,10 +296,10 @@ class Board:
         :return: tile instance: Tile, x-coordinate: int, y-coordinate: int
         '''
         boardSize = self.getBoardSize()
-        x = random.randint(0, boardSize-1)
-        y = random.randint(0, boardSize-1)
-        prevTile = self.getCoordContents( x, y )
-        return prevTile, x, y
+        column = random.randint(0, boardSize-1)
+        row = random.randint(0, boardSize-1)
+        prevTile = self.getCoordContents( column, row )
+        return prevTile, column, row
 
     def placeInRandomEmpty( self, itemToPlace ):
         '''
@@ -353,12 +353,12 @@ class Board:
         if ( numTreasures > self.getTileCount() * .05 ):
             raise ValueError
 
-    def checkOnBoard( self, x, y )->bool:
+    def checkOnBoard( self, column, row )->bool:
         '''
         checks if coordinates are within the gameboard
         :return: bool, isOnGameboard
         '''
-        if ( 0 <= x < self.getBoardSize() and 0 <= y < self.getBoardSize() ):
+        if ( 0 <= column < self.getBoardSize() and 0 <= row < self.getBoardSize() ):
             return True        
         else:
             return False
