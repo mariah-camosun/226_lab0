@@ -10,9 +10,9 @@ class Treasure:
 # 
 # # ~~~ Part C ~~~ 
 # general/copy to all [ ] copy reqts to ea class
-# [ ] add detailed header comments to ALL methods 
+# [x] add detailed header comments to ALL methods 
 # [ ] make sure ALL instance variables of classes not accessed directly by outside code
-# [ ] abv re-perspective. This class does NOT directly access any outside instance variables
+# [x] abv re-perspective. This class does NOT directly access any outside instance variables
 #          - eg. bad: board.player.row += 1
 #          - instead: board.move('D'), which will in turn call self.player.move('D')
 #     
@@ -20,6 +20,7 @@ class Treasure:
     def __init__(self, treasureValue: int)->None:
         '''
         initialize new treasure item, set value to treasureValue
+
         :param treasureValue: int, point value of treasure item
         '''
         self.setValue( treasureValue )
@@ -27,6 +28,7 @@ class Treasure:
     def __str__(self)->str:
         '''
         Returns the Treasure's symbol and value as a string
+        
         :return: (str)(Treasure.symbol (self.value)) 
         '''        
         return f'{ self.getSymbol() } ({ self.getValue() })'
@@ -37,6 +39,7 @@ class Treasure:
     def getSymbol( cls )->str:
         '''
         Returns the Treasure symbol
+        
         :return: str, Treasure.symbol 
         '''
         return cls.symbol
@@ -46,6 +49,7 @@ class Treasure:
         '''
         set the symbol for Treasure class
         NOTE: symbol is for class, NOT per instance
+        
         :param symbol: str, the symbol to represent a treasure tile 
         '''        
         cls.symbol = symbol
@@ -54,6 +58,7 @@ class Treasure:
     def getValue( self )->int:
         '''
         get point value of treasure item
+        
         :return: self.value: int, point value of treasure
         '''        
         return self.value
@@ -61,6 +66,7 @@ class Treasure:
     def setValue( self, value: int )->None:
         '''
         set the point value of a treasure object
+        
         :param value: int, point value of treasure
         '''
         try: 
@@ -74,6 +80,13 @@ class Treasure:
 
 # Validation and Checks
     def validateTreasureValue(self, value)->bool:
+        '''
+        checks that the point value of the treasure item is valid
+        raises errors if it is not
+
+        :param value: int, points value of the treasure
+        :return: bool, isValid
+        '''
         if type( value )!=int:
             raise TypeError
         elif ( value <= 0):
@@ -82,9 +95,14 @@ class Treasure:
             return True
 
 # utility
-    def collectTreasure( self, board:Board, tile:Tile, player:Player ):
-        # print(f"value of treasure item instance: {self.getValue()}")
-        # print(f"value of current player score: {player.get_score()}")
+    def collectTreasure( self, board:Board, tile:Tile, player:Player )->None:
+        '''
+        Collects the treasure on the tile and adds value to player score
+
+        :param board: Board, gameboard holding the treasure and player
+        :param tile: Tile, containing the treasure item to be collected
+        :param player: Player, player collecting the treasure
+        '''
         treasureValue = self.getValue()
         player.add_score( treasureValue )
         tile.clearTile()
