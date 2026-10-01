@@ -13,45 +13,52 @@ class Player:
 #       [ ] should probably rename the get/set etc from number to name (not technically a req't)
 # [x] row and column coordinates ( renamed xCoord to row, yCoord to column; function names left alone)
 # [x] score
-# [ ] ValueError if negative
-#       [ ] row, column
-#       [ ] score
-# [ ] ValueError if outside the board boundary
-#       [ ] row, column
-# [ ] add_score() methd: param: score to be added to existing score
-# [ ] get_score() methd: returns curr score
-# [ ] move() methd: takes direction 'UDLR' to change player location
+# [x] ValueError if negative
+#       [x] row, column
+#       [x] score
+# [x] ValueError if outside the board boundary
+#       [x] row, column
+# [x] add_score() methd: param: score to be added to existing score
+# [x] get_score() methd: returns curr score
+# [~] move() methd: takes direction 'UDLR' to change player location
 #       [ ] if move direction is not possible, nothing should happen
-#       [ ] ValueError thrown if direction is invalid
-#               [ ] not one of 4 options
+#       [x] ValueError thrown if direction is invalid
+#               [x] not one of 4 options
 #               [ ] if not *possible* but a valid UDLR, no ValueError, just nothing, CONFIRM
-# [ ] __str__() methd:
+# [x] __str__() methd:
 
 # ~~~ ~~~ while in the 'main, repeatedly' section, look more like move rules ~~~ ~~~
 #       [ ] if given tile contains treasure, 
-#               [ ] replace treasure with blank
+#               [x] replace treasure with blank
 #               [ ] add 1 to the Player's score
 #       [ ] if the player would move into a barrier or off the board, do not move
 
 # ~~~ Part C ~~~ 
-# general/copy to all [ ] copy reqts to ea class
-# [ ] add detailed header comments to ALL methods 
+# general/copy to all [x] copy reqts to ea class
+# [x] add detailed header comments to ALL methods 
 # [ ] make sure ALL instance variables of classes not accessed directly by outside code
 # [ ] abv re-perspective. This class does NOT directly access any outside instance variables
 #          - eg. bad: board.player.row += 1
 #          - instead: board.move('D'), which will in turn call self.player.move('D')
 
     playerCount = 0
-    # [~] auto-increment name as player number
+    # [x] auto-increment name as player number
     # [x] contain coors of player
     # [x] contains player score
     # [x] __str__ methd
     # [x] add_score method, 
     # [x] get_score methods
-    # [~] move methd, takes a dir (UDLR) to chg player location if poss (otherwise ignored)
-    #       [~] fix: collect treasure properly
-    # [ ] value error on: row, col, score negative; row col outside board
-    def __init__(self, column, row, gameBoard):
+    # [x] move methd, takes a dir (UDLR) to chg player location if poss (otherwise ignored)
+    #       [x] fix: collect treasure properly
+    # [x] value error on: row, col, score negative; row col outside board
+    def __init__(self, column:int, row:int, gameBoard)->None:
+        '''
+        create a new Player instance
+
+        :param column: int, the x-position of the player
+        :param row: int, the y-position of the player
+        :param gameBoard: the gameboard the player is on
+        '''
         self.incrementPlayerCount()
         self.name = self.getTotalPlayerCount()
         self.symbol = (str)(self.name)
@@ -61,62 +68,126 @@ class Player:
         self.gameBoard = gameBoard
         type(self).incrementPlayerCount()
 
-    def __str__(self):
+    def __str__(self)->str:
+        '''
+        returns the symbol (number) for the player instance
+
+        :return: str, player symbol (number)
+        '''
         return f'{self.symbol}'
 
 # Getters & Setters
     # Class variables: (player count)
     @classmethod
-    def getTotalPlayerCount( cls ):
+    def getTotalPlayerCount( cls )->int:
+        '''
+        returns the total number of players
+
+        :return: int, number of players
+        '''
         return cls.playerCount
     @classmethod
-    def setTotalPlayerCount( cls, count ):
+    def setTotalPlayerCount( cls, count:int )->None:
+        '''
+        sets the player count to the number passed in
+
+        :param count: int, number of current players
+        '''
         cls.playerCount = count
 
     # Instance Variables: (name, symbol, score, column, row, gameBoard)
-    def getPlayerNumber(self):
+    def getPlayerNumber(self)->int:
+        '''
+        returns the name of this player instance
+
+        :return: str, player name
+        '''
         return self.name
     # no setPlayerNumber() - only done at init
 
-    def getPlayerSymbol(self):
+    def getPlayerSymbol(self)->str:
+        '''
+        returns the symbol of this player's instance
+
+        :return: str, player symbol
+        '''
         return self.symbol
     # no setPlayerSymbol() - only done at init
-    def getSymbol(self): # temporarily have both until all refs fixed
+    def getSymbol(self)->str: # temporarily have both until all refs fixed
+        '''
+        returns the symbol of this player's instance
+
+        :return: str, player symbol
+        '''        
         return self.symbol
 
-    def get_score( self ):
+    def get_score( self )->int:
+        '''
+        returns the current score for this player instance
+
+        :return: int, player score
+        '''        
         return self.score
-    def set_score( self, score ):
+    def set_score( self, score:int ):
+        '''
+        changes this player's score to the number passed in
+
+        :param score: int, new player score        
+        '''
         self.score = score
 
-    def get_coords( self ):
+    def get_coords( self )->tuple[int, int]:
+        '''
+        returns the current gameboard coordinates of this player
+
+        :return: tupple[int, int], column coordiante, row coordinate
+        '''
         return self.column, self.row
-    def set_coords( self, column, row):
+    def set_coords( self, column:int, row:int)->None:
+        '''
+        sets the values for player coordinates to the given column and row
+
+        :param column: int, x-position of player
+        :param row: int, y-position of player
+        '''
         self.column = column
         self.row = row
 
-    def get_board( self ):
+    def get_board( self )->list[list[Tile]]:
+        '''
+        returns the gameboard the player is on
+
+        :return: list[list[Tile]], the gameboard containing the player
+        '''
         return self.gameBoard
     # no set_board() - only done at init
 
-# Modification of Setters
+# Extended Setters
     @classmethod
-    def incrementPlayerCount( cls ):
+    def incrementPlayerCount( cls )->None:
+        '''
+        icreases the player count by 1
+        '''        
         cls.playerCount += 1
      
-    def add_score( self, addScore ):
+    def add_score( self, addScore:int )->int:
+        '''
+        adds addScore to this player's score and returns updated score
+
+        :param addScore: int, points to add to player score
+        :return: int, player score after update
+        '''
         self.score += addScore
         return self.score
 
 # Validation
-# [ ] ValueError if negative
-#       [ ] row, column
-#       [ ] score
-# [ ] ValueError if outside the board boundary
-#       [ ] row, column
-# [ ] ValueError thrown if move() direction is invalid
+    def validateDirection( self, direction: str )->bool:
+        '''
+        validates the entered string is allowed
 
-    def validateDirection( self, direction ):
+        :param direction: str, direction to move the player in
+        :return: bool, isValid
+        '''
         if ( direction == "U" or direction == "D" or direction == "L" or direction == "R" ):
             return True
         else:
@@ -124,7 +195,7 @@ class Player:
 
     def validateCoords( self, row:int, column:int)->bool:
         '''
-        validates that coordinates (row and column) are both within the valid range (above 0, less than board size)
+        validates that coordinates (row and column) are both within the valid range (>= 0, < board size)
 
         :return: bool, isValid for BOTH row and column coordinates
         '''
@@ -133,11 +204,14 @@ class Player:
             return True
         else: 
             raise ValueError
-        
-    # def checkOnBoard( self, x, y )->bool:
 
 # Move
-    def getMoveDirection( self ):
+    def getMoveDirection( self )->str:
+        '''
+        Prompt user for direction to move in and check for validity
+
+        :return: str, direction to move
+        '''
         while True:
             direction = input(f"Move player {self.getPlayerSymbol()}: \nEnter a direction (U-up D-down L-left R-right) to move: ")
             direction = direction.upper()
@@ -152,7 +226,11 @@ class Player:
             else:
                 return direction
 
-    def move( self ): # direction not a param, as includes user prompt
+    def move( self )->None: # direction not a param, as includes user prompt
+        '''
+        Move the current player instance. Includes prompting and validation.
+        Checks contents of target tile, and moves or not as appropriate.
+        '''
         direction = self.getMoveDirection() # direction moving
 
         board = self.get_board()
@@ -196,4 +274,3 @@ class Player:
             targetTile.addPlayerToTile( self )
             self.set_coords( x2, y2 )
             oldTile.clearTile()
-
