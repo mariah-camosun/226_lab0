@@ -36,6 +36,7 @@ class Board:
         self.size = size
         self.numBarriers = numBarriers
         self.numTreasures = numTreasures
+        self.tileCount = 0
         self.makeEmptyBoard( size )
         self.makeBarriers( numBarriers, size )
         self.makeTreasures( numTreasures, size )
