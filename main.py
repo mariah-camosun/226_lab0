@@ -7,6 +7,7 @@ from Board import Board
 #       [ ] 5 barriers randomly assigned - can parially overlap, wrap edges
 # [ ] conf program still runs : PRE ADDING PLAYER 1 - find commit
 # [ ] commit & push to GitHub, share w instructor
+# [ ] CHANGE EVERYTHING to snake case (function names, variables)
 
 # ~~~ Part C ~~~ 'Complete the game'
 # repeatedly:
@@ -23,7 +24,7 @@ from Board import Board
 # general/copy to all [x] copy reqts to ea class
 # [ ] add detailed header comments to ALL methods 
 # [ ] make sure ALL instance variables of classes not accessed directly by outside code
-# [ ] abv re-perspective. This class does NOT directly access any outside instance variables
+# [x] abv re-perspective. This class does NOT directly access any outside instance variables
 #          - eg. bad: board.player.row += 1
 #          - instead: board.move('D'), which will in turn call self.player.move('D')
 

@@ -8,8 +8,8 @@ if TYPE_CHECKING:
 
 class Player:
 # Requirements
-# [~] 'name' string ( renamed .num to .name; function names left alone )
-#       [~] auto-set, first = 1, increments for ea new player: TEST
+# [x] 'name' string ( renamed .num to .name; function names left alone )
+#       [x] auto-set, first = 1, increments for ea new player - tested. only moves latest player curr
 #       [ ] should probably rename the get/set etc from number to name (not technically a req't)
 # [x] row and column coordinates ( renamed xCoord to row, yCoord to column; function names left alone)
 # [x] score
@@ -20,18 +20,18 @@ class Player:
 #       [x] row, column
 # [x] add_score() methd: param: score to be added to existing score
 # [x] get_score() methd: returns curr score
-# [~] move() methd: takes direction 'UDLR' to change player location
-#       [ ] if move direction is not possible, nothing should happen
+# [x] move() methd: takes direction 'UDLR' to change player location
+#       [x] if move direction is not possible, nothing should happen
 #       [x] ValueError thrown if direction is invalid
 #               [x] not one of 4 options
-#               [ ] if not *possible* but a valid UDLR, no ValueError, just nothing, CONFIRM
+#               [x] if not *possible* but a valid UDLR, no ValueError, just nothing, CONFIRM
 # [x] __str__() methd:
 
 # ~~~ ~~~ while in the 'main, repeatedly' section, look more like move rules ~~~ ~~~
-#       [ ] if given tile contains treasure, 
+#       [x] if given tile contains treasure, 
 #               [x] replace treasure with blank
-#               [ ] add 1 to the Player's score
-#       [ ] if the player would move into a barrier or off the board, do not move
+#               [x] add 1 to the Player's score
+#       [x] if the player would move into a barrier or off the board, do not move
 
 # ~~~ Part C ~~~ 
 # general/copy to all [x] copy reqts to ea class
