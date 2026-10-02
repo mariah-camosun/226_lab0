@@ -9,13 +9,13 @@ if TYPE_CHECKING:
 class Treasure:
     symbol = '$'
     
-    def __init__(self, treasureValue: int)->None:
+    def __init__(self, treasure_value: int)->None:
         '''
-        initialize new treasure item, set value to treasureValue
+        initialize new treasure item, set value to treasure_value
 
-        :param treasureValue: int, point value of treasure item
+        :param treasure_value: int, point value of treasure item
         '''
-        self.setValue( treasureValue )
+        self.set_value( treasure_value )
 
     def __str__(self)->str:
         '''
@@ -23,7 +23,7 @@ class Treasure:
         
         :return: (str)(Treasure.symbol (self.value)) 
         '''        
-        return f'{ self.getSymbol() } ({ self.getValue() })'
+        return f'{ self.getSymbol() } ({ self.get_value() })'
 
 # setters and getters
 # Class variables
@@ -47,7 +47,7 @@ class Treasure:
         cls.symbol = symbol
 
 # instance variables
-    def getValue( self )->int:
+    def get_value( self )->int:
         '''
         get point value of treasure item
         
@@ -55,14 +55,14 @@ class Treasure:
         '''        
         return self.value
     
-    def setValue( self, value: int )->None:
+    def set_value( self, value: int )->None:
         '''
         set the point value of a treasure object
         
         :param value: int, point value of treasure
         '''
         try: 
-            self.validateTreasureValue( value )
+            self.validate_value( value )
         except TypeError as details:
             print(f"{value} is not an integer: {details}")
         except ValueError as details:
@@ -71,7 +71,7 @@ class Treasure:
             self.value = value           
 
 # Validation and Checks
-    def validateTreasureValue(self, value)->bool:
+    def validate_value(self, value)->bool:
         '''
         checks that the point value of the treasure item is valid
         raises errors if it is not
@@ -87,7 +87,7 @@ class Treasure:
             return True
 
 # utility
-    def collectTreasure( self, board:Board, tile:Tile, player:Player )->None:
+    def collect_treasure( self, board:Board, tile:Tile, player:Player )->None:
         '''
         Collects the treasure on the tile and adds value to player score
 
@@ -95,9 +95,9 @@ class Treasure:
         :param tile: Tile, containing the treasure item to be collected
         :param player: Player, player collecting the treasure
         '''
-        treasureValue = self.getValue()
-        player.add_score( treasureValue )
+        treasure_value = self.get_value()
+        player.add_score( treasure_value )
         tile.clearTile()
         board.decrementTreasureCount()
         print(f"remaining treasures: {board.getTreasureCount()}")
-        print(f"player {player.get_name()} collected: {treasureValue} treasure points.")
+        print(f"player {player.get_name()} collected: {treasure_value} treasure points.")

@@ -229,7 +229,7 @@ class Player:
                 return
             elif ( isTreasure ): # 0 evals to false, 
                 treasure = targetTile.getTileContents()
-                treasure.collectTreasure( board, targetTile, self )
+                treasure.collect_treasure( board, targetTile, self )
             # else empty is only alternative (unspecified), 
             # no movement blocks then Given ALREADY PREVIOUSLY checked in bounds into
             # all successful move intos use the following code hence outside the if block

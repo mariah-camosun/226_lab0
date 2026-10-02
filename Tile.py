@@ -101,7 +101,7 @@ class Tile:
         contents = self.getTileContents()
         isTreasure = isinstance( contents, Treasure)
         if isTreasure:
-            return contents.getValue()
+            return contents.get_value()
         else:
             return 0
 
