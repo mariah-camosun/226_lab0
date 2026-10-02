@@ -1,6 +1,6 @@
 from Board import Board
     # TODO
-    # [ ] rework Tile.setBarrierTile() -- too much duplication
+    # [x] rework Tile.setBarrierTile() -- too much duplication
     # [ ] update draw.io class diagram to contain all functions
     # [ ] should probably rename the Player.get/set etc from number to name (not technically a req't)
     # [ ] fix functions that pass in unneccessary variables (eg. Board.Boardsize)

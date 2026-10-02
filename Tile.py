@@ -3,8 +3,6 @@ from Treasure import Treasure
 from Player import Player
 
 class Tile:
-    # TODO
-    # [ ] rework setBarrierTile() -- too much duplication
     
     def __init__(self)->None:
         '''
@@ -135,28 +133,15 @@ class Tile:
         bTile = Barrier( isOrigin ) #instanciate barrier
         prevContents = self.getTileContents()
 
-        # rework if statement for less duplication
-
-        if ( isOrigin == True ):
-            if ( prevContents != None):
-                # barriers are first non-empy generated. 
-                # Contents should only be empty or barrier
-                if ( prevContents.getIsOrigin() == True ): 
-                    # print("duplicate barrier")
-                    return True
-                else:
-                    self.setTileContents( bTile )
-                    self.setTileSymbol( bTile.getSymbol() )
-                    return False
-            else:
-                self.setTileContents( bTile )
-                self.setTileSymbol( bTile.getSymbol() )
-                return False
-        elif (self.contents == None):
-            self.setTileContents( bTile )
-            self.setTileSymbol( bTile.getSymbol() )
+        if ( isOrigin == True ) and ( prevContents != None) and ( prevContents.getIsOrigin() == True ): 
+            # barriers are first non-empy generated. 
+            # Contents should only be empty or barrier
+            return True
+        elif ( isOrigin == False ) and ( prevContents != None):
             return False
         else:
+            self.setTileContents( bTile )
+            self.setTileSymbol( bTile.getSymbol() )
             return False
 
     def addPlayerToTile( self, player: Player )->None: # NOT properly commented yet - player class still WIP
