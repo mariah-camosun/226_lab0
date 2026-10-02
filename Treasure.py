@@ -23,12 +23,12 @@ class Treasure:
         
         :return: (str)(Treasure.symbol (self.value)) 
         '''        
-        return f'{ self.getSymbol() } ({ self.get_value() })'
+        return f'{ self.get_symbol() } ({ self.get_value() })'
 
 # setters and getters
 # Class variables
     @classmethod
-    def getSymbol( cls )->str:
+    def get_symbol( cls )->str:
         '''
         Returns the Treasure symbol
         
@@ -37,7 +37,7 @@ class Treasure:
         return cls.symbol
 
     @classmethod
-    def setSymbol( cls, symbol: str )->None:
+    def set_symbol( cls, symbol: str )->None:
         '''
         set the symbol for Treasure class
         NOTE: symbol is for class, NOT per instance

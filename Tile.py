@@ -31,7 +31,7 @@ class Tile:
         '''
         self.contents = item
         if item != None:
-            self.setTileSymbol( item.getSymbol() )
+            self.setTileSymbol( item.get_symbol() )
             return item
         else:
             self.setTileSymbol( "_" )
@@ -117,7 +117,7 @@ class Tile:
         if ( isEmpty ):
             tTile = Treasure( treasureValue )
             self.setTileContents( tTile )
-            self.setTileSymbol( tTile.getSymbol() )
+            self.setTileSymbol( tTile.get_symbol() )
             return False
         else:
             return True
@@ -141,7 +141,7 @@ class Tile:
             return False
         else:
             self.setTileContents( bTile )
-            self.setTileSymbol( bTile.getSymbol() )
+            self.setTileSymbol( bTile.get_symbol() )
             return False
 
     def addPlayerToTile( self, player: Player )->None: # NOT properly commented yet - player class still WIP

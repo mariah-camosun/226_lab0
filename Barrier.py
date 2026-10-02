@@ -16,12 +16,12 @@ class Barrier:
 
         :return: (str)(Barrier.symbol)
         '''
-        return f'{ self.getSymbol() }'
+        return f'{ self.get_symbol() }'
 
 # Getters and Setters
 # class variables
     @classmethod
-    def getSymbol(cls)->str:
+    def get_symbol(cls)->str:
         '''
         get the symbol for Barrier class
 
@@ -30,7 +30,7 @@ class Barrier:
         return cls.symbol
 
     @classmethod
-    def setSymbol( cls, symbol: str )->None:
+    def set_symbol( cls, symbol: str )->None:
         '''
         set the symbol for Barrier class
         NOTE: symbol is for class, NOT per instance

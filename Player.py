@@ -75,7 +75,7 @@ class Player:
         '''
         return self.symbol
     # no setPlayerSymbol() - only done at init
-    def getSymbol(self)->str: # temporarily have both until all refs fixed
+    def get_symbol(self)->str: # temporarily have both until all refs fixed
         '''
         returns the symbol of this player's instance
 
