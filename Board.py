@@ -197,7 +197,7 @@ class Board:
             x = random.randint(0, boardSize-1)
             y = random.randint(0, boardSize-1)
             treasureTile = self.getCoordContents(x,y)
-            isDuplicate = treasureTile.setTreasureTile( 10 )
+            isDuplicate = treasureTile.setTreasureTile( 1 )
             if ( not isDuplicate ):
                 break
 
