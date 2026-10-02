@@ -225,10 +225,10 @@ class Player:
             isTreasure = targetTile.checkTileTreasure()
             if isBarrier: 
             # or targetTile.checkTilePlayer(): #Second check doesnt actually exist yet
-                print(f"entered tile is barrier or player: {targetTile.getTileContents()}")
+                print(f"entered tile is barrier or player: {targetTile.get_contents()}")
                 return
             elif ( isTreasure ): # 0 evals to false, 
-                treasure = targetTile.getTileContents()
+                treasure = targetTile.get_contents()
                 treasure.collect_treasure( board, targetTile, self )
             # else empty is only alternative (unspecified), 
             # no movement blocks then Given ALREADY PREVIOUSLY checked in bounds into

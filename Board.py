@@ -179,9 +179,9 @@ class Board:
         '''
         while True:
             tile, column, row = self.randomizePosition()
-            if tile.getTileContents() == None:
+            if tile.get_contents() == None:
                 # place new player instance into contents
-                newPlayer = tile.setTileContents( Player( column, row, self ) )
+                newPlayer = tile.set_contents( Player( column, row, self ) )
                 return newPlayer
 
 # Setters and Getters
@@ -302,8 +302,8 @@ class Board:
         '''
         while True:
             tile, _, _ = self.randomizePosition()
-            if tile.getTileContents() == None:
-                tile.setTileContents( itemToPlace )
+            if tile.get_contents() == None:
+                tile.set_contents( itemToPlace )
                 break
 
 # Validation and checks

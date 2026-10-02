@@ -8,8 +8,8 @@ class Tile:
         '''
         Initialize a new tile & set contents to empty, symbol to match
         '''
-        self.setTileContents( None )
-        self.setTileSymbol( '_' )
+        self.set_contents( None )
+        self.set_symbol( '_' )
 
     def __str__(self)->str:
         '''
@@ -17,12 +17,12 @@ class Tile:
 
         :return self.symbol: str, symbol for the tile instance
         '''
-        return f'{ self.getTileSymbol() }'
+        return f'{ self.get_symbol() }'
 
 # Getters & Setters
     # No Class Variables
     # Instance Variables ( contents, symbol )
-    def setTileContents( self, item )->None: #HOW TO HINT? should be one of a list of custom classes
+    def set_contents( self, item )->None: #HOW TO HINT? should be one of a list of custom classes
         '''
         set the contents of the tile
         includes subsequent symbol change
@@ -31,12 +31,12 @@ class Tile:
         '''
         self.contents = item
         if item != None:
-            self.setTileSymbol( item.get_symbol() )
+            self.set_symbol( item.get_symbol() )
             return item
         else:
-            self.setTileSymbol( "_" )
+            self.set_symbol( "_" )
             return item     
-    def getTileContents( self ): #HOW TO HINT? as abv meth'd
+    def get_contents( self ): #HOW TO HINT? as abv meth'd
         '''
         get the item contained in the tile
 
@@ -44,14 +44,14 @@ class Tile:
         '''
         return self.contents
 
-    def setTileSymbol(self, symbol: str)->None:
+    def set_symbol(self, symbol: str)->None:
         '''
         set the symbol for the tile
 
         :param symbol: str, symbol for the tile.
         '''
         self.symbol = symbol
-    def getTileSymbol( self )->str:
+    def get_symbol( self )->str:
         '''
         get the symbol for the tile
 
@@ -64,8 +64,8 @@ class Tile:
         '''
         Empty the Contents of the tile & change symbol to empty symbol
         '''
-        self.setTileContents( None )
-        self.setTileSymbol( '_' )
+        self.set_contents( None )
+        self.set_symbol( '_' )
 
 # Validation and Checks
     def checkTileEmpty(self)->bool:
@@ -74,7 +74,7 @@ class Tile:
 
         :return: bool, isEmpty
         '''
-        if ( self.getTileContents() == None ):
+        if ( self.get_contents() == None ):
             return True
         else:
             return False
@@ -85,7 +85,7 @@ class Tile:
 
         :return: tuple[ isBarrier, isBarrierOrigin ]
         '''
-        contents = self.getTileContents()
+        contents = self.get_contents()
         isBarrier = isinstance( contents, Barrier)
         if isBarrier:
             return True, contents.get_is_origin()
@@ -98,7 +98,7 @@ class Tile:
         
         :return: value of treasure. Value of 0 is no treasure!
         '''
-        contents = self.getTileContents()
+        contents = self.get_contents()
         isTreasure = isinstance( contents, Treasure)
         if isTreasure:
             return contents.get_value()
@@ -116,8 +116,8 @@ class Tile:
         isEmpty = self.checkTileEmpty()
         if ( isEmpty ):
             tTile = Treasure( treasureValue )
-            self.setTileContents( tTile )
-            self.setTileSymbol( tTile.get_symbol() )
+            self.set_contents( tTile )
+            self.set_symbol( tTile.get_symbol() )
             return False
         else:
             return True
@@ -131,7 +131,7 @@ class Tile:
         :return: bool, isDuplicate - true if tile already contains barrier origin
         '''
         bTile = Barrier( is_origin ) #instanciate barrier
-        prevContents = self.getTileContents()
+        prevContents = self.get_contents()
 
         if ( is_origin == True ) and ( prevContents != None) and ( prevContents.get_is_origin() == True ): 
             # barriers are first non-empy generated. 
@@ -140,8 +140,8 @@ class Tile:
         elif ( is_origin == False ) and ( prevContents != None):
             return False
         else:
-            self.setTileContents( bTile )
-            self.setTileSymbol( bTile.get_symbol() )
+            self.set_contents( bTile )
+            self.set_symbol( bTile.get_symbol() )
             return False
 
     def addPlayerToTile( self, player: Player )->None: # NOT properly commented yet - player class still WIP
