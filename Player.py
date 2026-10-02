@@ -10,6 +10,8 @@ class Player:
 # TODO
 # [ ] should probably rename the get/set etc from number to name (not technically a req't)
 
+    playerCount = 0
+
     def __init__(self, column:int, row:int, gameBoard)->None:
         '''
         create a new Player instance
