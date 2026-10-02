@@ -15,13 +15,27 @@ class Board:
 #       [x] at edge of board should wrap edge
 # [x] create 'numTreasures' randomly placed treasures ('$')
 #       [x] must be placed on empty tiles only
+# [x] parameters: size, numBarriers, numTreasures
+# [x] validates abv (3) parameters:
+#       [x] Value error* also typeError on: invalid entry, barriers >20%*board, treasures > 5%*board
+# [x] 'size x size collection' of Tiles. Each initially empty ('_')
+# [x] creates 'numBarriers' randomly placed barriers.
+#       [x] ea barrier is a 2x2 block of tiles
+#       [x] may partially, but not completely overlap
+#       [x] at edge of board should wrap edge
+# [x] create 'numTreasures' randomly placed treasures ('$')
+#       [x] must be placed on empty tiles only
 # ~~~AFTER CREATE PLAYER~~~
+# [x] place one Player on a free Tile
 # [x] place one Player on a free Tile
 
 # ~~~ Part C ~~~ 
 # general/copy to all [x] copy reqts to ea class
 # [x] add detailed header comments to ALL methods 
+# general/copy to all [x] copy reqts to ea class
+# [x] add detailed header comments to ALL methods 
 # [ ] make sure ALL instance variables of classes not accessed directly by outside code
+# [x] abv re-perspective. This class does NOT directly access any outside instance variables
 # [x] abv re-perspective. This class does NOT directly access any outside instance variables
 #          - eg. bad: board.player.row += 1
 #          - instead: board.move('D'), which will in turn call self.player.move('D')
@@ -118,6 +132,8 @@ class Board:
 
         # NOTE realized I can eliminate this parameter wherever it is used
         :param boardSize: int, size of board
+        # NOTE realized I can eliminate this parameter wherever it is used
+        :param boardSize: int, size of board
         '''
         while(True):
             originTile, x, y = self.randomizePosition()
@@ -194,6 +210,11 @@ class Board:
 
         :return: Player, the new player
         '''
+        '''
+        creates a new player and places it on a random empty tile
+
+        :return: Player, the new player
+        '''
         while True:
             tile, column, row = self.randomizePosition()
             if tile.getTileContents() == None:
@@ -233,6 +254,12 @@ class Board:
             return self.getBoard()[row][column]
     # no set_coord_contents() - only done at init
 
+    def getPlayers( self )->list[Player]:
+        '''
+        returns all current players as a list
+
+        :return: list[Player], list of all current players
+        '''
     def getPlayers( self )->list[Player]:
         '''
         returns all current players as a list
@@ -313,6 +340,9 @@ class Board:
         Places an item in a random empty tile. Loops until successfully placed.
 
         :param itemToPlace: item to place into the game Tile. Acceptable classes: Player, Barrier, Treasure
+        Places an item in a random empty tile. Loops until successfully placed.
+
+        :param itemToPlace: item to place into the game Tile. Acceptable classes: Player, Barrier, Treasure
         '''
         while True:
             tile, _, _ = self.randomizePosition()
@@ -322,10 +352,13 @@ class Board:
 
 # Validation and checks
     def validateSize(self, size: int)->bool:
+    def validateSize(self, size: int)->bool:
         '''
+        Validates size parameter for the game board is an integer > 0 and <= 30
         Validates size parameter for the game board is an integer > 0 and <= 30
 
         :param size: int between [1,30], size of each side of the board (board is size x size)
+        :return: bool, isValid
         :return: bool, isValid
         '''
         if not isinstance(size, int):
@@ -334,13 +367,17 @@ class Board:
             raise ValueError
         else:
             return True
+        else:
+            return True
         
+    def validateBarrierCount (self, numBarriers: int)->bool:
     def validateBarrierCount (self, numBarriers: int)->bool:
         '''
         Validates numBarriers parameter is an integer > 0, and
         Does not occupy > 20% of the board
 
         :param numBarriers: int > 0 and < 20% of board, number of barrier blocks to make
+        :return: bool, isValid
         :return: bool, isValid
         '''
         if not isinstance(numBarriers, int ):
@@ -352,13 +389,17 @@ class Board:
             raise ValueError
         else:
             return True
+        else:
+            return True
 
+    def validateTreasureCount (self, numTreasures: int)->bool:
     def validateTreasureCount (self, numTreasures: int)->bool:
         '''
         Validates numTreasures parameter is an integer > 0, and
         Does not occupy > 5% of the board
 
         :param numTreasures: int > 0 and < 5% of board, number of treasures to make
+        :return: bool, isValid
         :return: bool, isValid
         '''
         if not isinstance(numTreasures, int ):
@@ -367,13 +408,17 @@ class Board:
             raise ValueError
         # treasures must be <= 5% of board
         elif ( numTreasures > self.getTileCount() * .05 ):
+        elif ( numTreasures > self.getTileCount() * .05 ):
             raise ValueError
+        else:
+            return True
         else:
             return True
 
     def checkOnBoard( self, column, row )->bool:
         '''
         checks if coordinates are within the gameboard
+
 
         :return: bool, isOnGameboard
         '''
@@ -384,6 +429,9 @@ class Board:
 
 # Utility
     def reportPlayerScores(self):
+        '''
+        prints out the current player scores for all players
+        '''
         '''
         prints out the current player scores for all players
         '''
