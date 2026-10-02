@@ -1,5 +1,4 @@
 from __future__ import annotations
-import random
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -8,27 +7,23 @@ if TYPE_CHECKING:
     from Treasure import Treasure    
 
 class Player:
-# TODO
-# [ ] should probably rename the get/set etc from number to name (not technically a req't)
+    player_count = 0
 
-    playerCount = 0
-
-    def __init__(self, column:int, row:int, gameBoard)->None:
+    def __init__(self, column:int, row:int, game_board)->None:
         '''
         create a new Player instance
 
         :param column: int, the x-position of the player
         :param row: int, the y-position of the player
-        :param gameBoard: the gameboard the player is on
+        :param game_board: the game_board the player is on
         '''
-        self.incrementPlayerCount()
-        self.name = self.getTotalPlayerCount()
+        self.increment_player_count()
+        self.name = self.get_player_count()
         self.symbol = (str)(self.name)
         self.score = 0
         self.row = row
         self.column = column
-        self.gameBoard = gameBoard
-        # type(self).incrementPlayerCount()
+        self.game_board = game_board
 
     def __str__(self)->str:
         '''
@@ -41,23 +36,23 @@ class Player:
 # Getters & Setters
     # Class variables: (player count)
     @classmethod
-    def getTotalPlayerCount( cls )->int:
+    def get_player_count( cls )->int:
         '''
         returns the total number of players
 
         :return: int, number of players
         '''
-        return cls.playerCount
+        return cls.player_count
     @classmethod
-    def setTotalPlayerCount( cls, count:int )->None:
+    def set_player_count( cls, count:int )->None:
         '''
         sets the player count to the number passed in
 
         :param count: int, number of current players
         '''
-        cls.playerCount = count
+        cls.player_count = count
 
-    # Instance Variables: (name, symbol, score, column, row, gameBoard)
+    # Instance Variables: (name, symbol, score, column, row, game_board)
     def get_name(self)->int:
         '''
         returns the name of this player instance
@@ -65,9 +60,9 @@ class Player:
         :return: str, player name
         '''
         return self.name
-    # no setPlayerNumber() - only done at init
+    # no set_name() - only done at init
 
-    def getPlayerSymbol(self)->str:
+    def get_symbol(self)->str:
         '''
         returns the symbol of this player's instance
 
@@ -100,7 +95,7 @@ class Player:
 
     def get_coords( self )->tuple[int, int]:
         '''
-        returns the current gameboard coordinates of this player
+        returns the current game_board coordinates of this player
 
         :return: tupple[int, int], column coordiante, row coordinate
         '''
@@ -117,49 +112,49 @@ class Player:
 
     def get_board( self )->list[list[Tile]]:
         '''
-        returns the gameboard the player is on
+        returns the game_board the player is on
 
-        :return: list[list[Tile]], the gameboard containing the player
+        :return: list[list[Tile]], the game_board containing the player
         '''
-        return self.gameBoard
+        return self.game_board
     # no set_board() - only done at init
 
 # Extended Setters
     @classmethod
-    def incrementPlayerCount( cls )->None:
+    def increment_player_count( cls )->None:
         '''
         icreases the player count by 1
         '''        
-        cls.playerCount += 1
+        cls.player_count += 1
      
-    def add_score( self, addScore:int )->int:
+    def add_score( self, add_score:int )->int:
         '''
-        adds addScore to this player's score and returns updated score
+        adds add_score to this player's score and returns updated score
 
-        :param addScore: int, points to add to player score
+        :param add_score: int, points to add to player score
         :return: int, player score after update
         '''
-        self.score += addScore
+        self.score += add_score
         return self.score
 
 # Validation
-    def validateDirection( self, direction: str )->bool:
+    def validate_direction( self, direction: str )->bool:
         '''
         validates the entered string is allowed
 
         :param direction: str, direction to move the player in
-        :return: bool, isValid
+        :return: bool, is_valid
         '''
         if ( direction == "U" or direction == "D" or direction == "L" or direction == "R" ):
             return True
         else:
             raise ValueError
 
-    def validateCoords( self, row:int, column:int)->bool:
+    def validate_coords( self, row:int, column:int)->bool:
         '''
         validates that coordinates (row and column) are both within the valid range (>= 0, < board size)
 
-        :return: bool, isValid for BOTH row and column coordinates
+        :return: bool, is_valid for BOTH row and column coordinates
         '''
         boardSize = self.get_board().getBoardSize()
         if ( 0 <= row < boardSize and 0 <= column < boardSize ):
@@ -175,12 +170,12 @@ class Player:
         :return: str, direction to move
         '''
         while True:
-            direction = input(f"Move player {self.getPlayerSymbol()}: \nEnter a direction (U-up D-down L-left R-right) to move: ")
+            direction = input(f"Move player {self.get_symbol()}: \nEnter a direction (U-up D-down L-left R-right) to move: ")
             direction = direction.upper()
             print(f"direction value entered: {direction}")
 
             try:
-                isValid = self.validateDirection( direction )
+                is_valid = self.validate_direction( direction )
             except TypeError as details:
                 print(f"{direction} is not a string, must enter one of U, D, L, R") # will also accept lower case
             except ValueError as details:
@@ -213,9 +208,9 @@ class Player:
                 x2 = x + 1
                 y2 = y
 
-        # if x2 or y2 are outside the gameboard bounds, return, otherwise continue checking
+        # if x2 or y2 are outside the game_board bounds, return, otherwise continue checking
         try:
-            areCoordsValid = self.validateCoords( x2, y2 )
+            areCoordsValid = self.validate_coords( x2, y2 )
         except ValueError as details:
             print(f"Coordinates [{x2},{y2}] are outside the game board")
             return
