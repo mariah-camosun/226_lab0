@@ -66,7 +66,7 @@ class Player:
         self.row = row
         self.column = column
         self.gameBoard = gameBoard
-        type(self).incrementPlayerCount()
+        # type(self).incrementPlayerCount()
 
     def __str__(self)->str:
         '''
