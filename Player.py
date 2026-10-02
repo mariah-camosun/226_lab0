@@ -156,14 +156,14 @@ class Player:
 
         :return: bool, is_valid for BOTH row and column coordinates
         '''
-        boardSize = self.get_board().getBoardSize()
-        if ( 0 <= row < boardSize and 0 <= column < boardSize ):
+        board_size = self.get_board().get_size()
+        if ( 0 <= row < board_size and 0 <= column < board_size ):
             return True
         else: 
             raise ValueError
 
 # Move
-    def getMoveDirection( self )->str:
+    def get_move_direction( self )->str:
         '''
         Prompt user for direction to move in and check for validity
 
@@ -188,11 +188,11 @@ class Player:
         Move the current player instance. Includes prompting and validation.
         Checks contents of target tile, and moves or not as appropriate.
         '''
-        direction = self.getMoveDirection() # direction moving
+        direction = self.get_move_direction() # direction moving
 
         board = self.get_board()
         x,y = self.get_coords() # coordinates of initial position
-        oldTile = board.getCoordContents( x,y ) # initial position tile
+        old_tile = board.get_coord_tile( x,y ) # initial position tile
 
         match direction:
             case "D":
@@ -210,24 +210,24 @@ class Player:
 
         # if x2 or y2 are outside the game_board bounds, return, otherwise continue checking
         try:
-            areCoordsValid = self.validate_coords( x2, y2 )
+            are_coords_valid = self.validate_coords( x2, y2 )
         except ValueError as details:
             print(f"Coordinates [{x2},{y2}] are outside the game board")
             return
         else:
-            targetTile = board.getCoordContents( x2,y2 ) # tile to move to
-            isBarrier, _ = targetTile.check_if_barrier()
-            isTreasure = targetTile.check_is_treasure()
-            if isBarrier: 
-            # or targetTile.checkTilePlayer(): #Second check doesnt actually exist yet
-                print(f"entered tile is barrier or player: {targetTile.get_contents()}")
+            target_tile = board.get_coord_tile( x2,y2 ) # tile to move to
+            is_barrier, _ = target_tile.check_if_barrier()
+            is_treasure = target_tile.check_is_treasure()
+            if is_barrier: 
+            # or target_tile.checkTilePlayer(): #Second check doesnt actually exist yet
+                print(f"entered tile is barrier or player: {target_tile.get_contents()}")
                 return
-            elif ( isTreasure ): # 0 evals to false, 
-                treasure = targetTile.get_contents()
-                treasure.collect_treasure( board, targetTile, self )
+            elif ( is_treasure ): # 0 evals to false, 
+                treasure = target_tile.get_contents()
+                treasure.collect_treasure( board, target_tile, self )
             # else empty is only alternative (unspecified), 
             # no movement blocks then Given ALREADY PREVIOUSLY checked in bounds into
             # all successful move intos use the following code hence outside the if block
-            targetTile.set_to_player( self )
+            target_tile.set_to_player( self )
             self.set_coords( x2, y2 )
-            oldTile.clear_tile()
+            old_tile.clear_tile()
