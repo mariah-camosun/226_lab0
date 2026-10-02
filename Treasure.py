@@ -100,4 +100,4 @@ class Treasure:
         tile.clearTile()
         board.decrementTreasureCount()
         print(f"remaining treasures: {board.getTreasureCount()}")
-        print(f"player {player.getPlayerNumber()} collected: {treasureValue} treasure points.")
+        print(f"player {player.get_name()} collected: {treasureValue} treasure points.")

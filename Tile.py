@@ -151,4 +151,4 @@ class Tile:
         :param player: Player, the player being moved
         '''
         self.contents = player
-        self.symbol = player.getPlayerNumber()
+        self.symbol = player.get_name()

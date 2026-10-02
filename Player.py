@@ -58,7 +58,7 @@ class Player:
         cls.playerCount = count
 
     # Instance Variables: (name, symbol, score, column, row, gameBoard)
-    def getPlayerNumber(self)->int:
+    def get_name(self)->int:
         '''
         returns the name of this player instance
 

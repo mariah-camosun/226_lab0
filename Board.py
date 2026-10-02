@@ -383,4 +383,4 @@ class Board:
         '''
         players = self.getPlayers()
         for player in players:
-            print(f"player {player.getPlayerNumber()}: score: {player.get_score()}")
+            print(f"player {player.get_name()}: score: {player.get_score()}")
