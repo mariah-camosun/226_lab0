@@ -352,7 +352,6 @@ class Board:
 
 # Validation and checks
     def validateSize(self, size: int)->bool:
-    def validateSize(self, size: int)->bool:
         '''
         Validates size parameter for the game board is an integer > 0 and <= 30
         Validates size parameter for the game board is an integer > 0 and <= 30
@@ -367,10 +366,7 @@ class Board:
             raise ValueError
         else:
             return True
-        else:
-            return True
         
-    def validateBarrierCount (self, numBarriers: int)->bool:
     def validateBarrierCount (self, numBarriers: int)->bool:
         '''
         Validates numBarriers parameter is an integer > 0, and
@@ -389,10 +385,7 @@ class Board:
             raise ValueError
         else:
             return True
-        else:
-            return True
 
-    def validateTreasureCount (self, numTreasures: int)->bool:
     def validateTreasureCount (self, numTreasures: int)->bool:
         '''
         Validates numTreasures parameter is an integer > 0, and
@@ -408,10 +401,7 @@ class Board:
             raise ValueError
         # treasures must be <= 5% of board
         elif ( numTreasures > self.getTileCount() * .05 ):
-        elif ( numTreasures > self.getTileCount() * .05 ):
             raise ValueError
-        else:
-            return True
         else:
             return True
 
