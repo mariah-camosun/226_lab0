@@ -10,7 +10,7 @@ b = Board(10,5,4)
 print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
 print(b)
 while ( b.get_treasure_count() > 0 ):
-    players = b.getPlayers()
+    players = b.get_players()
     for player in players:
         player.move( )
     print(b)

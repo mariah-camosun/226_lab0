@@ -216,7 +216,7 @@ class Board:
             return self.getBoard()[row][column]
     # no set_coord_contents() - only done at init
 
-    def getPlayers( self )->list[Player]:
+    def get_players( self )->list[Player]:
         '''
         returns all current players as a list
 
@@ -381,6 +381,6 @@ class Board:
         '''
         prints out the current player scores for all players
         '''
-        players = self.getPlayers()
+        players = self.get_players()
         for player in players:
             print(f"player {player.get_name()}: score: {player.get_score()}")
