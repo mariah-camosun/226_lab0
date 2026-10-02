@@ -222,12 +222,6 @@ class Board:
 
         :return: list[Player], list of all current players
         '''
-    def getPlayers( self )->list[Player]:
-        '''
-        returns all current players as a list
-
-        :return: list[Player], list of all current players
-        '''
         output = "Current players: "
         for player in self.players:
             output += (str)(player)
