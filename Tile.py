@@ -88,7 +88,7 @@ class Tile:
         contents = self.getTileContents()
         isBarrier = isinstance( contents, Barrier)
         if isBarrier:
-            return True, contents.getIsOrigin()
+            return True, contents.get_is_origin()
         else:
             return False, False
 
@@ -122,22 +122,22 @@ class Tile:
         else:
             return True
 
-    def setBarrierTile(self, isOrigin: bool )->bool: # this methd needs some cleanup
+    def setBarrierTile(self, is_origin: bool )->bool: # this methd needs some cleanup
         '''
         Add or change tile contents to Barrier
         Includes checks for previous tile contents
 
-        :param isOrigin: is this barrier tile the origin of its barrier block
+        :param is_origin: is this barrier tile the origin of its barrier block
         :return: bool, isDuplicate - true if tile already contains barrier origin
         '''
-        bTile = Barrier( isOrigin ) #instanciate barrier
+        bTile = Barrier( is_origin ) #instanciate barrier
         prevContents = self.getTileContents()
 
-        if ( isOrigin == True ) and ( prevContents != None) and ( prevContents.getIsOrigin() == True ): 
+        if ( is_origin == True ) and ( prevContents != None) and ( prevContents.get_is_origin() == True ): 
             # barriers are first non-empy generated. 
             # Contents should only be empty or barrier
             return True
-        elif ( isOrigin == False ) and ( prevContents != None):
+        elif ( is_origin == False ) and ( prevContents != None):
             return False
         else:
             self.setTileContents( bTile )

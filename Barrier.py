@@ -2,13 +2,13 @@ class Barrier:
     # Symbol is the same for all tiles, including 'origin' and 'non-origin' types
     symbol = 'X' 
 
-    def __init__( self, isOrigin: bool )->None:
+    def __init__( self, is_origin: bool )->None:
         '''
         Creates a new barrier instance (not block), occupies 1 tile
 
-        :param isOrigin: bool, is this barrier the 'origin' or inital segment of the barrier
+        :param is_origin: bool, is this barrier the 'origin' or inital segment of the barrier
         '''
-        self.setIsOrigin( isOrigin ) # 'origin' is top left, 'initial' point of the barrier
+        self.set_is_origin( is_origin ) # 'origin' is top left, 'initial' point of the barrier
 
     def __str__( self )->str:
         '''
@@ -40,18 +40,18 @@ class Barrier:
         cls.symbol = symbol
 
 # instance variables
-    def getIsOrigin( self )->bool:
+    def get_is_origin( self )->bool:
         '''
-        get value of param: isOrigin
+        get value of param: is_origin
 
-        :return: isOrigin: bool, is this the 'origin' barrier tile for it's block
+        :return: is_origin: bool, is this the 'origin' barrier tile for it's block
         '''
-        return self.isOrigin
+        return self.is_origin
 
-    def setIsOrigin( self, isOrigin: bool )->None:
+    def set_is_origin( self, is_origin: bool )->None:
         '''
-        set value of param: isOrigin
+        set value of param: is_origin
 
-        :param isOrigin: bool, is this the 'origin' barrier tile for it's block
+        :param is_origin: bool, is this the 'origin' barrier tile for it's block
         '''
-        self.isOrigin = isOrigin
+        self.is_origin = is_origin
