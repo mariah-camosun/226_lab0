@@ -6,17 +6,8 @@ if TYPE_CHECKING:
     from Player import Player  
 
 class Treasure:
-# Requirements
-# 
-# # ~~~ Part C ~~~ 
-# general/copy to all [ ] copy reqts to ea class
-# [x] add detailed header comments to ALL methods 
-# [ ] make sure ALL instance variables of classes not accessed directly by outside code
-# [x] abv re-perspective. This class does NOT directly access any outside instance variables
-#          - eg. bad: board.player.row += 1
-#          - instead: board.move('D'), which will in turn call self.player.move('D')
-#     
     symbol = '$'
+    
     def __init__(self, treasureValue: int)->None:
         '''
         initialize new treasure item, set value to treasureValue

@@ -4,41 +4,9 @@ from typing import TYPE_CHECKING
 from Player import Player
 
 class Board:
-# Requirements
-# [x] parameters: size, numBarriers, numTreasures
-# [x] validates abv (3) parameters:
-#       [x] Value error* also typeError on: invalid entry, barriers >20%*board, treasures > 5%*board
-# [x] 'size x size collection' of Tiles. Each initially empty ('_')
-# [x] creates 'numBarriers' randomly placed barriers.
-#       [x] ea barrier is a 2x2 block of tiles
-#       [x] may partially, but not completely overlap
-#       [x] at edge of board should wrap edge
-# [x] create 'numTreasures' randomly placed treasures ('$')
-#       [x] must be placed on empty tiles only
-# [x] parameters: size, numBarriers, numTreasures
-# [x] validates abv (3) parameters:
-#       [x] Value error* also typeError on: invalid entry, barriers >20%*board, treasures > 5%*board
-# [x] 'size x size collection' of Tiles. Each initially empty ('_')
-# [x] creates 'numBarriers' randomly placed barriers.
-#       [x] ea barrier is a 2x2 block of tiles
-#       [x] may partially, but not completely overlap
-#       [x] at edge of board should wrap edge
-# [x] create 'numTreasures' randomly placed treasures ('$')
-#       [x] must be placed on empty tiles only
-# ~~~AFTER CREATE PLAYER~~~
-# [x] place one Player on a free Tile
-# [x] place one Player on a free Tile
+# TODO
+# [ ] fix functions that pass in unneccessary variables (eg. Boardsize)
 
-# ~~~ Part C ~~~ 
-# general/copy to all [x] copy reqts to ea class
-# [x] add detailed header comments to ALL methods 
-# general/copy to all [x] copy reqts to ea class
-# [x] add detailed header comments to ALL methods 
-# [ ] make sure ALL instance variables of classes not accessed directly by outside code
-# [x] abv re-perspective. This class does NOT directly access any outside instance variables
-# [x] abv re-perspective. This class does NOT directly access any outside instance variables
-#          - eg. bad: board.player.row += 1
-#          - instead: board.move('D'), which will in turn call self.player.move('D')
     def __init__(self, size: int, numBarriers: int, numTreasures: int)->None:
         '''
         Creates new board
@@ -130,8 +98,6 @@ class Board:
         create 1 'block' of barriers (2x2 tiles) at a random position
         includes check for complete overlap and increments barrierCound on success
 
-        # NOTE realized I can eliminate this parameter wherever it is used
-        :param boardSize: int, size of board
         # NOTE realized I can eliminate this parameter wherever it is used
         :param boardSize: int, size of board
         '''

@@ -7,50 +7,9 @@ if TYPE_CHECKING:
     from Treasure import Treasure    
 
 class Player:
-# Requirements
-# [x] 'name' string ( renamed .num to .name; function names left alone )
-#       [x] auto-set, first = 1, increments for ea new player - tested. only moves latest player curr
-#       [ ] should probably rename the get/set etc from number to name (not technically a req't)
-# [x] row and column coordinates ( renamed xCoord to row, yCoord to column; function names left alone)
-# [x] score
-# [x] ValueError if negative
-#       [x] row, column
-#       [x] score
-# [x] ValueError if outside the board boundary
-#       [x] row, column
-# [x] add_score() methd: param: score to be added to existing score
-# [x] get_score() methd: returns curr score
-# [x] move() methd: takes direction 'UDLR' to change player location
-#       [x] if move direction is not possible, nothing should happen
-#       [x] ValueError thrown if direction is invalid
-#               [x] not one of 4 options
-#               [x] if not *possible* but a valid UDLR, no ValueError, just nothing, CONFIRM
-# [x] __str__() methd:
+# TODO
+# [ ] should probably rename the get/set etc from number to name (not technically a req't)
 
-# ~~~ ~~~ while in the 'main, repeatedly' section, look more like move rules ~~~ ~~~
-#       [x] if given tile contains treasure, 
-#               [x] replace treasure with blank
-#               [x] add 1 to the Player's score
-#       [x] if the player would move into a barrier or off the board, do not move
-
-# ~~~ Part C ~~~ 
-# general/copy to all [x] copy reqts to ea class
-# [x] add detailed header comments to ALL methods 
-# [ ] make sure ALL instance variables of classes not accessed directly by outside code
-# [x] abv re-perspective. This class does NOT directly access any outside instance variables
-#          - eg. bad: board.player.row += 1
-#          - instead: board.move('D'), which will in turn call self.player.move('D')
-
-    playerCount = 0
-    # [x] auto-increment name as player number
-    # [x] contain coors of player
-    # [x] contains player score
-    # [x] __str__ methd
-    # [x] add_score method, 
-    # [x] get_score methods
-    # [x] move methd, takes a dir (UDLR) to chg player location if poss (otherwise ignored)
-    #       [x] fix: collect treasure properly
-    # [x] value error on: row, col, score negative; row col outside board
     def __init__(self, column:int, row:int, gameBoard)->None:
         '''
         create a new Player instance

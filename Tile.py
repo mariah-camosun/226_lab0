@@ -3,16 +3,9 @@ from Treasure import Treasure
 from Player import Player
 
 class Tile:
-# Requirements    
-# [x] keeps track of own contents
-
-# ~~~ Part C ~~~ 
-# general/copy to all [ ] copy reqts to ea class
-# [x] add detailed header comments to ALL methods 
-# [ ] make sure ALL instance variables of classes not accessed directly by outside code
-# [x] abv re-perspective. This class does NOT directly access any outside instance variables
-#          - eg. bad: board.player.row += 1
-#          - instead: board.move('D'), which will in turn call self.player.move('D')
+    # TODO
+    # [ ] rework setBarrierTile() -- too much duplication
+    
     def __init__(self)->None:
         '''
         Initialize a new tile & set contents to empty, symbol to match
