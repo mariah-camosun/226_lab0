@@ -68,61 +68,61 @@ class Tile:
         self.set_symbol( '_' )
 
 # Validation and Checks
-    def checkTileEmpty(self)->bool:
+    def check_empty(self)->bool:
         '''
         check if the tile is empty
 
-        :return: bool, isEmpty
+        :return: bool, is_empty
         '''
         if ( self.get_contents() == None ):
             return True
         else:
             return False
 
-    def checkTileBarrier(self)->tuple[bool, bool]:
+    def check_if_barrier(self)->tuple[bool, bool]:
         '''
         check if the tile contains a barrier, and if it is the origin of the barrier block
 
-        :return: tuple[ isBarrier, isBarrierOrigin ]
+        :return: tuple[ is_barrier, is_barrier_origin ]
         '''
         contents = self.get_contents()
-        isBarrier = isinstance( contents, Barrier)
-        if isBarrier:
+        is_barrier = isinstance( contents, Barrier)
+        if is_barrier:
             return True, contents.get_is_origin()
         else:
             return False, False
 
-    def checkTileTreasure(self)->int:
+    def check_is_treasure(self)->int:
         '''
         Find the value of a treasure. Returns 0 if no treasure.
         
         :return: value of treasure. Value of 0 is no treasure!
         '''
         contents = self.get_contents()
-        isTreasure = isinstance( contents, Treasure)
-        if isTreasure:
+        is_treasure = isinstance( contents, Treasure)
+        if is_treasure:
             return contents.get_value()
         else:
             return 0
 
-    def setTreasureTile( self, treasureValue: int )->bool:
+    def set_to_treasure( self, treasure_value: int )->bool:
         '''
         Add or change tile contents to Treasure
         Includes checks for previous tile contents
 
-        :param treasureValue: the point value for the treasure item
+        :param treasure_value: the point value for the treasure item
         :return: bool, isBlocked - true if tile already full
         '''
-        isEmpty = self.checkTileEmpty()
-        if ( isEmpty ):
-            tTile = Treasure( treasureValue )
-            self.set_contents( tTile )
-            self.set_symbol( tTile.get_symbol() )
+        is_empty = self.check_empty()
+        if ( is_empty ):
+            t_tile = Treasure( treasure_value )
+            self.set_contents( t_tile )
+            self.set_symbol( t_tile.get_symbol() )
             return False
         else:
             return True
 
-    def setBarrierTile(self, is_origin: bool )->bool: # this methd needs some cleanup
+    def set_to_barrier(self, is_origin: bool )->bool: # this methd needs some cleanup
         '''
         Add or change tile contents to Barrier
         Includes checks for previous tile contents
@@ -130,21 +130,21 @@ class Tile:
         :param is_origin: is this barrier tile the origin of its barrier block
         :return: bool, isDuplicate - true if tile already contains barrier origin
         '''
-        bTile = Barrier( is_origin ) #instanciate barrier
-        prevContents = self.get_contents()
+        b_tile = Barrier( is_origin ) #instanciate barrier
+        prev_contents = self.get_contents()
 
-        if ( is_origin == True ) and ( prevContents != None) and ( prevContents.get_is_origin() == True ): 
+        if ( is_origin == True ) and ( prev_contents != None) and ( prev_contents.get_is_origin() == True ): 
             # barriers are first non-empy generated. 
             # Contents should only be empty or barrier
             return True
-        elif ( is_origin == False ) and ( prevContents != None):
+        elif ( is_origin == False ) and ( prev_contents != None):
             return False
         else:
-            self.set_contents( bTile )
-            self.set_symbol( bTile.get_symbol() )
+            self.set_contents( b_tile )
+            self.set_symbol( b_tile.get_symbol() )
             return False
 
-    def addPlayerToTile( self, player: Player )->None: # NOT properly commented yet - player class still WIP
+    def set_to_player( self, player: Player )->None: # NOT properly commented yet - player class still WIP
         '''
         Move player into tile (add player to tile component)
 

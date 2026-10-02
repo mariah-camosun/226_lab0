@@ -221,8 +221,8 @@ class Player:
             return
         else:
             targetTile = board.getCoordContents( x2,y2 ) # tile to move to
-            isBarrier, _ = targetTile.checkTileBarrier()
-            isTreasure = targetTile.checkTileTreasure()
+            isBarrier, _ = targetTile.check_if_barrier()
+            isTreasure = targetTile.check_is_treasure()
             if isBarrier: 
             # or targetTile.checkTilePlayer(): #Second check doesnt actually exist yet
                 print(f"entered tile is barrier or player: {targetTile.get_contents()}")
@@ -233,6 +233,6 @@ class Player:
             # else empty is only alternative (unspecified), 
             # no movement blocks then Given ALREADY PREVIOUSLY checked in bounds into
             # all successful move intos use the following code hence outside the if block
-            targetTile.addPlayerToTile( self )
+            targetTile.set_to_player( self )
             self.set_coords( x2, y2 )
             oldTile.clear_tile()

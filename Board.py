@@ -102,7 +102,7 @@ class Board:
         '''
         while(True):
             originTile, x, y = self.randomizePosition()
-            isDuplicate = originTile.setBarrierTile( True )
+            isDuplicate = originTile.set_to_barrier( True )
             if ( not isDuplicate ):
                 break
 
@@ -120,9 +120,9 @@ class Board:
             y2 = y+1
 
         # add remaining barrier tiles of the 2x2 barrier
-        self.getCoordContents(x2,y).setBarrierTile( False )        
-        self.getCoordContents(x2,y2).setBarrierTile( False )        
-        self.getCoordContents(x,y2).setBarrierTile( False )        
+        self.getCoordContents(x2,y).set_to_barrier( False )        
+        self.getCoordContents(x2,y2).set_to_barrier( False )        
+        self.getCoordContents(x,y2).set_to_barrier( False )        
 
     def makeTreasures( self, numTreasures: int )->bool:
         '''
@@ -159,7 +159,7 @@ class Board:
             x = random.randint(0, boardSize-1)
             y = random.randint(0, boardSize-1)
             treasureTile = self.getCoordContents(x,y)
-            isDuplicate = treasureTile.setTreasureTile( 1 )
+            isDuplicate = treasureTile.set_to_treasure( 1 )
             if ( not isDuplicate ):
                 break
 
