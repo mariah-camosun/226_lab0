@@ -9,7 +9,7 @@ from Board import Board
 b = Board(10,5,4)
 print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
 print(b)
-while ( b.getTreasureCount() > 0 ):
+while ( b.get_treasure_count() > 0 ):
     players = b.getPlayers()
     for player in players:
         player.move( )

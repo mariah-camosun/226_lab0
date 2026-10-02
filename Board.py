@@ -164,7 +164,7 @@ class Board:
                 break
 
         #once successfull treasure, add 1 to treasureCount
-        self.setTreasureCount( self.getTreasureCount() + 1 )
+        self.setTreasureCount( self.get_treasure_count() + 1 )
 
     def makeNewPlayer( self )->Player:
         '''
@@ -245,7 +245,7 @@ class Board:
         '''
         self.tileCount = count
 
-    def getTreasureCount( self )->int:
+    def get_treasure_count( self )->int:
         '''
         get number of treasures on the board
 
@@ -276,7 +276,7 @@ class Board:
         self.barrierCount = count
 
 # expanded setters
-    def decrementTreasureCount( self ):
+    def decrement_treasure_count( self ):
         self.treasureCount -= 1
 
     def randomizePosition(self):

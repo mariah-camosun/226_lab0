@@ -60,7 +60,7 @@ class Tile:
         return self.symbol
 
 # expanded setters
-    def clearTile(self)->None:
+    def clear_tile(self)->None:
         '''
         Empty the Contents of the tile & change symbol to empty symbol
         '''

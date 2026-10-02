@@ -235,4 +235,4 @@ class Player:
             # all successful move intos use the following code hence outside the if block
             targetTile.addPlayerToTile( self )
             self.set_coords( x2, y2 )
-            oldTile.clearTile()
+            oldTile.clear_tile()

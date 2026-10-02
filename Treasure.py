@@ -97,7 +97,7 @@ class Treasure:
         '''
         treasure_value = self.get_value()
         player.add_score( treasure_value )
-        tile.clearTile()
-        board.decrementTreasureCount()
-        print(f"remaining treasures: {board.getTreasureCount()}")
+        tile.clear_tile()
+        board.decrement_treasure_count()
+        print(f"remaining treasures: {board.get_treasure_count()}")
         print(f"player {player.get_name()} collected: {treasure_value} treasure points.")
