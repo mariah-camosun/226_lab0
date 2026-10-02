@@ -176,9 +176,10 @@ class Board:
         create 1 treasure at a random position
         includes check for previous tile contents and increments treasureCount on success
 
-        # NOTE realized I can eleminate boardSize parameter wherever it is used
+        # NOTE realized I can eleminate boardSize parameter wherever it is used (WIP)
         :param boardsize: int, size of board
         '''
+        boardSize = self.getBoardSize()
         while(True):
             x = random.randint(0, boardSize-1)
             y = random.randint(0, boardSize-1)
@@ -312,23 +313,27 @@ class Board:
                 break
 
 # Validation and checks
-    def validateSize(self, size: int)->None:
+    def validateSize(self, size: int)->bool:
         '''
-        Validates size parameter is an integer > 0 and <= 30
+        Validates size parameter for the game board is an integer > 0 and <= 30
 
         :param size: int between [1,30], size of each side of the board (board is size x size)
+        :return: bool, isValid
         '''
         if not isinstance(size, int):
             raise TypeError
         elif ( not( 0 < size <= 30) ):
             raise ValueError
+        else:
+            return True
         
-    def validateBarrierCount (self, numBarriers: int)->None:
+    def validateBarrierCount (self, numBarriers: int)->bool:
         '''
         Validates numBarriers parameter is an integer > 0, and
         Does not occupy > 20% of the board
 
         :param numBarriers: int > 0 and < 20% of board, number of barrier blocks to make
+        :return: bool, isValid
         '''
         if not isinstance(numBarriers, int ):
             raise TypeError            
@@ -337,21 +342,26 @@ class Board:
         # barriers must be <= 20% of board; each barrier takes (up to) 4 tiles
         elif ( numBarriers*4 > ( self.getTileCount() * .2 ) ):
             raise ValueError
+        else:
+            return True
 
-    def validateTreasureCount (self, numTreasures: int)->None:
+    def validateTreasureCount (self, numTreasures: int)->bool:
         '''
         Validates numTreasures parameter is an integer > 0, and
         Does not occupy > 5% of the board
 
         :param numTreasures: int > 0 and < 5% of board, number of treasures to make
+        :return: bool, isValid
         '''
         if not isinstance(numTreasures, int ):
             raise TypeError
         elif ( numTreasures <= 0 ):
             raise ValueError
         # treasures must be <= 5% of board
-        if ( numTreasures > self.getTileCount() * .05 ):
+        elif ( numTreasures > self.getTileCount() * .05 ):
             raise ValueError
+        else:
+            return True
 
     def checkOnBoard( self, column, row )->bool:
         '''
