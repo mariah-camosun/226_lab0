@@ -7,22 +7,22 @@ class Board:
 # TODO
 # [ ] fix functions that pass in unneccessary variables (eg. board_size)
 
-    def __init__(self, size: int, barrier_count: int, treasure_count: int)->None:
+    def __init__(self, size: int, barrier_number: int, treasure_number: int)->None:
         '''
         Creates new board
 
         :param size: number of tiles per side of board
-        :param barrier_count: number of barrier blocks to generate (multiple tiles per block)
-        :param treasure_count: number of treasures to generate
+        :param barrier_number: number of barrier blocks to generate (multiple tiles per block)
+        :param treasure_number: number of treasures to generate
         '''
         self.size = size
-        self.barrier_count = barrier_count
-        self.treasure_count = treasure_count
+        self.barrier_number = barrier_number
+        self.treasure_number = treasure_number
         self.tile_count = 0
-        print(f"to make: {size}*{size}, {barrier_count} barriers, {treasure_count} treasures")
+        print(f"to make: {size}*{size}, {barrier_number} barriers, {treasure_number} treasures")
         self.make_empty_board()
-        self.make_barriers( barrier_count )
-        self.make_treasures( treasure_count )
+        self.make_barriers( barrier_number )
+        self.make_treasures( treasure_number )
         # For now, treating as single entry for simplicity
         # self.players = []
         # self.players.append( self.make_new_player() ) 
@@ -40,8 +40,8 @@ class Board:
                 output += tile.__str__()
                 output += "  "
             output += "\n"
-        output += "\nnum treasures remaining: " + (str)(self.treasureCount) + "\n"
-        self.reportPlayerScores()
+        output += "\nnum treasures remaining: " + (str)(self.treasure_count) + "\n"
+        self.report_player_scores()
         return output
 
 # init functions
@@ -54,45 +54,45 @@ class Board:
         size = self.get_size()
         self.grid = []
         try:
-            self.validateSize( size )
+            self.validate_size( size )
         except TypeError:
             print( "size = ", size, " is not an integer")
         except ValueError:
             print( f"size must be an integer in [1-30]; entered size is {size}" )
         else:
             self.set_tile_count( size*size )
-            self.setTreasureCount( 0 )
-            self.setBarrierCount( 0 )
+            self.set_treasure_count( 0 )
+            self.set_barrier_count( 0 )
 
             for item in range( size ):
                 self.grid.append( [ Tile() for _ in range (size) ] )
 
-    def make_barriers( self, barrier_count: int )->bool:
+    def make_barriers( self, barrier_number: int )->bool:
         '''
         generate board barriers
 
-        :param barrier_count: number of barrier blocks to make
-        :return: bool isValid
+        :param barrier_number: number of barrier blocks to make
+        :return: bool is_valid
         '''
         board_size = self.get_size()
         try: 
-            self.validateBarrierCount(barrier_count)
+            self.validate_barrier_number(barrier_number)
         except ValueError:
-            maxBlocks = (board_size*board_size)*.2/4
-            if barrier_count <= 0:
-                print( "must have at least 1 barrier block, and no more than ", maxBlocks)
+            max_blocks = (board_size*board_size)*.2/4
+            if barrier_number <= 0:
+                print( "must have at least 1 barrier block, and no more than ", max_blocks)
             else: 
-                print(f"{barrier_count} is too many barriers for board size, at current size, generate no more than ", maxBlocks)
+                print(f"{barrier_number} is too many barriers for board size, at current size, generate no more than ", max_blocks)
                 print("increase board size, or decrease number of barriers")
             return False
         except TypeError:
-            print(barrier_count + "is not a number")
+            print(barrier_number + "is not a number")
             return False
         else:            
-            for i in range( barrier_count ): 
-                self.makeOneBarrier( board_size )
+            for i in range( barrier_number ): 
+                self.make_one_barrier( board_size )
 
-    def makeOneBarrier( self, board_size: int )->None:
+    def make_one_barrier( self, board_size: int )->None:
         '''
         create 1 'block' of barriers (2x2 tiles) at a random position
         includes check for complete overlap and increments barrierCound on success
@@ -101,13 +101,13 @@ class Board:
         :param board_size: int, size of board
         '''
         while(True):
-            originTile, x, y = self.randomizePosition()
-            isDuplicate = originTile.set_to_barrier( True )
-            if ( not isDuplicate ):
+            origin_tile, x, y = self.randomize_position()
+            is_duplicate = origin_tile.set_to_barrier( True )
+            if ( not is_duplicate ):
                 break
 
         #once successfull barrier origin, add 1 to barrierCount
-        self.setBarrierCount( self.getBarrierCount()+1 )
+        self.set_barrier_count( self.get_barrier_count()+1 )
 
         # if barrier would overflow an edge, wrap overflow barrier tiles (set coord value = 0)
         if ( x+1 == board_size ):
@@ -124,47 +124,47 @@ class Board:
         self.get_coord_tile(x2,y2).set_to_barrier( False )        
         self.get_coord_tile(x,y2).set_to_barrier( False )        
 
-    def make_treasures( self, treasure_count: int )->bool:
+    def make_treasures( self, treasure_number: int )->bool:
         '''
         generate board treasures
 
-        :param treasure_count: number of treasures to make
-        :return: bool isValid
+        :param treasure_number: number of treasures to make
+        :return: bool is_valid
         '''
         board_size = self.get_size()               
         try: 
-            self.validateTreasureCount(treasure_count)
+            self.validate_treasure_number(treasure_number)
         except ValueError:
-            maxBlocks = (board_size*board_size)*.05
-            if treasure_count <= 0:
-                print( "must have at least 1 treasures, and no more than ", maxBlocks)
+            max_blocks = (board_size*board_size)*.05
+            if treasure_number <= 0:
+                print( "must have at least 1 treasures, and no more than ", max_blocks)
             else: 
-                print("Too many treasures for board size, at current size, generate no more than ", maxBlocks)
+                print("Too many treasures for board size, at current size, generate no more than ", max_blocks)
                 print("increase board size, or decrease number of treasures")
             return False
         except TypeError:
-            print(treasure_count + "is not a number")
+            print(treasure_number + "is not a number")
             return False
         else:            
-            for i in range( treasure_count ):
-                self.makeOneTreasure()
+            for i in range( treasure_number ):
+                self.make_one_treasure()
 
-    def makeOneTreasure( self )->None:
+    def make_one_treasure( self )->None:
         '''
         create 1 treasure at a random position
-        includes check for previous tile contents and increments treasureCount on success
+        includes check for previous tile contents and increments treasure_count on success
         '''
         board_size = self.get_size()
         while(True):
             x = random.randint(0, board_size-1)
             y = random.randint(0, board_size-1)
-            treasureTile = self.get_coord_tile(x,y)
-            isDuplicate = treasureTile.set_to_treasure( 1 )
-            if ( not isDuplicate ):
+            treasure_tile = self.get_coord_tile(x,y)
+            is_duplicate = treasure_tile.set_to_treasure( 1 )
+            if ( not is_duplicate ):
                 break
 
-        #once successfull treasure, add 1 to treasureCount
-        self.setTreasureCount( self.get_treasure_count() + 1 )
+        #once successfull treasure, add 1 to treasure_count
+        self.set_treasure_count( self.get_treasure_count() + 1 )
 
     def make_new_player( self )->Player:
         '''
@@ -178,14 +178,14 @@ class Board:
         :return: Player, the new player
         '''
         while True:
-            tile, column, row = self.randomizePosition()
+            tile, column, row = self.randomize_position()
             if tile.get_contents() == None:
                 # place new player instance into contents
-                newPlayer = tile.set_contents( Player( column, row, self ) )
-                return newPlayer
+                new_player = tile.set_contents( Player( column, row, self ) )
+                return new_player
 
 # Setters and Getters
-    def getBoard( self )->list[list[Tile]]:
+    def get_board( self )->list[list[Tile]]:
         '''
         returns the 2D array of board tiles
 
@@ -212,8 +212,8 @@ class Board:
         :param column: index of tile in row array
         :return: Tile
         '''
-        if self.checkOnBoard( column,row ):
-            return self.getBoard()[row][column]
+        if self.check_on_board( column,row ):
+            return self.get_board()[row][column]
     # no set_coord_contents() - only done at init
 
     def get_players( self )->list[Player]:
@@ -251,23 +251,23 @@ class Board:
 
         :return: number of treasures on the board
         ''' 
-        return self.treasureCount
-    def setTreasureCount( self, count: int )->None:
+        return self.treasure_count
+    def set_treasure_count( self, count: int )->None:
         '''
-        set treasureCount to value count
+        set treasure_count to value count
 
         :param count: number of treasures on the board
         '''
-        self.treasureCount = count
+        self.treasure_count = count
 
-    def getBarrierCount( self )->int:
+    def get_barrier_count( self )->int:
         '''
         get number of barrier blocks on the board
 
         :return: number of barrier blocks on the board
         '''         
         return self.barrierCount
-    def setBarrierCount( self, count: int )->None:
+    def set_barrier_count( self, count: int )->None:
         '''
         set barrierCount to value count
 
@@ -277,9 +277,9 @@ class Board:
 
 # expanded setters
     def decrement_treasure_count( self ):
-        self.treasureCount -= 1
+        self.treasure_count -= 1
 
-    def randomizePosition(self):
+    def randomize_position(self):
         '''
         get a random board position and return tile, if any
 
@@ -288,33 +288,33 @@ class Board:
         board_size = self.get_size()
         column = random.randint(0, board_size-1)
         row = random.randint(0, board_size-1)
-        prevTile = self.get_coord_tile( column, row )
-        return prevTile, column, row
+        prev_tile = self.get_coord_tile( column, row )
+        return prev_tile, column, row
 
-    def placeInRandomEmpty( self, itemToPlace ):
+    def place_in_random_empty( self, item_to_place ):
         '''
         Places an item in a random empty tile. Loops until successfully placed.
 
-        :param itemToPlace: item to place into the game Tile. Acceptable classes: Player, Barrier, Treasure
+        :param item_to_place: item to place into the game Tile. Acceptable classes: Player, Barrier, Treasure
         Places an item in a random empty tile. Loops until successfully placed.
 
-        :param itemToPlace: item to place into the game Tile. Acceptable classes: Player, Barrier, Treasure
+        :param item_to_place: item to place into the game Tile. Acceptable classes: Player, Barrier, Treasure
         '''
         while True:
-            tile, _, _ = self.randomizePosition()
+            tile, _, _ = self.randomize_position()
             if tile.get_contents() == None:
-                tile.set_contents( itemToPlace )
+                tile.set_contents( item_to_place )
                 break
 
 # Validation and checks
-    def validateSize(self, size: int)->bool:
+    def validate_size(self, size: int)->bool:
         '''
         Validates size parameter for the game board is an integer > 0 and <= 30
         Validates size parameter for the game board is an integer > 0 and <= 30
 
         :param size: int between [1,30], size of each side of the board (board is size x size)
-        :return: bool, isValid
-        :return: bool, isValid
+        :return: bool, is_valid
+        :return: bool, is_valid
         '''
         if not isinstance(size, int):
             raise TypeError
@@ -323,45 +323,45 @@ class Board:
         else:
             return True
         
-    def validateBarrierCount (self, barrier_count: int)->bool:
+    def validate_barrier_number (self, barrier_number: int)->bool:
         '''
-        Validates barrier_count parameter is an integer > 0, and
+        Validates barrier_number parameter is an integer > 0, and
         Does not occupy > 20% of the board
 
-        :param barrier_count: int > 0 and < 20% of board, number of barrier blocks to make
-        :return: bool, isValid
-        :return: bool, isValid
+        :param barrier_number: int > 0 and < 20% of board, number of barrier blocks to make
+        :return: bool, is_valid
+        :return: bool, is_valid
         '''
-        if not isinstance(barrier_count, int ):
+        if not isinstance(barrier_number, int ):
             raise TypeError            
-        elif ( barrier_count <= 0 ):
+        elif ( barrier_number <= 0 ):
             raise ValueError
         # barriers must be <= 20% of board; each barrier takes (up to) 4 tiles
-        elif ( barrier_count*4 > ( self.get_tile_count() * .2 ) ):
+        elif ( barrier_number*4 > ( self.get_tile_count() * .2 ) ):
             raise ValueError
         else:
             return True
 
-    def validateTreasureCount (self, treasure_count: int)->bool:
+    def validate_treasure_number (self, treasure_number: int)->bool:
         '''
-        Validates treasure_count parameter is an integer > 0, and
+        Validates treasure_number parameter is an integer > 0, and
         Does not occupy > 5% of the board
 
-        :param treasure_count: int > 0 and < 5% of board, number of treasures to make
-        :return: bool, isValid
-        :return: bool, isValid
+        :param treasure_number: int > 0 and < 5% of board, number of treasures to make
+        :return: bool, is_valid
+        :return: bool, is_valid
         '''
-        if not isinstance(treasure_count, int ):
+        if not isinstance(treasure_number, int ):
             raise TypeError
-        elif ( treasure_count <= 0 ):
+        elif ( treasure_number <= 0 ):
             raise ValueError
         # treasures must be <= 5% of board
-        elif ( treasure_count > self.get_tile_count() * .05 ):
+        elif ( treasure_number > self.get_tile_count() * .05 ):
             raise ValueError
         else:
             return True
 
-    def checkOnBoard( self, column, row )->bool:
+    def check_on_board( self, column, row )->bool:
         '''
         checks if coordinates are within the gameboard
 
@@ -374,7 +374,7 @@ class Board:
             return False
 
 # Utility
-    def reportPlayerScores(self):
+    def report_player_scores(self):
         '''
         prints out the current player scores for all players
         '''
