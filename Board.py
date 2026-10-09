@@ -20,7 +20,7 @@ class Board:
         self.treasure_number = treasure_number
         self.tile_count = 0
         print(f"to make: {size}*{size}, {barrier_number} barriers, {treasure_number} treasures")
-        self.make_empty_board()
+        self.make_empty_board( size )
         self.make_barriers( barrier_number )
         self.make_treasures( treasure_number )
         # For now, treating as single entry for simplicity
@@ -45,21 +45,21 @@ class Board:
         return output
 
 # init functions
-    def make_empty_board(self):
+    def make_empty_board(self, size):
         '''
         make an empty board of size x size tiles
         sets tile count to size**2, clears treasure and barrier counts
         '''
         # create size x size collection of Tiles; ea empty (initially)
-        size = self.get_size()
-        self.grid = []
         try:
             self.validate_size( size )
         except TypeError:
-            print( "size = ", size, " is not an integer")
+            raise
         except ValueError:
-            print( f"size must be an integer in [1-30]; entered size is {size}" )
+            raise
         else:
+            self.size = size
+            self.grid = []
             self.set_tile_count( size*size )
             self.set_treasure_count( 0 )
             self.set_barrier_count( 0 )
@@ -67,7 +67,7 @@ class Board:
             for item in range( size ):
                 self.grid.append( [ Tile() for _ in range (size) ] )
 
-    def make_barriers( self, barrier_number: int )->bool:
+    def make_barriers( self, barrier_number: int )->None:
         '''
         generate board barriers
 
@@ -78,16 +78,16 @@ class Board:
         try: 
             self.validate_barrier_number(barrier_number)
         except ValueError:
-            max_blocks = (board_size*board_size)*.2/4
-            if barrier_number <= 0:
-                print( "must have at least 1 barrier block, and no more than ", max_blocks)
-            else: 
-                print(f"{barrier_number} is too many barriers for board size, at current size, generate no more than ", max_blocks)
-                print("increase board size, or decrease number of barriers")
-            return False
+            # max_blocks = (board_size*board_size)*.2/4
+            # if barrier_number <= 0:
+            #     print( "must have at least 1 barrier block, and no more than ", max_blocks)
+            # else: 
+            #     print(f"{barrier_number} is too many barriers for board size, at current size, generate no more than ", max_blocks)
+            #     print("increase board size, or decrease number of barriers")
+            raise
         except TypeError:
-            print(barrier_number + "is not a number")
-            return False
+            # print(barrier_number + "is not a number")
+            raise
         else:            
             for i in range( barrier_number ): 
                 self.make_one_barrier( board_size )
@@ -135,16 +135,18 @@ class Board:
         try: 
             self.validate_treasure_number(treasure_number)
         except ValueError:
-            max_blocks = (board_size*board_size)*.05
-            if treasure_number <= 0:
-                print( "must have at least 1 treasures, and no more than ", max_blocks)
-            else: 
-                print("Too many treasures for board size, at current size, generate no more than ", max_blocks)
-                print("increase board size, or decrease number of treasures")
-            return False
+            raise
+            # max_blocks = (board_size*board_size)*.05
+            # if treasure_number <= 0:
+            #     print( "must have at least 1 treasures, and no more than ", max_blocks)
+            # else: 
+            #     print("Too many treasures for board size, at current size, generate no more than ", max_blocks)
+            #     print("increase board size, or decrease number of treasures")
+            # return False
         except TypeError:
-            print(treasure_number + "is not a number")
-            return False
+            raise
+            # print(treasure_number + "is not a number")
+            # return False
         else:            
             for i in range( treasure_number ):
                 self.make_one_treasure()
@@ -317,9 +319,9 @@ class Board:
         :return: bool, is_valid
         '''
         if not isinstance(size, int):
-            raise TypeError
+            raise TypeError("Size given is not an integer")
         elif ( not( 0 < size <= 30) ):
-            raise ValueError
+            raise ValueError("Size must be at least 5.")
         else:
             return True
         
@@ -333,12 +335,12 @@ class Board:
         :return: bool, is_valid
         '''
         if not isinstance(barrier_number, int ):
-            raise TypeError            
-        elif ( barrier_number <= 0 ):
-            raise ValueError
+            raise TypeError("Barrier_number given needs to be an integer")
+        elif ( barrier_number < 1 ):
+            raise ValueError("Must have 1 or more barriers")
         # barriers must be <= 20% of board; each barrier takes (up to) 4 tiles
         elif ( barrier_number*4 > ( self.get_tile_count() * .2 ) ):
-            raise ValueError
+            raise ValueError("Too many barriers. Either increase board size, or decrease barrier_number")
         else:
             return True
 
@@ -349,15 +351,14 @@ class Board:
 
         :param treasure_number: int > 0 and < 5% of board, number of treasures to make
         :return: bool, is_valid
-        :return: bool, is_valid
         '''
         if not isinstance(treasure_number, int ):
-            raise TypeError
+            raise TypeError("treasure_number given needs to be an integer")
         elif ( treasure_number <= 0 ):
-            raise ValueError
+            raise ValueError("Cannot have negative treasures")
         # treasures must be <= 5% of board
         elif ( treasure_number > self.get_tile_count() * .05 ):
-            raise ValueError
+            raise ValueError("Too many treasures. Either increase board size, or decrease treasure_number")
         else:
             return True
 
