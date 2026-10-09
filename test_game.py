@@ -11,6 +11,8 @@ def test_player():
     assert p.get_score() == 3
     p.add_score(10)
     assert p.get_score() == 13
+    p.set_score(6)
+    assert p.get_score() == 6
     p.move(constants.UP) #, constants.BLANK)
     assert p.get_coords() == (2, 0)
 
