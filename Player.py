@@ -9,18 +9,19 @@ if TYPE_CHECKING:
 class Player:
     player_count = 0
 
-    def __init__(self, column:int, row:int, game_board)->None:
+    def __init__(self, column:int, row:int, game_board, initial_score = 0)->None:
         '''
         create a new Player instance
 
         :param column: int, the x-position of the player
         :param row: int, the y-position of the player
         :param game_board: the game_board the player is on
+        :param initial_score: int, starting score for player. Defaults to 0
         '''
         self.increment_player_count()
         self.name = self.get_player_count()
         self.symbol = (str)(self.name)
-        self.score = 0
+        self.score = initial_score
         self.row = row
         self.column = column
         self.game_board = game_board
