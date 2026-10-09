@@ -17,3 +17,6 @@ def test_player():
 def test_board():
     with pytest.raises(ValueError, match='Size must be at least 5.'):
         b = Board(0, 0, 0)
+
+    with pytest.raises(ValueError, match='Size must be at least 5.'):
+        b = Board(5, 0, 0)
