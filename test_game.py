@@ -45,4 +45,28 @@ def test_board():
     with pytest.raises(ValueError, match='Cannot have negative treasures'):
         b = Board(5, 1, -5)
     with pytest.raises(ValueError, match='Too many treasures. Either increase board size, or decrease treasure_number'):
-        b = Board(5, 1, 20)    
+        b = Board(5, 1, 20)
+
+    # make 1 barrier, treasure, player
+        b = Board(5, 1, 1)
+        boardOutputArr = (b.__str__()).replace("\n", "").replace("_", "").replace(" ", "").split("n", 1)
+        boardOutput = boardOutputArr[0]
+        assert boardOutput.count("X") == 4
+        assert boardOutput.count("$") == 1
+        assert boardOutput.count("1") == 1
+
+    # make 2 barrier, 5 treasure, 1 player
+        b = Board(5, 2, 5)
+        boardOutputArr = (b.__str__()).replace("\n", "").replace("_", "").replace(" ", "").split("n", 1)
+        boardOutput = boardOutputArr[0]
+        assert 6 <= boardOutput.count("X") <= 2*4 
+        assert boardOutput.count("$") == 5
+        assert boardOutput.count("1") == 1
+
+    # make 4 barrier, 5 treasure, 1 player
+        b = Board(5, 4, 5)
+        boardOutputArr = (b.__str__()).replace("\n", "").replace("_", "").replace(" ", "").split("n", 1)
+        boardOutput = boardOutputArr[0]
+        assert 10 <= boardOutput.count("X") <= 5*4 
+        assert boardOutput.count("$") == 5
+        assert boardOutput.count("1") == 1
