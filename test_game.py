@@ -18,6 +18,8 @@ def test_board():
     # Size
     with pytest.raises(ValueError, match='Size must be at least 5.'):
         b = Board(0, 0, 0)
+    with pytest.raises(TypeError, match='Size given is not an integer'):
+        b = Board("a", 0, 0)
 
     # Barrier Number
     with pytest.raises(TypeError, match='Barrier_number given needs to be an integer'):
