@@ -4,7 +4,7 @@ from Board import Board
 from Player import Player
 
 def test_player():
-    b = Board(10,0,4)
+    b = Board(10,1,4)
 
     p = Player(2, 1, b, 3) #column row (x,y), og given code was row column
     assert p.get_coords() == (2,1)
@@ -14,6 +14,23 @@ def test_player():
     p.move(constants.UP) #, constants.BLANK)
     assert p.get_coords() == (2, 0)
 
-# def test_board():
-#     with pytest.raises(ValueError, match='Size must be at least 5.'):
-#     b = Board(0, 0, 0)
+def test_board():
+    # Size
+    with pytest.raises(ValueError, match='Size must be at least 5.'):
+        b = Board(0, 0, 0)
+
+    # Barrier Number
+    with pytest.raises(TypeError, match='Barrier_number given needs to be an integer'):
+        b = Board(5, "a", 0)
+    with pytest.raises(ValueError, match='Must have 1 or more barriers'):
+        b = Board(5, 0, 0)
+    with pytest.raises(ValueError, match='Too many barriers. Either increase board size, or decrease barrier_number'):
+        b = Board(5, 20, 0)
+
+    # Treasure Number
+    with pytest.raises(TypeError, match='treasure_number given needs to be an integer'):
+        b = Board(5, 1, "a")
+    with pytest.raises(ValueError, match='Cannot have negative treasures'):
+        b = Board(5, 1, -5)
+    with pytest.raises(ValueError, match='Too many treasures. Either increase board size, or decrease treasure_number'):
+        b = Board(5, 1, 20)    
