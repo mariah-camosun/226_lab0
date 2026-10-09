@@ -4,7 +4,7 @@ from Board import Board
     # [ ] update draw.io class diagram to contain all functions
     # [x] should probably rename the Player.get/set etc from number to name (not technically a req't)
     # [~] fix functions that pass in unneccessary variables (eg. Board.Boardsize)
-    # [~] CHANGE EVERYTHING to snake case (function names, variables)
+    # [x] CHANGE EVERYTHING to snake case (function names, variables)
 
 b = Board(10,5,4)
 print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
