@@ -3,6 +3,12 @@ import pytest
 from Board import Board
 from Player import Player
 
+# TODO
+# [ ] test for:
+#       [ ] every exception, 
+#       [ ] every public method, and 
+#       [ ] for normal game play
+
 def test_player():
     b = Board(10,1,4)
 
@@ -17,6 +23,8 @@ def test_player():
     assert p.get_coords() == (2, 0)
 
 def test_board():
+#   [ ]  
+    # -------testing validation--------
     # Size
     with pytest.raises(ValueError, match='Size must be at least 5.'):
         b = Board(0, 0, 0)
