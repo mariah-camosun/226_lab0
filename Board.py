@@ -336,8 +336,8 @@ class Board:
         '''
         if not isinstance(barrier_number, int ):
             raise TypeError("Barrier_number given needs to be an integer")
-        elif ( barrier_number < 1 ):
-            raise ValueError("Must have 1 or more barriers")
+        elif ( barrier_number < 0 ):
+            raise ValueError("Cannot have negative barriers")
         # barriers must be <= 20% of board; each barrier takes (up to) 4 tiles
         elif ( barrier_number*4 > ( self.get_tile_count() * .2 ) ):
             raise ValueError("Too many barriers. Either increase board size, or decrease barrier_number")

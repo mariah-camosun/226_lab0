@@ -24,8 +24,8 @@ def test_board():
     # Barrier Number
     with pytest.raises(TypeError, match='Barrier_number given needs to be an integer'):
         b = Board(5, "a", 0)
-    with pytest.raises(ValueError, match='Must have 1 or more barriers'):
-        b = Board(5, 0, 0)
+    with pytest.raises(ValueError, match='Cannot have negative barriers'):
+        b = Board(5, -5, 0)
     with pytest.raises(ValueError, match='Too many barriers. Either increase board size, or decrease barrier_number'):
         b = Board(5, 20, 0)
 
