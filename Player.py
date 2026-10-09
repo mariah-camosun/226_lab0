@@ -184,12 +184,13 @@ class Player:
             else:
                 return direction
 
-    def move( self )->None: # direction not a param, as includes user prompt
+    def move( self, direction=None )->None: # direction not a param, as includes user prompt
         '''
         Move the current player instance. Includes prompting and validation.
         Checks contents of target tile, and moves or not as appropriate.
         '''
-        direction = self.get_move_direction() # direction moving
+        if direction==None:
+            direction = self.get_move_direction() # direction moving
 
         board = self.get_board()
         x,y = self.get_coords() # coordinates of initial position
