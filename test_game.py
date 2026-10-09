@@ -14,6 +14,6 @@ def test_player():
     p.move(constants.UP) #, constants.BLANK)
     assert p.get_coords() == (2, 0)
 
-# def test_board():
-#     with pytest.raises(ValueError, match='Size must be at least 5.'):
-#     b = Board(0, 0, 0)
+def test_board():
+    with pytest.raises(ValueError, match='Size must be at least 5.'):
+        b = Board(0, 0, 0)

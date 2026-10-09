@@ -15,7 +15,10 @@ class Board:
         :param barrier_number: number of barrier blocks to generate (multiple tiles per block)
         :param treasure_number: number of treasures to generate
         '''
-        self.size = size
+        if self.validate_size(size):
+            self.size = size
+        else: 
+            return
         self.barrier_number = barrier_number
         self.treasure_number = treasure_number
         self.tile_count = 0
@@ -58,7 +61,7 @@ class Board:
         except TypeError:
             print( "size = ", size, " is not an integer")
         except ValueError:
-            print( f"size must be an integer in [1-30]; entered size is {size}" )
+            print( f"size must be an integer in [5-30]; entered size is {size}" )
         else:
             self.set_tile_count( size*size )
             self.set_treasure_count( 0 )
@@ -309,17 +312,17 @@ class Board:
 # Validation and checks
     def validate_size(self, size: int)->bool:
         '''
-        Validates size parameter for the game board is an integer > 0 and <= 30
-        Validates size parameter for the game board is an integer > 0 and <= 30
+        Validates size parameter for the game board is an integer >= 5 and <= 30
+        Validates size parameter for the game board is an integer >= 5 and <= 30
 
-        :param size: int between [1,30], size of each side of the board (board is size x size)
+        :param size: int between [5,30], size of each side of the board (board is size x size)
         :return: bool, is_valid
         :return: bool, is_valid
         '''
         if not isinstance(size, int):
             raise TypeError
-        elif ( not( 0 < size <= 30) ):
-            raise ValueError
+        elif ( not( 5 < size <= 30) ):
+            raise ValueError("Size must be at least 5.")
         else:
             return True
         
@@ -334,7 +337,7 @@ class Board:
         '''
         if not isinstance(barrier_number, int ):
             raise TypeError            
-        elif ( barrier_number <= 0 ):
+        elif ( barrier_number < 0 ):
             raise ValueError
         # barriers must be <= 20% of board; each barrier takes (up to) 4 tiles
         elif ( barrier_number*4 > ( self.get_tile_count() * .2 ) ):
