@@ -86,7 +86,7 @@ class Board:
                 output += "  "
             output += "\n"
         output += "\nnum treasures remaining: " + (str)(self.treasure_count) + "\n"
-        self.report_player_scores()
+        output += self.report_player_scores()
         return output
 
 # init functions
@@ -279,12 +279,6 @@ class Board:
 
         :return: list[Player], list of all current players
         '''
-        output = "Current players: "
-        for player in self.players:
-            output += (str)(player)
-            output += ', '
-        trimmed = output[:-2]
-        print(trimmed)
         return self.players
     #no set_players() - instead, make_new_player()
 
@@ -361,7 +355,7 @@ class Board:
         '''
         if not isinstance(size, int):
             raise TypeError("Size given is not an integer")
-        elif ( not( 0 < size <= 30) ):
+        elif ( not( 5 <= size <= 30) ):
             raise ValueError("Size must be at least 5.")
         else:
             return True
@@ -416,16 +410,30 @@ class Board:
             return False
 
 # Utility
+    def show_players( self )->None:
+        '''
+        print to terminal all current players as a list
+        '''
+        output = "Current players: "
+        for player in self.players:
+            output += (str)(player)
+            output += ', '
+        trimmed = output[:-2]
+        print(trimmed)
+
     def report_player_scores(self):
         '''
-        prints out the current player scores for all players
-        '''
-        '''
-        prints out the current player scores for all players
+        returns current player scores for all players
         '''
         players = self.get_players()
+        output = ""
         for player in players:
-            self.report_a_player_score( player )
+            output += self.report_a_player_score( player )
+            output += "\n"
+        return output
 
-    def report_a_player_score(self, player):
-        print(f"player {player.get_name()} score: {player.get_score()}")
+    def report_a_player_score(self, player)->str:
+        '''
+        returns current player score for 1 players
+        '''        
+        return str(f"player {player.get_name()} score: {player.get_score()}")

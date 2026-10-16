@@ -543,33 +543,23 @@ def test_board_2player(capsys):
     Player.set_player_count(8)
 
     # get player array
-    capsys.readouterr() # clear
     playerList = m.get_players()
-    capture = capsys.readouterr()
-    assert capture.out.strip() == "Current players: 1, 2, 9"
     p1 = playerList[0]    # create p1
     assert playerList[1] == p2
     assert playerList[2] == p3
 
+    capsys.readouterr() # clear
+    m.show_players()    
+    capture = capsys.readouterr()
+    assert capture.out.strip() == "Current players: 1, 2, 9"
+
     p1.set_score(-30)
     p2.set_score(83)
-    capsys.readouterr()
+    assert m.report_a_player_score( p1 ) == "player 1 score: -30"
+    assert m.report_a_player_score( p2 ) == "player 2 score: 83"
+    assert m.report_a_player_score( p3 ) == "player 9 score: 0"
 
-    score = m.report_a_player_score( p1 )
-    capture = capsys.readouterr()
-    assert capture.out.strip() == "player 1 score: -30"
-
-    score = m.report_a_player_score( p2 )
-    capture = capsys.readouterr()
-    assert capture.out.strip() == "player 2 score: 83"
-
-    score = m.report_a_player_score( p3 )
-    capture = capsys.readouterr()
-    assert capture.out.strip() == "player 9 score: 0"
-
-    score = m.report_player_scores()
-    capture = capsys.readouterr()
-    assert capture.out.strip() == "Current players: 1, 2, 9\nplayer 1 score: -30\nplayer 2 score: 83\nplayer 9 score: 0"
+    assert m.report_player_scores() == "player 1 score: -30\nplayer 2 score: 83\nplayer 9 score: 0\n"
 
 def test_barrier_increase_wrap_probability():
     b = Board(5,1,1)
