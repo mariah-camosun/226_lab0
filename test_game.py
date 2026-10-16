@@ -6,16 +6,18 @@ from Barrier import Barrier
 from Treasure import Treasure
 from Tile import Tile
 
-# TODO
-# [ ] test for:
-#       [ ] every exception, 
-#       [ ] every public method, and 
-#       [ ] for normal game play
+def set_monkeypatch( input_values, monkeypatch ):
+    user_inputs = iter( input_values )
+    monkeypatch.setattr("builtins.input", lambda _: next(user_inputs))
 
-def test_player():
+# ---------------------Testing Player---------------------------------
+def test_player_score():
     b = Board(10,1,4)
+    # changed from original (row, column, board_size/board, initial score) 
+    # to: (column, row, board_size/board, initial score) for consistency w/ my code (x,y) order
+    p = Player(2, 1, b, 3) 
 
-    p = Player(2, 1, b, 3) #column row (x,y), og given code was row column
+    # testing: set, get, add score & get_coords()
     assert p.get_coords() == (2,1)
     assert p.get_score() == 3
     p.add_score(10)
@@ -25,15 +27,49 @@ def test_player():
     p.move(constants.UP) #, constants.BLANK)
     assert p.get_coords() == (2, 0)
 
-    # testing score & score reporting
-    # no validate score, as set is always set by the program
+def test_player_multi_creation():
+    # testing: get_players(), get_player_count() and make_new_player() 
     m = Board(5, 0, 1)
+    playerList = m.get_players()
+    p1 = playerList[0]
+
     assert Player.get_player_count() == 1
 
+    p2 = m.make_new_player()
+    assert Player.get_player_count() == 2
+
+    Player.set_player_count( 8 )
+    assert Player.get_player_count() == 8
+
+    p3 = m.make_new_player()
+    assert Player.get_player_count() == 9
+    assert p3.get_name() == 9
+
+    assert p1.get_board() == m
+    assert p2.get_board() == m
+
+    # check name, symbol, print output
+    # there is no 'set name' or 'set symbol'
+    assert p1.get_name() == 1
+    assert p1.get_symbol() == "1"
+    assert str(p1) == "1"
+
+    assert p2.get_name() == 2
+    assert p2.get_symbol() == "2"
+    assert str(p2) == "2"
+
+    assert p3.get_name() == 9
+    assert p3.get_symbol() == "9"
+    assert str(p3) == "9"
+
+def test_player_multi_score():
+    m = Board(5, 0, 1)
     playerList = m.get_players()
     p1 = playerList[0]
     p2 = m.make_new_player()
-    assert Player.get_player_count() == 2
+
+    # testing score & score reporting for 2p
+    # no validate score, as set is always set by the program
     assert p1.get_score() == 0
     assert p2.get_score() == 0
 
@@ -46,12 +82,37 @@ def test_player():
     p2.add_score(10)
     assert p1.get_score() == 0
     assert p2.get_score() == 93
+
     p2.add_score(-100)
     assert p2.get_score() == -7
 
-    #only called by move, so no validation at this level
+def test_player_coords():
+    b = Board(10,1,4)
+    p = Player(2, 1, b, 3) 
+
+    # testing: coords set above correctly, and get_coords()
+    assert p.get_coords() == (2,1)
+
+    # testing: move & get_coords()
+    p.move(constants.UP) #, constants.BLANK)
+    assert p.get_coords() == (2, 0)
+
+    # testing standard initial player creation 
+    m = Board(5, 0, 1)
+    playerList = m.get_players()
+    p1 = playerList[0]
+
+    # clear coords to set to
+    b.get_coord_tile(2,1).clear_tile()
+    b.get_coord_tile(3,2).clear_tile()
+    # test: get & set coords
+    # only called by move, so no validation at this level
     p1.set_coords(2,1)
     assert p1.get_coords() == (2,1)
+    p1.set_coords(3,2)
+    assert p1.get_coords() == (3,2)
+
+    # test: validation of coords
     assert p1.validate_coords( 0, 0 ) == True
     assert p1.validate_coords( 3, 3 ) == True
     assert p1.validate_coords( 4, 4 ) == True
@@ -68,49 +129,30 @@ def test_player():
     with pytest.raises(ValueError):
         p1.validate_coords( 11, 3 )
 
-    #no set name, symbol
-    assert p1.get_name() == 1
-    assert p1.get_symbol() == "1"
-    assert str(p1) == "1"
-
-    assert p2.get_name() == 2
-    assert p2.get_symbol() == "2"
-    assert str(p2) == "2"
-
-    Player.set_player_count( 99 )
-    assert Player.get_player_count() == 99 
-    Player.set_player_count( 2 )
-
-    assert p1.get_board() == m
-    assert p2.get_board() == m
-
-    # test movement
-
-def set_monkeypatch( input_values, monkeypatch ):
-    user_inputs = iter( input_values )
-    monkeypatch.setattr("builtins.input", lambda _: next(user_inputs))
-
-def test_getMovePlayer( monkeypatch ): # under 'player'cover
+def test_Player_getMoveDir( monkeypatch ): # under 'player'cover
     b = Board(5,0,1)
     p1 = Player( 3,3,b )
 
     set_monkeypatch(["a", "uu", 1, "D"], monkeypatch)
-    p1.get_move_direction( ) == "D"
+    p1.get_move_direction( ) == constants.DOWN
 
     set_monkeypatch(["U", "u", "D", "d", "L", "l", "R", "r"], monkeypatch)
-    assert p1.get_move_direction() == "U"
-    assert p1.get_move_direction() == "U"
-    assert p1.get_move_direction() == "D"
-    assert p1.get_move_direction() == "D"
-    assert p1.get_move_direction() == "L"
-    assert p1.get_move_direction() == "L"
-    assert p1.get_move_direction() == "R"
-    assert p1.get_move_direction() == "R"
+    assert p1.get_move_direction() == constants.UP
+    assert p1.get_move_direction() == constants.UP
+    assert p1.get_move_direction() == constants.DOWN
+    assert p1.get_move_direction() == constants.DOWN
+    assert p1.get_move_direction() == constants.LEFT
+    assert p1.get_move_direction() == constants.LEFT
+    assert p1.get_move_direction() == constants.RIGHT
+    assert p1.get_move_direction() == constants.RIGHT
 
-def test_movePlayer(monkeypatch): # under 'player'
+def test_player_move(monkeypatch): # under 'player'
     b = Board(5,0,1)
 
     # make sure that tiles are free to start
+    b.get_coord_tile(1,0).clear_tile()
+    b.get_coord_tile(1,1).clear_tile()
+    b.get_coord_tile(1,2).clear_tile()
     b.get_coord_tile(0,0).clear_tile()
     b.get_coord_tile(0,1).clear_tile()
     b.get_coord_tile(0,2).clear_tile()
@@ -120,58 +162,85 @@ def test_movePlayer(monkeypatch): # under 'player'
     b.get_coord_tile(2,4).clear_tile()
     b.get_coord_tile(3,4).clear_tile()
     b.get_coord_tile(4,4).clear_tile()
+    b.get_coord_tile(4,3).clear_tile()
 
-    # activeTile
+    # create objects to interact with
     b1 = b.get_coord_tile( 1, 2 ).set_to_barrier(True) #col,row
     t1 = b.get_coord_tile( 0, 0 ).set_to_treasure( 1 )
 
-    p = Player(1, 1, b, 0) #column row (x,y), og given code was row column 
+    # specify player (2) location
+    p = Player(1, 1, b, 0)
     assert p.get_coords() == (1,1)
     assert p.get_score() == 0
 
-    p.move( "D" ) # trying to move into a barrier
+    # trying to move into a barrier (fails)
+    set_monkeypatch([ constants.DOWN ], monkeypatch)
+    assert p.get_coords() == (1,1)
+    p.move() 
     assert p.get_coords() == (1,1)
 
-    p.move( "U" )
+    # move up 1 works, up off board does not
+    set_monkeypatch([ constants.UP , constants.UP ], monkeypatch)
+    assert p.get_coords() == (1,1)
+    p.move()
     assert p.get_coords() == (1,0)
-    p.move( "U" ) # moving up off the board
+    p.move()
     assert p.get_coords() == (1,0)
 
-    p.move( "L" ) # moving into treasure. includes test that it collects
+    # moving into treasure: allows movement, adds to score, removes from board
+    set_monkeypatch([ constants.LEFT ], monkeypatch)
+    assert p.get_coords() == (1,0)
+    assert p.get_score() == 0
+    p.move() 
     assert p.get_coords() == (0,0)
     assert p.get_score() == 1
-    p.move( "L" ) # attempting to move off board
+
+    # moving off left side of board fails (move left succeeds already tested w/ treasure collect)
+    set_monkeypatch([ constants.LEFT ], monkeypatch)
+    assert p.get_coords() == (0,0)
+    p.move()
     assert p.get_coords() == (0,0)
 
-    p.move( "D" )
+    # move Down works, move off bottom of board does not
+    set_monkeypatch([ constants.DOWN ], monkeypatch)
+    assert p.get_coords() == (0,0)
+    p.move()
     assert p.get_coords() == (0,1)
-    p.move( "D" )
-    p.move( "D" )
-    p.move( "D" )
+    set_monkeypatch( [constants.DOWN]*4, monkeypatch)
+    p.move()
+    p.move()
+    p.move()
     assert p.get_coords() == (0,4)
-    p.move( "D" ) # off other end of board
+    p.move() # off other end of board
     assert p.get_coords() == (0,4)
 
-    p.move( "R" )
+    # move Right works, move off right side does not
+    set_monkeypatch([ constants.RIGHT ], monkeypatch)
+    assert p.get_coords() == (0,4)
+    p.move()
     assert p.get_coords() == (1,4)
-    p.move( "R" )
-    p.move( "R" )
-    p.move( "R" )
+    set_monkeypatch( [constants.RIGHT]*4, monkeypatch)
+    p.move()
+    p.move()
+    p.move()
     assert p.get_coords() == (4,4)
-    p.move( "R" ) # off other end of board
+    p.move() # off other end of board
     assert p.get_coords() == (4,4)
 
-    set_monkeypatch(["u"], monkeypatch)
+    set_monkeypatch([ constants.UP ], monkeypatch)
     p.move()
     assert p.get_coords() == (4,3)    
 
+# ---------------------Testing Barrier---------------------------------
 def test_barrier():
     b = Board(10,1,4)
 
+    # test: Barrier class symbol set/get
     assert Barrier.get_symbol() == "X"
     Barrier.set_symbol("*")
     assert Barrier.get_symbol() == "*"
 
+    # test: instanciation, set/get origin, outpu
     bar1 = Barrier( True )
     assert bar1.get_is_origin() == True
     bar1.set_is_origin( False )
@@ -182,33 +251,19 @@ def test_barrier():
     assert bar2.get_is_origin() == False
     assert str( bar2 ) == "*"
 
-    #reset
+    #reset class & test instances follow
     Barrier.set_symbol("X")
     assert str( bar1 ) == "X"
     assert str( bar2 ) == "X"
 
-def test_barrier_increase_wrap_probability():
-    b = Board(5,1,1)
-    #using the make barriers func will trigger the count error bc validation
-    b.make_one_barrier(5) 
-    b.make_one_barrier(5)
-    b.make_one_barrier(5)
-    b.make_one_barrier(5)
-    b.make_one_barrier(5)
-    b.make_one_barrier(5)
-    b.make_one_barrier(5)
-    b.make_one_barrier(5)
-    b.make_one_barrier(5)
-    b.make_one_barrier(5)
-    b.make_one_barrier(5)
-    b.make_one_barrier(5)
-    b.make_one_barrier(5)
-
+# ---------------------Testing Treasure---------------------------------
 def test_treasure(capsys):
+    # Test: class symbol set/get
     assert Treasure.get_symbol() == "$"
     Treasure.set_symbol("&")
     assert Treasure.get_symbol() == "&"
 
+    # Test init treasure value, output (matches class symbol)
     t1 = Treasure( 10 )
     t2 = Treasure( 1 )
 
@@ -217,13 +272,22 @@ def test_treasure(capsys):
     assert str( t1 ) == "& (10)"
     assert str( t2 ) == "& (1)"
 
-    #reset
+    t1.set_value( 2 )
+    assert t1.get_value() == 2
+    assert str( t1 ) == "& (2)"
+
+    #reset class symbol, test instances output follows
     Treasure.set_symbol("$")
-    assert str( t1 ) == "$ (10)"
+    assert str( t1 ) == "$ (2)"
     assert str( t2 ) == "$ (1)"
+
+def test_treasure_value():
+    t1 = Treasure( 10 )
+    assert t1.get_value() == 10
 
     t1.set_value(2)
     assert t1.get_value() == 2
+
     with pytest.raises(ValueError, match='Treasure value -2 is not valid. Must be integer > 0'):
         t1.set_value(-2)
     with pytest.raises(TypeError, match='a is not an integer'):
@@ -231,58 +295,86 @@ def test_treasure(capsys):
     with pytest.raises(TypeError, match='9 is not an integer'):
         t1.set_value("9")
 
-    #Testing collect 
+def test_treasure_collect(capsys):
     b = Board(10,0,4)
     tile = b.get_coord_tile( 2,2 )
-    tile.set_to_treasure( 5 ) #DOES NOT INCLUDE INCREMENT
-    b.set_treasure_count( 5 ) 
-    t3 = tile.get_contents()
-
-    assert isinstance( t3, Treasure)
-    capsys.readouterr()
+    assert b.get_treasure_count() == 4
     players = b.get_players()
     p1 = players[0]
-    t3.collect_treasure( b, tile, p1 )
-    capture = capsys.readouterr()
+    p2 = b.make_new_player()    
 
-    assert capture.out.strip() == "Current players: 1\nremaining treasures: 4\nplayer 1 collected: 5 treasure points."
+    # set/get treasure as expected
+    tile.clear_tile() # clear
+    assert tile.get_contents() == None
+    tile.set_to_treasure( 5 ) #DOES NOT INCREMENT, occurs in calling funct
+    b.set_treasure_count( 5 )
+    assert isinstance( tile.get_contents(), Treasure)
+    
 
+    # test collect : correct pre-collect values
+    assert isinstance( tile.get_contents(), Treasure)
+    assert tile.get_symbol() == "$"
+    assert b.get_treasure_count() == 5
+    assert p1.get_score() == 0
+    assert p2.get_score() == 0
+
+    # Test: output correct when collect
+    capsys.readouterr() # clear
+    tile.get_contents().collect_treasure( b, tile, p1 )
+    capture = capsys.readouterr().out.strip() # get output & clean
+    assert capture == "remaining treasures: 4\nplayer 1 collected: 5 treasure points."
+
+    assert tile.get_contents() == None # treasure removed
+    assert tile.get_symbol() == "_" # tile symbol reverted to empty
+    assert b.get_treasure_count() == 4 # treasure count decremented
+    assert p1.get_score() == 5 # player score increased by treasure value
+    assert p2.get_score() == 0
+
+# ---------------------Testing Tile---------------------------------
+def test_tile_init_setget_attr():
+    t1 = Tile()
+
+    # testing initialize correct
+    assert t1.get_symbol() == "_"
+    assert t1.get_contents() == None
+    assert str( t1 ) == '_'
+
+    # testing set/get symbol, contents, clear
+    t1.set_symbol("%")
+    assert t1.get_symbol() == "%"
+    assert t1.get_contents() == None
+    assert str( t1 ) == "%"
+
+    t1.set_contents( Treasure(5) )
+    assert t1.get_symbol() == "$"
+    assert t1.get_contents().get_value() == 5
+    assert isinstance( t1.get_contents(), Treasure )
+    assert str( t1 ) == "$"
+
+    t1.clear_tile()
+    assert t1.get_symbol() == "_"
+    assert t1.get_contents() == None
+    assert str( t1 ) == "_"     
+
+def test_tile_setgetcheck_contents(capsys):   
+    b = Board(10,0,4)
+    p1 = b.get_players()[0]
+    tile = b.get_coord_tile( 2,2 )
+    # clear target tile & confirm
+    tile.clear_tile()
     assert tile.get_contents() == None
     assert tile.get_symbol() == "_"
-    assert b.get_treasure_count() == 4
-    assert p1.get_score() == 5
 
-def test_tile(capsys):
-    t1 = Tile()
-    
-    assert t1.get_symbol() == "_"
-    t1.set_symbol("'")
-    assert t1.get_symbol() == "'"
-
-    #Testing check contents 
-    b = Board(10,0,4)
-    tile = b.get_coord_tile( 2,2 )
-    tile.clear_tile()
-    p1 = b.get_players()[0]
-
-    assert str( tile ) == '_'
-    tile.set_symbol("%")
-    assert tile.get_symbol() == '%'
-    assert str( tile ) == '%'
-
-    tile.set_contents( p1 )
-    assert tile.get_contents() == p1
-    tile.clear_tile()
-
+    # Testing starts
     tile.set_to_barrier( True )
     assert tile.check_is_treasure() == False
     assert tile.check_if_barrier() == (True, True)
+    assert tile.get_contents().get_is_origin() == True
     assert tile.check_empty() == False
     assert isinstance( tile.get_contents(), Barrier)
     assert tile.get_symbol() == "X"
 
-    # with pytest.raises(ValueError, match='Treasure value -2 is not valid. Must be integer > 0'):
-    assert tile.set_to_barrier( True ) == True
+    assert tile.set_to_barrier( True ) == True # (returning 'is duplicate' NOT 'is success')
     assert tile.set_to_barrier( False ) == False
 
     tile.clear_tile()
@@ -295,6 +387,7 @@ def test_tile(capsys):
     tile.set_to_barrier( False )
     assert tile.check_is_treasure() == False
     assert tile.check_if_barrier() == (True, False)
+    assert tile.get_contents().get_is_origin() == False
     assert tile.check_empty() == False
     assert isinstance( tile.get_contents(), Barrier)
 
@@ -308,7 +401,7 @@ def test_tile(capsys):
     assert isinstance( tile.get_contents(), Treasure)
     assert tile.get_symbol() == "$"
 
-    tile.set_to_player( p1 ) #does not trigger a collect or anything else, just teh sets
+    tile.set_to_player( p1 ) #DOES NOT trigger collect, etc. Handled in calling function
     assert tile.check_is_treasure() == False
     assert tile.check_if_barrier() == (False, False)
     assert tile.check_empty() == False
@@ -316,8 +409,8 @@ def test_tile(capsys):
     assert tile.get_symbol() == 1
     assert str(tile) == "1"
 
-def test_board(capsys):
-#   [ ]  
+# ---------------------Testing Board---------------------------------
+def test_board_validation():
     # -------testing validation--------
     # Size
     with pytest.raises(ValueError, match='Size must be at least 5.'):
@@ -341,6 +434,7 @@ def test_board(capsys):
     with pytest.raises(ValueError, match='Too many treasures. Either increase board size, or decrease treasure_number'):
         b = Board(5, 1, 20)
 
+def test_board_checks():
     # check_on_board()
     b = Board(5,1,1)
     assert b.check_on_board( 11, 11 ) == False
@@ -354,6 +448,7 @@ def test_board(capsys):
     assert b.check_on_board( 2, 2 ) == True
     assert b.check_on_board( 4, 4 ) == True
 
+def test_board_init_output():
     # -------testing board & player creation & output --------
     b = Board(5, 1, 1)
     boardOutputArr = (b.__str__()).replace("\n", "").replace("_", "").replace(" ", "").split("n", 1)
@@ -377,7 +472,33 @@ def test_board(capsys):
     assert 10 <= boardOutput.count("X") <= 5*4 
     assert boardOutput.count("$") == 5
     assert boardOutput.count("1") == 1
-    # test decrement
+
+def test_board_counts():
+    b = Board(10, 4, 5)
+
+    # validation happens in the single calling function (realizing now this should not be the case, but too literal following instructions)
+    # test tile count
+    assert b.get_tile_count() == 100
+    b.set_tile_count( 2 )
+    assert b.get_tile_count() == 2
+    b.set_tile_count( 100 )
+    assert b.get_tile_count() == 100
+
+    # test barrier count
+    assert b.get_barrier_count() == 4
+    b.set_barrier_count( 10 )
+    assert b.get_barrier_count() == 10
+    b.set_barrier_count( 4 )
+    assert b.get_barrier_count() == 4
+
+    # test set/get treasure
+    assert b.get_treasure_count() == 5
+    b.set_treasure_count( 10 )
+    assert b.get_treasure_count() == 10
+    b.set_treasure_count( 5 )
+    assert b.get_treasure_count() == 5
+
+    # test treasure decrement
     b.decrement_treasure_count()
     assert b.get_treasure_count() == 4
     b.decrement_treasure_count()
@@ -393,7 +514,7 @@ def test_board(capsys):
     b.decrement_treasure_count()
     assert b.get_treasure_count() == -1 
 
-
+def test_board_2player(capsys):
     # make empty board (+1 player, +1treasure (minimum))
     m = Board(5, 0, 1)
     boardOutputArr = (m.__str__()).replace("\n", "").replace(" ", "").split("n", 1)
@@ -409,28 +530,60 @@ def test_board(capsys):
     assert boardOutput.count("1") == 1
     assert boardOutput.count("2") == 1
 
-    # getting all players through get_players() not written yet.
-    # currently should return most *recently* created player
-    capsys.readouterr()
+    #make 3rd player, changed count
+    Player.set_player_count(8)
+    p3 = m.make_new_player()
+    boardOutputArr = (m.__str__()).replace("\n", "").replace(" ", "").split("n", 1)
+    boardOutput = boardOutputArr[0]
+    assert boardOutput.count("1") == 1
+    assert boardOutput.count("2") == 1
+    assert boardOutput.count("9") == 1
+
+    #fix Player Count to what it should be...
+    Player.set_player_count(8)
+
+    # get player array
+    capsys.readouterr() # clear
     playerList = m.get_players()
-    p1 = playerList[0]    
     capture = capsys.readouterr()
-    assert capture.out.strip() == "Current players: 1, 2"
+    assert capture.out.strip() == "Current players: 1, 2, 9"
+    p1 = playerList[0]    # create p1
     assert playerList[1] == p2
+    assert playerList[2] == p3
 
     p1.set_score(-30)
     p2.set_score(83)
     capsys.readouterr()
-    score = m.report_a_player_score( p2 )
-    capture = capsys.readouterr()
-    assert capture.out.strip() == "player 2 score: 83"
 
     score = m.report_a_player_score( p1 )
     capture = capsys.readouterr()
     assert capture.out.strip() == "player 1 score: -30"
 
+    score = m.report_a_player_score( p2 )
+    capture = capsys.readouterr()
+    assert capture.out.strip() == "player 2 score: 83"
+
+    score = m.report_a_player_score( p3 )
+    capture = capsys.readouterr()
+    assert capture.out.strip() == "player 9 score: 0"
+
     score = m.report_player_scores()
     capture = capsys.readouterr()
-    assert capture.out.strip() == "Current players: 1, 2\nplayer 1 score: -30\nplayer 2 score: 83"
+    assert capture.out.strip() == "Current players: 1, 2, 9\nplayer 1 score: -30\nplayer 2 score: 83\nplayer 9 score: 0"
 
-    
+def test_barrier_increase_wrap_probability():
+    b = Board(5,1,1)
+    #using the make barriers func will trigger the count error bc validation
+    b.make_one_barrier(5) 
+    b.make_one_barrier(5)
+    b.make_one_barrier(5)
+    b.make_one_barrier(5)
+    b.make_one_barrier(5)
+    b.make_one_barrier(5)
+    b.make_one_barrier(5)
+    b.make_one_barrier(5)
+    b.make_one_barrier(5)
+    b.make_one_barrier(5)
+    b.make_one_barrier(5)
+    b.make_one_barrier(5)
+    b.make_one_barrier(5)
