@@ -6,12 +6,6 @@ from Barrier import Barrier
 from Treasure import Treasure
 from Tile import Tile
 
-# TODO
-# [ ] test for:
-#       [ ] every exception, 
-#       [ ] every public method, and 
-#       [ ] for normal game play
-
 def set_monkeypatch( input_values, monkeypatch ):
     user_inputs = iter( input_values )
     monkeypatch.setattr("builtins.input", lambda _: next(user_inputs))
