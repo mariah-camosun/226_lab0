@@ -15,10 +15,54 @@ class Board:
         :param barrier_number: number of barrier blocks to generate (multiple tiles per block)
         :param treasure_number: number of treasures to generate
         '''
-        self.size = size
-        self.barrier_number = barrier_number
-        self.treasure_number = treasure_number
-        self.tile_count = 0
+        try:
+            self.validate_size( size )
+        except TypeError as details:
+            print(details)
+            raise
+        except ValueError as details:
+            print(details)
+            raise
+        else:
+            self.size = size
+            self.set_tile_count( size*size )
+
+        try:
+            self.validate_barrier_number(barrier_number)
+        except TypeError as details:
+            print(details)
+            print(barrier_number + "is not a number")
+            raise
+        except ValueError as details:
+            print(details)
+            max_blocks = (size*size)*.2/4
+            if barrier_number <= 0:
+                print( "must have at least 1 barrier block, and no more than ", max_blocks)
+            else: 
+                print(f"{barrier_number} is too many barriers for board size, at current size, generate no more than ", max_blocks)
+                print("increase board size, or decrease number of barriers")
+            raise
+        else:
+            self.barrier_number = barrier_number
+
+        try:
+            self.validate_treasure_number(treasure_number)
+        except TypeError as details:
+            print(details)
+            print(treasure_number + "is not a number")
+            raise
+        except ValueError as details:
+            print(details)
+            max_blocks = (size*size)*.05
+            if treasure_number <= 0:
+                print( "must have at least 1 treasures, and no more than ", max_blocks)
+            else: 
+                print("Too many treasures for board size, at current size, generate no more than ", max_blocks)
+                print("increase board size, or decrease number of treasures")
+            raise
+        else:
+            self.treasure_number = treasure_number
+
         print(f"to make: {size}*{size}, {barrier_number} barriers, {treasure_number} treasures")
         self.make_empty_board( size )
         self.make_barriers( barrier_number )
@@ -65,8 +109,8 @@ class Board:
             self.set_treasure_count( 0 )
             self.set_barrier_count( 0 )
 
-            for item in range( size ):
-                self.grid.append( [ Tile() for _ in range (size) ] )
+        for item in range( size ):
+            self.grid.append( [ Tile() for _ in range (size) ] )
 
     def make_barriers( self, barrier_number: int )->None:
         '''
@@ -308,10 +352,10 @@ class Board:
 # Validation and checks
     def validate_size(self, size: int)->bool:
         '''
-        Validates size parameter for the game board is an integer > 0 and <= 30
-        Validates size parameter for the game board is an integer > 0 and <= 30
+        Validates size parameter for the game board is an integer >= 5 and <= 30
+        Validates size parameter for the game board is an integer >= 5 and <= 30
 
-        :param size: int between [1,30], size of each side of the board (board is size x size)
+        :param size: int between [5,30], size of each side of the board (board is size x size)
         :return: bool, is_valid
         :return: bool, is_valid
         '''
