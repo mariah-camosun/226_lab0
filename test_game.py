@@ -262,144 +262,158 @@ def set_monkeypatch( input_values, monkeypatch ):
 #     assert str( bar1 ) == "X"
 #     assert str( bar2 ) == "X"
 
-# ---------------------Testing Treasure---------------------------------
-def test_treasure(capsys):
-    # Test: class symbol set/get
-    assert Treasure.get_symbol() == "$"
-    Treasure.set_symbol("&")
-    assert Treasure.get_symbol() == "&"
+# # ---------------------Testing Treasure---------------------------------
+# def test_treasure(capsys):
+#     # Test: class symbol set/get
+#     assert Treasure.get_symbol() == "$"
+#     Treasure.set_symbol("&")
+#     assert Treasure.get_symbol() == "&"
 
-    # Test init treasure value, output (matches class symbol)
-    t1 = Treasure( 10 )
-    t2 = Treasure( 1 )
+#     # Test init treasure value, output (matches class symbol)
+#     t1 = Treasure( 10 )
+#     t2 = Treasure( 1 )
 
-    assert t1.get_value() == 10
-    assert t2.get_value() == 1
-    assert str( t1 ) == "& (10)"
-    assert str( t2 ) == "& (1)"
+#     assert t1.get_value() == 10
+#     assert t2.get_value() == 1
+#     assert str( t1 ) == "& (10)"
+#     assert str( t2 ) == "& (1)"
 
-    t1.set_value( 2 )
-    assert t1.get_value() == 2
-    assert str( t1 ) == "& (2)"
+#     t1.set_value( 2 )
+#     assert t1.get_value() == 2
+#     assert str( t1 ) == "& (2)"
 
-    #reset class symbol, test instances output follows
-    Treasure.set_symbol("$")
-    assert str( t1 ) == "$ (2)"
-    assert str( t2 ) == "$ (1)"
+#     #reset class symbol, test instances output follows
+#     Treasure.set_symbol("$")
+#     assert str( t1 ) == "$ (2)"
+#     assert str( t2 ) == "$ (1)"
 
-def test_treasure_value():
-    t1 = Treasure( 10 )
-    assert t1.get_value() == 10
+# def test_treasure_value():
+#     t1 = Treasure( 10 )
+#     assert t1.get_value() == 10
 
-    t1.set_value(2)
-    assert t1.get_value() == 2
+#     t1.set_value(2)
+#     assert t1.get_value() == 2
 
-    with pytest.raises(ValueError, match='Treasure value -2 is not valid. Must be integer > 0'):
-        t1.set_value(-2)
-    with pytest.raises(TypeError, match='a is not an integer'):
-        t1.set_value("a")
-    with pytest.raises(TypeError, match='9 is not an integer'):
-        t1.set_value("9")
+#     with pytest.raises(ValueError, match='Treasure value -2 is not valid. Must be integer > 0'):
+#         t1.set_value(-2)
+#     with pytest.raises(TypeError, match='a is not an integer'):
+#         t1.set_value("a")
+#     with pytest.raises(TypeError, match='9 is not an integer'):
+#         t1.set_value("9")
 
-def test_treasure_collect(capsys):
-    b = Board(10,0,4)
-    tile = b.get_coord_tile( 2,2 )
-    assert b.get_treasure_count() == 4
-    players = b.get_players()
-    p1 = players[0]
-    p2 = b.make_new_player()    
-
-    # set/get treasure as expected
-    tile.clear_tile() # clear
-    assert tile.get_contents() == None
-    tile.set_to_treasure( 5 ) #DOES NOT INCREMENT, occurs in calling funct
-    b.set_treasure_count( 5 )
-    assert isinstance( tile.get_contents(), Treasure)
-    
-
-    # test collect : correct pre-collect values
-    assert isinstance( tile.get_contents(), Treasure)
-    assert tile.get_symbol() == "$"
-    assert b.get_treasure_count() == 5
-    assert p1.get_score() == 0
-    assert p2.get_score() == 0
-
-    # Test: output correct when collect
-    capsys.readouterr() # clear
-    tile.get_contents().collect_treasure( b, tile, p1 )
-    capture = capsys.readouterr().out.strip() # get output & clean
-    assert capture == "remaining treasures: 4\nplayer 1 collected: 5 treasure points."
-
-    assert tile.get_contents() == None # treasure removed
-    assert tile.get_symbol() == "_" # tile symbol reverted to empty
-    assert b.get_treasure_count() == 4 # treasure count decremented
-    assert p1.get_score() == 5 # player score increased by treasure value
-    assert p2.get_score() == 0
-
-# # ---------------------Testing Tile---------------------------------
-# def test_tile(capsys):
-#     t1 = Tile()
-    
-#     assert t1.get_symbol() == "_"
-#     t1.set_symbol("'")
-#     assert t1.get_symbol() == "'"
-
-#     #Testing check contents 
+# def test_treasure_collect(capsys):
 #     b = Board(10,0,4)
 #     tile = b.get_coord_tile( 2,2 )
-#     tile.clear_tile()
-#     p1 = b.get_players()[0]
+#     assert b.get_treasure_count() == 4
+#     players = b.get_players()
+#     p1 = players[0]
+#     p2 = b.make_new_player()    
 
-#     assert str( tile ) == '_'
-#     tile.set_symbol("%")
-#     assert tile.get_symbol() == '%'
-#     assert str( tile ) == '%'
+#     # set/get treasure as expected
+#     tile.clear_tile() # clear
+#     assert tile.get_contents() == None
+#     tile.set_to_treasure( 5 ) #DOES NOT INCREMENT, occurs in calling funct
+#     b.set_treasure_count( 5 )
+#     assert isinstance( tile.get_contents(), Treasure)
+    
 
-#     tile.set_contents( p1 )
-#     assert tile.get_contents() == p1
-#     tile.clear_tile()
-
-#     tile.set_to_barrier( True )
-#     assert tile.check_is_treasure() == False
-#     assert tile.check_if_barrier() == (True, True)
-#     assert tile.check_empty() == False
-#     assert isinstance( tile.get_contents(), Barrier)
-#     assert tile.get_symbol() == "X"
-
-#     # with pytest.raises(ValueError, match='Treasure value -2 is not valid. Must be integer > 0'):
-#     assert tile.set_to_barrier( True ) == True
-#     assert tile.set_to_barrier( False ) == False
-
-#     tile.clear_tile()
-#     assert tile.check_is_treasure() == False
-#     assert tile.check_if_barrier() == (False, False)
-#     assert tile.check_empty() == True
-#     assert tile.get_contents() is None
-#     assert tile.get_symbol() == "_"
-
-#     tile.set_to_barrier( False )
-#     assert tile.check_is_treasure() == False
-#     assert tile.check_if_barrier() == (True, False)
-#     assert tile.check_empty() == False
-#     assert isinstance( tile.get_contents(), Barrier)
-
-#     assert tile.set_to_treasure(5) == True
-#     tile.clear_tile()
-
-#     tile.set_to_treasure( 5 )
-#     assert tile.check_is_treasure() == 5
-#     assert tile.check_if_barrier() == (False, False)
-#     assert tile.check_empty() == False
+#     # test collect : correct pre-collect values
 #     assert isinstance( tile.get_contents(), Treasure)
 #     assert tile.get_symbol() == "$"
+#     assert b.get_treasure_count() == 5
+#     assert p1.get_score() == 0
+#     assert p2.get_score() == 0
 
-#     tile.set_to_player( p1 ) #does not trigger a collect or anything else, just teh sets
-#     assert tile.check_is_treasure() == False
-#     assert tile.check_if_barrier() == (False, False)
-#     assert tile.check_empty() == False
-#     assert isinstance( tile.get_contents(), Player)
-#     assert tile.get_symbol() == 1
-#     assert str(tile) == "1"
+#     # Test: output correct when collect
+#     capsys.readouterr() # clear
+#     tile.get_contents().collect_treasure( b, tile, p1 )
+#     capture = capsys.readouterr().out.strip() # get output & clean
+#     assert capture == "remaining treasures: 4\nplayer 1 collected: 5 treasure points."
+
+#     assert tile.get_contents() == None # treasure removed
+#     assert tile.get_symbol() == "_" # tile symbol reverted to empty
+#     assert b.get_treasure_count() == 4 # treasure count decremented
+#     assert p1.get_score() == 5 # player score increased by treasure value
+#     assert p2.get_score() == 0
+
+# ---------------------Testing Tile---------------------------------
+def test_tile_init_setget_attr():
+    t1 = Tile()
+
+    # testing initialize correct
+    assert t1.get_symbol() == "_"
+    assert t1.get_contents() == None
+    assert str( t1 ) == '_'
+
+    # testing set/get symbol, contents, clear
+    t1.set_symbol("%")
+    assert t1.get_symbol() == "%"
+    assert t1.get_contents() == None
+    assert str( t1 ) == "%"
+
+    t1.set_contents( Treasure(5) )
+    assert t1.get_symbol() == "$"
+    assert t1.get_contents().get_value() == 5
+    assert isinstance( t1.get_contents(), Treasure )
+    assert str( t1 ) == "$"
+
+    t1.clear_tile()
+    assert t1.get_symbol() == "_"
+    assert t1.get_contents() == None
+    assert str( t1 ) == "_"     
+
+def test_tile_setgetcheck_contents(capsys):   
+    b = Board(10,0,4)
+    p1 = b.get_players()[0]
+    tile = b.get_coord_tile( 2,2 )
+    # clear target tile & confirm
+    tile.clear_tile()
+    assert tile.get_contents() == None
+    assert tile.get_symbol() == "_"
+
+    # Testing starts
+    tile.set_to_barrier( True )
+    assert tile.check_is_treasure() == False
+    assert tile.check_if_barrier() == (True, True)
+    assert tile.get_contents().get_is_origin() == True
+    assert tile.check_empty() == False
+    assert isinstance( tile.get_contents(), Barrier)
+    assert tile.get_symbol() == "X"
+
+    assert tile.set_to_barrier( True ) == True # (returning 'is duplicate' NOT 'is success')
+    assert tile.set_to_barrier( False ) == False
+
+    tile.clear_tile()
+    assert tile.check_is_treasure() == False
+    assert tile.check_if_barrier() == (False, False)
+    assert tile.check_empty() == True
+    assert tile.get_contents() is None
+    assert tile.get_symbol() == "_"
+
+    tile.set_to_barrier( False )
+    assert tile.check_is_treasure() == False
+    assert tile.check_if_barrier() == (True, False)
+    assert tile.get_contents().get_is_origin() == False
+    assert tile.check_empty() == False
+    assert isinstance( tile.get_contents(), Barrier)
+
+    assert tile.set_to_treasure(5) == True
+    tile.clear_tile()
+
+    tile.set_to_treasure( 5 )
+    assert tile.check_is_treasure() == 5
+    assert tile.check_if_barrier() == (False, False)
+    assert tile.check_empty() == False
+    assert isinstance( tile.get_contents(), Treasure)
+    assert tile.get_symbol() == "$"
+
+    tile.set_to_player( p1 ) #DOES NOT trigger collect, etc. Handled in calling function
+    assert tile.check_is_treasure() == False
+    assert tile.check_if_barrier() == (False, False)
+    assert tile.check_empty() == False
+    assert isinstance( tile.get_contents(), Player)
+    assert tile.get_symbol() == 1
+    assert str(tile) == "1"
 
 # # # ---------------------Testing Board---------------------------------
 # # def test_board(capsys):
