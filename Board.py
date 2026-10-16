@@ -93,18 +93,23 @@ class Board:
             for i in range( barrier_number ): 
                 self.make_one_barrier( board_size )
 
-    def make_one_barrier( self, board_size: int )->None:
+    def make_one_barrier( self, board_size: int, column=None, row=None )->None:
         '''
         create 1 'block' of barriers (2x2 tiles) at a random position
-        includes check for complete overlap and increments barrierCound on success
+        includes check for complete overlap and increments barrierCount on success
 
         # NOTE realized I can eliminate this parameter wherever it is used
         :param board_size: int, size of board
         '''
+        x = column
+        y = row
         while(True):
-            origin_tile, x, y = self.randomize_position()
-            is_duplicate = origin_tile.set_to_barrier( True )
-            if ( not is_duplicate ):
+            if ( x == None or y == None):
+                origin_tile, x, y = self.randomize_position()
+            else:
+                origin_tile = self.get_coord_tile( x,y )
+            is_success = origin_tile.set_to_barrier( True )
+            if ( not is_success ):
                 break
 
         #once successfull barrier origin, add 1 to barrierCount
@@ -162,8 +167,8 @@ class Board:
             x = random.randint(0, board_size-1)
             y = random.randint(0, board_size-1)
             treasure_tile = self.get_coord_tile(x,y)
-            is_duplicate = treasure_tile.set_to_treasure( 1 )
-            if ( not is_duplicate ):
+            is_success = treasure_tile.set_to_treasure( 1 )
+            if ( is_success ):
                 break
 
         #once successfull treasure, add 1 to treasure_count
@@ -297,8 +302,8 @@ class Board:
         board_size = self.get_size()
         column = random.randint(0, board_size-1)
         row = random.randint(0, board_size-1)
-        prev_tile = self.get_coord_tile( column, row )
-        return prev_tile, column, row
+        tile = self.get_coord_tile( column, row )
+        return tile, column, row
 
 # Validation and checks
     def validate_size(self, size: int)->bool:

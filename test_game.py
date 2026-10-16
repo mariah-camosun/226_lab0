@@ -374,8 +374,8 @@ def test_tile_setgetcheck_contents(capsys):
     assert isinstance( tile.get_contents(), Barrier)
     assert tile.get_symbol() == "X"
 
-    assert tile.set_to_barrier( True ) == True # (returning 'is duplicate' NOT 'is success')
-    assert tile.set_to_barrier( False ) == False
+    assert tile.set_to_barrier( True ) == False
+    assert tile.set_to_barrier( False ) == True
 
     tile.clear_tile()
     assert tile.check_is_treasure() == False
@@ -391,10 +391,10 @@ def test_tile_setgetcheck_contents(capsys):
     assert tile.check_empty() == False
     assert isinstance( tile.get_contents(), Barrier)
 
-    assert tile.set_to_treasure(5) == True
+    assert tile.set_to_treasure(5) == False
     tile.clear_tile()
 
-    tile.set_to_treasure( 5 )
+    assert tile.set_to_treasure( 5 ) == True
     assert tile.check_is_treasure() == 5
     assert tile.check_if_barrier() == (False, False)
     assert tile.check_empty() == False
