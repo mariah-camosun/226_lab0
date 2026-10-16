@@ -133,7 +133,7 @@ class Tile:
         b_tile = Barrier( is_origin ) #instanciate barrier
         prev_contents = self.get_contents()
 
-        if ( is_origin == True ) and ( prev_contents != None) and ( prev_contents.get_is_origin() == True ): 
+        if ( is_origin == True ) and isinstance(prev_contents, Barrier) and ( prev_contents.get_is_origin() == True ): 
             # barriers are first non-empy generated. 
             # Contents should only be empty or barrier
             return True

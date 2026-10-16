@@ -25,8 +25,9 @@ class Board:
         self.make_treasures( treasure_number )
         # For now, treating as single entry for simplicity
         # self.players = []
-        # self.players.append( self.make_new_player() ) 
-        self.players = [self.make_new_player()]
+        # self.players.append( self.make_new_player() )
+        self.players = [ ]        
+        p1 = self.make_initial_player()
 
     def __str__(self)->str:
         '''
@@ -168,6 +169,10 @@ class Board:
         #once successfull treasure, add 1 to treasure_count
         self.set_treasure_count( self.get_treasure_count() + 1 )
 
+    def make_initial_player( self ):
+        Player.set_player_count(0)
+        return self.make_new_player()
+
     def make_new_player( self )->Player:
         '''
         creates a new player and places it on a random empty tile
@@ -184,6 +189,7 @@ class Board:
             if tile.get_contents() == None:
                 # place new player instance into contents
                 new_player = tile.set_contents( Player( column, row, self ) )
+                self.players.append( new_player )
                 return new_player
 
 # Setters and Getters
@@ -227,8 +233,9 @@ class Board:
         output = "Current players: "
         for player in self.players:
             output += (str)(player)
-            output += ','
-        print(output)
+            output += ', '
+        trimmed = output[:-2]
+        print(trimmed)
         return self.players
     #no set_players() - instead, make_new_player()
 
@@ -292,21 +299,6 @@ class Board:
         row = random.randint(0, board_size-1)
         prev_tile = self.get_coord_tile( column, row )
         return prev_tile, column, row
-
-    def place_in_random_empty( self, item_to_place ):
-        '''
-        Places an item in a random empty tile. Loops until successfully placed.
-
-        :param item_to_place: item to place into the game Tile. Acceptable classes: Player, Barrier, Treasure
-        Places an item in a random empty tile. Loops until successfully placed.
-
-        :param item_to_place: item to place into the game Tile. Acceptable classes: Player, Barrier, Treasure
-        '''
-        while True:
-            tile, _, _ = self.randomize_position()
-            if tile.get_contents() == None:
-                tile.set_contents( item_to_place )
-                break
 
 # Validation and checks
     def validate_size(self, size: int)->bool:
@@ -384,4 +376,7 @@ class Board:
         '''
         players = self.get_players()
         for player in players:
-            print(f"player {player.get_name()}: score: {player.get_score()}")
+            self.report_a_player_score( player )
+
+    def report_a_player_score(self, player):
+        print(f"player {player.get_name()} score: {player.get_score()}")
