@@ -111,16 +111,16 @@ class Tile:
         Includes checks for previous tile contents
 
         :param treasure_value: the point value for the treasure item
-        :return: bool, isBlocked - true if tile already full
+        :return: bool, is_success - false if tile already full
         '''
         is_empty = self.check_empty()
         if ( is_empty ):
             t_tile = Treasure( treasure_value )
             self.set_contents( t_tile )
             self.set_symbol( t_tile.get_symbol() )
-            return False
-        else:
             return True
+        else:
+            return False
 
     def set_to_barrier(self, is_origin: bool )->bool: # this methd needs some cleanup
         '''
@@ -128,7 +128,7 @@ class Tile:
         Includes checks for previous tile contents
 
         :param is_origin: is this barrier tile the origin of its barrier block
-        :return: bool, isDuplicate - true if tile already contains barrier origin
+        :return: bool, is_success - false only if tile already contains barrier origin
         '''
         b_tile = Barrier( is_origin ) #instanciate barrier
         prev_contents = self.get_contents()
@@ -136,13 +136,13 @@ class Tile:
         if ( is_origin == True ) and isinstance(prev_contents, Barrier) and ( prev_contents.get_is_origin() == True ): 
             # barriers are first non-empy generated. 
             # Contents should only be empty or barrier
-            return True
-        elif ( is_origin == False ) and ( prev_contents != None):
             return False
+        elif ( is_origin == False ) and ( prev_contents != None):
+            return True
         else:
             self.set_contents( b_tile )
             self.set_symbol( b_tile.get_symbol() )
-            return False
+            return True
 
     def set_to_player( self, player: Player )->None: # NOT properly commented yet - player class still WIP
         '''
