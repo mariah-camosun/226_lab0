@@ -64,9 +64,11 @@ class Treasure:
         try: 
             self.validate_value( value )
         except TypeError as details:
-            print(f"{value} is not an integer: {details}")
+            print(f"{value} is not an integer")
+            raise TypeError(f"{value} is not an integer")
         except ValueError as details:
-            print(f"Treasure value {value} is not valid. Must be integer > 0: {details}")
+            print(f"Treasure value {value} is not valid. Must be integer > 0")
+            raise ValueError(f"Treasure value {value} is not valid. Must be integer > 0")
         else:
             self.value = value           
 

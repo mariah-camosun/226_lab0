@@ -71,13 +71,6 @@ class Player:
         '''
         return self.symbol
     # no setPlayerSymbol() - only done at init
-    def get_symbol(self)->str: # temporarily have both until all refs fixed
-        '''
-        returns the symbol of this player's instance
-
-        :return: str, player symbol
-        '''        
-        return self.symbol
 
     def get_score( self )->int:
         '''
@@ -172,15 +165,23 @@ class Player:
         '''
         while True:
             direction = input(f"Move player {self.get_symbol()}: \nEnter a direction (U-up D-down L-left R-right) to move: ")
-            direction = direction.upper()
             print(f"direction value entered: {direction}")
 
+            if isinstance( direction, int):
+                print(f"Choose one of: U, D, L, R")
+                continue
+                # raise TypeError
+            
             try:
+                direction = direction.upper()
                 is_valid = self.validate_direction( direction )
-            except TypeError as details:
-                print(f"{direction} is not a string, must enter one of U, D, L, R") # will also accept lower case
+            # except TypeError as details:
+            #     print(f"Choose one of: U, D, L, R") # will also accept lower case
+            #     raise
             except ValueError as details:
-                print(f"{direction} is not a valid option. Choose one of: U, D, L, R") # will also accept lower case
+                print(f"Choose one of: U, D, L, R") # will also accept lower case
+                # raise
+                continue
             else:
                 return direction
 
@@ -191,7 +192,6 @@ class Player:
         '''
         if direction==None:
             direction = self.get_move_direction() # direction moving
-
         board = self.get_board()
         x,y = self.get_coords() # coordinates of initial position
         old_tile = board.get_coord_tile( x,y ) # initial position tile
@@ -224,7 +224,7 @@ class Player:
             # or target_tile.checkTilePlayer(): #Second check doesnt actually exist yet
                 print(f"entered tile is barrier or player: {target_tile.get_contents()}")
                 return
-            elif ( is_treasure ): # 0 evals to false, 
+            elif ( is_treasure ): # 0 evals to false,
                 treasure = target_tile.get_contents()
                 treasure.collect_treasure( board, target_tile, self )
             # else empty is only alternative (unspecified), 
