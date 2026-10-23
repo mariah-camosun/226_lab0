@@ -1,68 +1,68 @@
 <mxfile host="app.diagrams.net">
   <diagram name="Page-1" id="5OaaEsXTI26hM2EHwZra">
-    <mxGraphModel dx="682" dy="555" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+    <mxGraphModel dx="2184" dy="2374" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
         <mxCell id="uQ9hbC53AYLW13qBH_qL-1" parent="1" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" value="Barrier" vertex="1">
-          <mxGeometry height="107" width="240" x="600" y="200" as="geometry" />
+          <mxGeometry height="160" width="420" x="760" y="438" as="geometry" />
         </mxCell>
-        <mxCell id="uQ9hbC53AYLW13qBH_qL-2" parent="uQ9hbC53AYLW13qBH_qL-1" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" value="&lt;div&gt;&lt;u&gt;symbol: str (class)&lt;/u&gt;&lt;/div&gt;isOrigin: bool" vertex="1">
-          <mxGeometry height="47" width="240" y="26" as="geometry" />
+        <mxCell id="uQ9hbC53AYLW13qBH_qL-2" parent="uQ9hbC53AYLW13qBH_qL-1" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" value="&lt;div&gt;&lt;u&gt;symbol: str (class)&lt;/u&gt;&lt;/div&gt;is_origin: bool" vertex="1">
+          <mxGeometry height="47" width="420" y="26" as="geometry" />
         </mxCell>
         <mxCell id="uQ9hbC53AYLW13qBH_qL-3" parent="uQ9hbC53AYLW13qBH_qL-1" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" value="" vertex="1">
-          <mxGeometry height="8" width="240" y="73" as="geometry" />
+          <mxGeometry height="8" width="420" y="73" as="geometry" />
         </mxCell>
-        <mxCell id="uQ9hbC53AYLW13qBH_qL-4" parent="uQ9hbC53AYLW13qBH_qL-1" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" value="+ getters/setters, init, str" vertex="1">
-          <mxGeometry height="26" width="240" y="81" as="geometry" />
+        <mxCell id="uQ9hbC53AYLW13qBH_qL-4" parent="uQ9hbC53AYLW13qBH_qL-1" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" value="&lt;div&gt;__init__( self, is_origin: bool )-&amp;gt;None&lt;/div&gt;&lt;div&gt;__str__( self )-&amp;gt;str&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;+ getters/setters(symbol, is_origin), init, str" vertex="1">
+          <mxGeometry height="79" width="420" y="81" as="geometry" />
         </mxCell>
         <mxCell id="uQ9hbC53AYLW13qBH_qL-5" parent="1" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" value="Treasure" vertex="1">
-          <mxGeometry height="150" width="240" x="600" y="30" as="geometry" />
+          <mxGeometry height="201" width="420" x="760" y="200" as="geometry" />
         </mxCell>
         <mxCell id="uQ9hbC53AYLW13qBH_qL-6" parent="uQ9hbC53AYLW13qBH_qL-5" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" value="&lt;u&gt;symbol: str (class)&lt;/u&gt;&lt;br&gt;value: int" vertex="1">
-          <mxGeometry height="47" width="240" y="26" as="geometry" />
+          <mxGeometry height="47" width="420" y="26" as="geometry" />
         </mxCell>
         <mxCell id="uQ9hbC53AYLW13qBH_qL-7" parent="uQ9hbC53AYLW13qBH_qL-5" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" value="" vertex="1">
-          <mxGeometry height="8" width="240" y="73" as="geometry" />
+          <mxGeometry height="8" width="420" y="73" as="geometry" />
         </mxCell>
-        <mxCell id="uQ9hbC53AYLW13qBH_qL-8" parent="uQ9hbC53AYLW13qBH_qL-5" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" value="+ getters/setters, init, str&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;validateTreasureValue( value): bool&lt;/div&gt;" vertex="1">
-          <mxGeometry height="69" width="240" y="81" as="geometry" />
+        <mxCell id="uQ9hbC53AYLW13qBH_qL-8" parent="uQ9hbC53AYLW13qBH_qL-5" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" value="&lt;div&gt;__init__(self, treasure_value: int)-&amp;gt;None&lt;/div&gt;&lt;div&gt;__str__(self)-&amp;gt;str&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;+ getters/setters (symbol, value), init, str&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;validate_value(self, value)-&amp;gt;bool&lt;/div&gt;&lt;div&gt;collect_treasure( self, board:Board, tile:Tile, player:Player )-&amp;gt;None&lt;/div&gt;" vertex="1">
+          <mxGeometry height="120" width="420" y="81" as="geometry" />
         </mxCell>
         <mxCell id="uQ9hbC53AYLW13qBH_qL-10" parent="1" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" value="Player" vertex="1">
-          <mxGeometry height="290" width="240" x="600" y="320" as="geometry" />
+          <mxGeometry height="340" width="420" x="760" y="-200" as="geometry" />
         </mxCell>
-        <mxCell id="uQ9hbC53AYLW13qBH_qL-11" parent="uQ9hbC53AYLW13qBH_qL-10" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" value="&lt;u&gt;playerCount: int (class)&lt;/u&gt;&lt;br&gt;num: int&lt;div&gt;symbol: str&lt;/div&gt;&lt;div&gt;score: int&lt;br&gt;xCoord: int&lt;/div&gt;&lt;div&gt;yCoord: int&lt;/div&gt;&lt;div&gt;gameBoard: Board&lt;/div&gt;" vertex="1">
-          <mxGeometry height="120" width="240" y="26" as="geometry" />
+        <mxCell id="uQ9hbC53AYLW13qBH_qL-11" parent="uQ9hbC53AYLW13qBH_qL-10" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" value="&lt;u&gt;player_count: int (class)&lt;/u&gt;&lt;br&gt;num: int&lt;div&gt;symbol: str&lt;/div&gt;&lt;div&gt;score: int&lt;br&gt;row: int&lt;/div&gt;&lt;div&gt;column: int&lt;/div&gt;&lt;div&gt;game_board: Board&lt;/div&gt;" vertex="1">
+          <mxGeometry height="120" width="420" y="26" as="geometry" />
         </mxCell>
         <mxCell id="uQ9hbC53AYLW13qBH_qL-12" parent="uQ9hbC53AYLW13qBH_qL-10" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" value="" vertex="1">
-          <mxGeometry height="8" width="240" y="146" as="geometry" />
+          <mxGeometry height="8" width="420" y="146" as="geometry" />
         </mxCell>
-        <mxCell id="uQ9hbC53AYLW13qBH_qL-13" parent="uQ9hbC53AYLW13qBH_qL-10" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" value="+ getters/setters, init, str&lt;br&gt;incrementPlayerCount():&amp;nbsp;&lt;div&gt;add_score( addScore )&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;validateDirection( direction ): bool&lt;/div&gt;&lt;div&gt;move():&amp;nbsp;&lt;/div&gt;" vertex="1">
-          <mxGeometry height="136" width="240" y="154" as="geometry" />
+        <mxCell id="uQ9hbC53AYLW13qBH_qL-13" parent="uQ9hbC53AYLW13qBH_qL-10" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" value="&lt;div&gt;__init__(self, column:int, row:int, game_board)-&amp;gt;None&lt;/div&gt;&lt;div&gt;__str__(self)-&amp;gt;str&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;+ getters/setters (player count, name, symbol, score, coords, board), init, str&lt;br&gt;increment_player_count( cls )-&amp;gt;None&lt;div&gt;add_score( self, add_score:int )-&amp;gt;int&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;validate_direction( self, direction: str )-&amp;gt;bool&lt;/span&gt;&lt;/div&gt;&lt;div&gt;validate_coords( self, row:int, column:int)-&amp;gt;bool&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;get_move_direction( self )-&amp;gt;str&lt;/div&gt;&lt;div&gt;move( self, direction=None )-&amp;gt;None:&lt;/div&gt;" vertex="1">
+          <mxGeometry height="186" width="420" y="154" as="geometry" />
         </mxCell>
         <mxCell id="uQ9hbC53AYLW13qBH_qL-14" parent="1" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" value="Tile" vertex="1">
-          <mxGeometry height="261" width="160" x="350" y="210" as="geometry" />
+          <mxGeometry height="290" width="270" x="360" y="163" as="geometry" />
         </mxCell>
         <mxCell id="uQ9hbC53AYLW13qBH_qL-15" parent="uQ9hbC53AYLW13qBH_qL-14" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" value="contents: Class&lt;div&gt;symbol: str&lt;/div&gt;" vertex="1">
-          <mxGeometry height="47" width="160" y="26" as="geometry" />
+          <mxGeometry height="47" width="270" y="26" as="geometry" />
         </mxCell>
         <mxCell id="uQ9hbC53AYLW13qBH_qL-16" parent="uQ9hbC53AYLW13qBH_qL-14" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" value="" vertex="1">
-          <mxGeometry height="8" width="160" y="73" as="geometry" />
+          <mxGeometry height="8" width="270" y="73" as="geometry" />
         </mxCell>
-        <mxCell id="uQ9hbC53AYLW13qBH_qL-17" parent="uQ9hbC53AYLW13qBH_qL-14" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" value="+ getters/setters, init, str&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;clearTile():None&lt;/div&gt;&lt;div&gt;checkTileContents()&lt;/div&gt;&lt;div&gt;checkTileEmpty()&lt;/div&gt;&lt;div&gt;checkTileBarrier()&lt;/div&gt;&lt;div&gt;checkTileTreasure()&lt;/div&gt;&lt;div&gt;// checkTilePlayer()&lt;/div&gt;&lt;div&gt;setTreasureTile()&lt;/div&gt;&lt;div&gt;setBarrierTile()&lt;/div&gt;&lt;div&gt;addPlayerToTile()&lt;/div&gt;" vertex="1">
-          <mxGeometry height="180" width="160" y="81" as="geometry" />
+        <mxCell id="uQ9hbC53AYLW13qBH_qL-17" parent="uQ9hbC53AYLW13qBH_qL-14" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" value="&lt;div&gt;__init__(self)-&amp;gt;None&lt;/div&gt;&lt;div&gt;__str__(self)-&amp;gt;str&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;/div&gt;+ getters/setters (contents, symbol)&lt;div&gt;&lt;br&gt;&lt;div&gt;clear_tile(self)-&amp;gt;None&lt;/div&gt;&lt;div&gt;REMOVED: checkTileContents()&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;background-color: transparent;&quot;&gt;check_empty(self)-&amp;gt;bool&lt;/span&gt;&lt;/div&gt;&lt;div&gt;check_if_barrier(self)-&amp;gt;tuple[bool, bool]&lt;/div&gt;&lt;div&gt;check_is_treasure(self)-&amp;gt;int:&lt;/div&gt;&lt;div&gt;set_to_treasure( self, treasure_value: int )-&amp;gt;bool&lt;/div&gt;&lt;div&gt;set_to_barrier(self, is_origin: bool )-&amp;gt;bool&lt;/div&gt;&lt;div&gt;set_to_player( self, player: Player )-&amp;gt;None&lt;/div&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="209" width="270" y="81" as="geometry" />
         </mxCell>
         <mxCell id="uQ9hbC53AYLW13qBH_qL-18" parent="1" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" value="Board" vertex="1">
-          <mxGeometry height="440" width="220" x="60" y="210" as="geometry" />
+          <mxGeometry height="600" width="430" x="-150" y="120" as="geometry" />
         </mxCell>
-        <mxCell id="uQ9hbC53AYLW13qBH_qL-19" parent="uQ9hbC53AYLW13qBH_qL-18" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" value="size: int&lt;div&gt;numBarriers: int&lt;/div&gt;&lt;div&gt;numTreasures: int&lt;/div&gt;&lt;div&gt;tileCount: int&lt;/div&gt;&lt;div&gt;players: [ Player ]&lt;/div&gt;&lt;div&gt;grid: [ [Tile] ]&lt;/div&gt;" vertex="1">
-          <mxGeometry height="107" width="220" y="26" as="geometry" />
+        <mxCell id="uQ9hbC53AYLW13qBH_qL-19" parent="uQ9hbC53AYLW13qBH_qL-18" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" value="size: int&lt;div&gt;barrier_number: int&lt;/div&gt;&lt;div&gt;treasure_number: int&lt;/div&gt;&lt;div&gt;tile_count: int&lt;/div&gt;&lt;div&gt;players: [ Player ]&lt;/div&gt;&lt;div&gt;grid: [ [Tile] ]&lt;/div&gt;" vertex="1">
+          <mxGeometry height="107" width="430" y="26" as="geometry" />
         </mxCell>
         <mxCell id="uQ9hbC53AYLW13qBH_qL-20" parent="uQ9hbC53AYLW13qBH_qL-18" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" value="" vertex="1">
-          <mxGeometry height="8" width="220" y="133" as="geometry" />
+          <mxGeometry height="8" width="430" y="133" as="geometry" />
         </mxCell>
-        <mxCell id="uQ9hbC53AYLW13qBH_qL-21" parent="uQ9hbC53AYLW13qBH_qL-18" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" value="+ getters/setters, init, str&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;makeEmptyBoard()&lt;/div&gt;&lt;div&gt;makeBarriers()&lt;/div&gt;&lt;div&gt;makeOneBarrier()&lt;/div&gt;&lt;div&gt;makeTreasures()&lt;/div&gt;&lt;div&gt;makeOneTreasure()&lt;/div&gt;&lt;div&gt;makeNewPlayer()&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;getCoordContents(x,y): Tile&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;decrementTreasureCount()&lt;/div&gt;&lt;div&gt;randomizePosition()&lt;/div&gt;&lt;div&gt;placeInRandomEmpty( item )&lt;/div&gt;&lt;div&gt;collectTreasure( tile, player )&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;validateSize(): bool&lt;/div&gt;&lt;div&gt;validateBarrierCount(): bool&lt;/div&gt;&lt;div&gt;validateTreasureCount(): bool&lt;/div&gt;" vertex="1">
-          <mxGeometry height="299" width="220" y="141" as="geometry" />
+        <mxCell id="uQ9hbC53AYLW13qBH_qL-21" parent="uQ9hbC53AYLW13qBH_qL-18" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" value="&lt;div&gt;__init__(self, size: int, barrier_number: int, treasure_number: int)-&amp;gt;None&lt;/div&gt;&lt;div&gt;__str__(self)-&amp;gt;str&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;make_empty_board(self)-&amp;gt;None&lt;/div&gt;&lt;div&gt;make_barriers(self, board_size: int)-&amp;gt;bool&lt;/div&gt;&lt;div&gt;make_one_barrier(self, board_size: int)-&amp;gt;None&lt;/div&gt;&lt;div&gt;make_treasures(self, treasure_number:int)-&amp;gt;bool&lt;/div&gt;&lt;div&gt;make_one_treasure(self)-&amp;gt;None&lt;/div&gt;&lt;div&gt;make_initial_player(self)-&amp;gt;Player&lt;/div&gt;&lt;div&gt;make_new_player(self)-&amp;gt;Player&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;+ basic getters/setters ( board, size, tile count, treasure count, barrier count)&lt;/div&gt;&lt;div&gt;get_coord_tile(self, column: int, row: int)-&amp;gt;Tile&lt;/div&gt;&lt;div&gt;get_players(self)-&amp;gt;list[Player]&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;decrement_treasure_count(self)-&amp;gt;None&lt;/div&gt;&lt;div&gt;randomize_position(self)-&amp;gt;None&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;REMOVED: &lt;/span&gt;place_in_random_empty( self, item_to_place)-&amp;gt;None&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;validate_size(self, size:int): bool&lt;/div&gt;&lt;div&gt;validate_barrier_number(self, barrier_number:int): bool&lt;/div&gt;&lt;div&gt;validate_treasure_number(self, treasure_number:int): bool&lt;/div&gt;&lt;div&gt;check_on_board( self, column, row )-&amp;gt;bool&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;show_players(self)-&amp;gt;none&lt;/div&gt;&lt;div&gt;report_player_scores(self)-&amp;gt;str&lt;/div&gt;&lt;div&gt;report_a_player_score(self, player)-&amp;gt;str&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;REMOVED:&amp;nbsp;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;collectTreasure( tile, player )&lt;/span&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="459" width="430" y="141" as="geometry" />
         </mxCell>
         <mxCell id="uQ9hbC53AYLW13qBH_qL-22" edge="1" parent="1" source="uQ9hbC53AYLW13qBH_qL-5" style="endArrow=classic;html=1;rounded=0;exitX=0;exitY=0;exitDx=0;exitDy=0;entryX=1;entryY=0;entryDx=0;entryDy=0;" target="uQ9hbC53AYLW13qBH_qL-14" value="">
           <mxGeometry height="50" relative="1" width="50" as="geometry">
@@ -87,6 +87,9 @@
             <mxPoint x="660" y="500" as="sourcePoint" />
             <mxPoint x="570" y="390" as="targetPoint" />
           </mxGeometry>
+        </mxCell>
+        <mxCell id="fgzxBEHssQmfLSo9LLKd-1" edge="1" parent="1" source="uQ9hbC53AYLW13qBH_qL-10" style="edgeStyle=none;curved=1;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fontSize=12;startSize=8;endSize=8;entryX=1;entryY=0;entryDx=0;entryDy=0;exitX=0;exitY=0;exitDx=0;exitDy=0;" target="uQ9hbC53AYLW13qBH_qL-18" value="">
+          <mxGeometry relative="1" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
