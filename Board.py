@@ -212,7 +212,7 @@ class Board:
         #once successfull treasure, add 1 to treasure_count
         self.set_treasure_count( self.get_treasure_count() + 1 )
 
-    def make_initial_player( self ):
+    def make_initial_player( self )->Player:
         Player.set_player_count(0)
         return self.make_new_player()
 
@@ -412,10 +412,18 @@ class Board:
 # Utility
     def report_player_scores(self):
         '''
-        prints out the current player scores for all players
+        print to terminal all current players as a list
         '''
+        output = "Current players: "
+        for player in self.players:
+            output += (str)(player)
+            output += ', '
+        trimmed = output[:-2]
+        print(trimmed)
+
+    def report_player_scores(self)->str:
         '''
-        prints out the current player scores for all players
+        returns current player scores for all players
         '''
         players = self.get_players()
         for player in players:
