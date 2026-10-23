@@ -1,0 +1,6 @@
+in 'server' terminal: python3 server.py
+
+in 'client' terminal: echo -n '0001' | xxd -r -p | nc 127.0.0.1 12345 | xxd
+
+
+why am i seeing soemthing other than the instructor
