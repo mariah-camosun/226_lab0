@@ -86,7 +86,7 @@ class Board:
                 output += "  "
             output += "\n"
         output += "\nnum treasures remaining: " + (str)(self.treasure_count) + "\n"
-        self.report_player_scores()
+        output += self.report_player_scores()
         return output
 
 # init functions
@@ -137,17 +137,23 @@ class Board:
             for i in range( barrier_number ): 
                 self.make_one_barrier( board_size )
 
-    def make_one_barrier( self, board_size: int )->None:
+    def make_one_barrier( self, board_size: int, column=None, row=None )->None:
         '''
         create 1 'block' of barriers (2x2 tiles) at a random position
+        includes check for complete overlap and increments barrierCount on success
 
         # NOTE realized I can eliminate this parameter wherever it is used
         :param board_size: int, size of board
         '''
+        x = column
+        y = row
         while(True):
-            origin_tile, x, y = self.randomize_position()
-            is_duplicate = origin_tile.set_to_barrier( True )
-            if ( not is_duplicate ):
+            if ( x == None or y == None):
+                origin_tile, x, y = self.randomize_position()
+            else:
+                origin_tile = self.get_coord_tile( x,y )
+            is_success = origin_tile.set_to_barrier( True )
+            if ( not is_success ):
                 break
 
         #once successfull barrier origin, add 1 to barrierCount
@@ -205,8 +211,8 @@ class Board:
             x = random.randint(0, board_size-1)
             y = random.randint(0, board_size-1)
             treasure_tile = self.get_coord_tile(x,y)
-            is_duplicate = treasure_tile.set_to_treasure( 1 )
-            if ( not is_duplicate ):
+            is_success = treasure_tile.set_to_treasure( 1 )
+            if ( is_success ):
                 break
 
         #once successfull treasure, add 1 to treasure_count
@@ -273,12 +279,6 @@ class Board:
 
         :return: list[Player], list of all current players
         '''
-        output = "Current players: "
-        for player in self.players:
-            output += (str)(player)
-            output += ', '
-        trimmed = output[:-2]
-        print(trimmed)
         return self.players
     #no set_players() - instead, make_new_player()
 
@@ -340,8 +340,8 @@ class Board:
         board_size = self.get_size()
         column = random.randint(0, board_size-1)
         row = random.randint(0, board_size-1)
-        prev_tile = self.get_coord_tile( column, row )
-        return prev_tile, column, row
+        tile = self.get_coord_tile( column, row )
+        return tile, column, row
 
 # Validation and checks
     def validate_size(self, size: int)->bool:
@@ -355,7 +355,7 @@ class Board:
         '''
         if not isinstance(size, int):
             raise TypeError("Size given is not an integer")
-        elif ( not( 0 < size <= 30) ):
+        elif ( not( 5 <= size <= 30) ):
             raise ValueError("Size must be at least 5.")
         else:
             return True
@@ -410,7 +410,7 @@ class Board:
             return False
 
 # Utility
-    def report_player_scores(self):
+    def show_players( self )->None:
         '''
         print to terminal all current players as a list
         '''
@@ -421,13 +421,19 @@ class Board:
         trimmed = output[:-2]
         print(trimmed)
 
-    def report_player_scores(self)->str:
+    def report_player_scores(self):
         '''
         returns current player scores for all players
         '''
         players = self.get_players()
+        output = ""
         for player in players:
-            self.report_a_player_score( player )
+            output += self.report_a_player_score( player )
+            output += "\n"
+        return output
 
-    def report_a_player_score(self, player):
-        print(f"player {player.get_name()} score: {player.get_score()}")
+    def report_a_player_score(self, player)->str:
+        '''
+        returns current player score for 1 players
+        '''        
+        return str(f"player {player.get_name()} score: {player.get_score()}")
