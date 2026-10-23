@@ -218,7 +218,7 @@ class Board:
         #once successfull treasure, add 1 to treasure_count
         self.set_treasure_count( self.get_treasure_count() + 1 )
 
-    def make_initial_player( self ):
+    def make_initial_player( self )->Player:
         Player.set_player_count(0)
         return self.make_new_player()
 
