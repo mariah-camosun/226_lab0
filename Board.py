@@ -63,7 +63,7 @@ class Board:
         else:
             self.treasure_number = treasure_number
 
-        print(f"to make: {size}*{size}, {barrier_number} barriers, {treasure_number} treasures")
+        # print(f"to make: {size}*{size}, {barrier_number} barriers, {treasure_number} treasures")
         self.make_empty_board( size )
         self.make_barriers( barrier_number )
         self.make_treasures( treasure_number )
@@ -111,6 +111,17 @@ class Board:
 
         for item in range( size ):
             self.grid.append( [ Tile() for _ in range (size) ] )
+    @classmethod
+    def new_max_board( cls, size ):
+        '''
+        make a board of size x size tiles
+        fill with maximum allowed barriers and treasures
+        sets tile count to size**2, treasure and barrier counts
+        '''
+        num_barriers = ( size**2 // 4 ) // 5
+        num_treasures = size**2 // 20 
+
+        return Board( size, num_barriers, num_treasures )
 
     def make_barriers( self, barrier_number: int )->None:
         '''
