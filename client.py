@@ -4,10 +4,12 @@ from socket import socket, AF_INET, SOCK_STREAM
 from sys import argv
 import main
 import constants
+import asyncio
+from struct import pack, unpack
 
 BUF_SIZE = 2
 HOST = '10.21.75.22'
-PORT = 65432
+PORT = 12345
 
 def request_board():
     # send request (already binary string)
@@ -15,13 +17,16 @@ def request_board():
     
     # recieve, decode & interpret data
     reply = sock.recv( BUF_SIZE )
-    decoded_reply = reply.decode()
-    print('Reply:', decoded_reply)
-    return decoded_reply    
+    print( reply )
+    # decoded_reply = reply.decode()
+    unpacked = unpack( '!H', reply )
+    print('Reply:', unpacked)
+    return unpacked    
 
-with socket(AF_INET, SOCK_STREAM) as sock:
+sock = socket(AF_INET, SOCK_STREAM)
+# with socket(AF_INET, SOCK_STREAM) as sock:
     # create connection
-    sock.connect(( HOST, PORT ))
-    print( 'Client:', sock.getsockname())
+sock.connect(( HOST, PORT ))
+print( 'Client:', sock.getsockname())
 
-    board = request_board()
+board = request_board()
