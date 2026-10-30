@@ -2,20 +2,26 @@
 
 from socket import socket, AF_INET, SOCK_STREAM
 from sys import argv
+import main
+import constants
 
-BUF_SIZE = 1024
-HOST = ''
+BUF_SIZE = 2
+HOST = '10.21.75.22'
 PORT = 65432
 
-if len(argv) != 2:
-    print(argv[0] + '<message>')
-    exit()
-
-with socket(AF_INET, SOCK_STREAM) as sock:
-    sock.connect(( HOST, PORT ))
-    print( 'Client:', sock.getsockname())
-    data = argv[1].encode( 'utf-8' )
-    sock.sendall( data )
+def request_board():
+    # send request (already binary string)
+    main.send_cmd(sock, constants.PRINT_CMD, '!B')
+    
+    # recieve, decode & interpret data
     reply = sock.recv( BUF_SIZE )
     decoded_reply = reply.decode()
     print('Reply:', decoded_reply)
+    return decoded_reply    
+
+with socket(AF_INET, SOCK_STREAM) as sock:
+    # create connection
+    sock.connect(( HOST, PORT ))
+    print( 'Client:', sock.getsockname())
+
+    board = request_board()

@@ -26,6 +26,7 @@
 ### stage 1:
 #### client to do: 
     [ ] connect to server
+            - currently getting connection refused
     [ ] send print cmd to server
         [ ] update server to accept print cmd
     [ ] close connection
