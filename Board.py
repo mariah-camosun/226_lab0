@@ -63,7 +63,7 @@ class Board:
         else:
             self.treasure_number = treasure_number
 
-        print(f"to make: {size}*{size}, {barrier_number} barriers, {treasure_number} treasures")
+        # print(f"to make: {size}*{size}, {barrier_number} barriers, {treasure_number} treasures")
         self.make_empty_board( size )
         self.make_barriers( barrier_number )
         self.make_treasures( treasure_number )
@@ -85,8 +85,8 @@ class Board:
                 output += tile.__str__()
                 output += "  "
             output += "\n"
-        output += "\nnum treasures remaining: " + (str)(self.treasure_count) + "\n"
-        output += self.report_player_scores()
+        # output += "\nnum treasures remaining: " + (str)(self.treasure_count) + "\n"
+        # output += self.report_player_scores()
         return output
 
 # init functions
@@ -111,6 +111,20 @@ class Board:
 
         for item in range( size ):
             self.grid.append( [ Tile() for _ in range (size) ] )
+    @classmethod
+    def new_max_board( cls, size ):
+        '''
+        make a board of size x size tiles
+        fill with maximum allowed barriers and treasures
+        sets tile count to size**2, treasure and barrier counts
+
+        :param1: int, tiles per side of board
+        :returns: board object
+        '''
+        num_barriers = ( size**2 // 4 ) // 5
+        num_treasures = size**2 // 20 
+
+        return Board( size, num_barriers, num_treasures )
 
     def make_barriers( self, barrier_number: int )->None:
         '''
@@ -282,6 +296,9 @@ class Board:
         return self.players
     #no set_players() - instead, make_new_player()
 
+    def get_player( self, player_number )->Player:
+        return self.get_players()[player_number - 1]
+
     def get_tile_count( self )->int:
         '''
         get number of tiles on the board
@@ -389,7 +406,7 @@ class Board:
         '''
         if not isinstance(treasure_number, int ):
             raise TypeError("treasure_number given needs to be an integer")
-        elif ( treasure_number <= 0 ):
+        elif ( treasure_number < 0 ):
             raise ValueError("Cannot have negative treasures")
         # treasures must be <= 5% of board
         elif ( treasure_number > self.get_tile_count() * .05 ):

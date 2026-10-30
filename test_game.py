@@ -12,13 +12,14 @@ def set_monkeypatch( input_values, monkeypatch ):
 
 # ---------------------Testing Player---------------------------------
 def test_player_score():
-    b = Board(10,1,4)
+    b = Board(10,0,0)
     # changed from original (row, column, board_size/board, initial score) 
     # to: (column, row, board_size/board, initial score) for consistency w/ my code (x,y) order
     p = Player(2, 1, b, 3) 
 
     # testing: set, get, add score & get_coords()
     assert p.get_coords() == (2,1)
+    b.get_coord_tile(2,0).clear_tile()
     assert p.get_score() == 3
     p.add_score(10)
     assert p.get_score() == 13
@@ -29,7 +30,7 @@ def test_player_score():
 
 def test_player_multi_creation():
     # testing: get_players(), get_player_count() and make_new_player() 
-    m = Board(5, 0, 1)
+    m = Board(5, 0, 0)
     playerList = m.get_players()
     p1 = playerList[0]
 
@@ -63,7 +64,7 @@ def test_player_multi_creation():
     assert str(p3) == "9"
 
 def test_player_multi_score():
-    m = Board(5, 0, 1)
+    m = Board(5, 0, 0)
     playerList = m.get_players()
     p1 = playerList[0]
     p2 = m.make_new_player()
@@ -87,7 +88,7 @@ def test_player_multi_score():
     assert p2.get_score() == -7
 
 def test_player_coords():
-    b = Board(10,1,4)
+    b = Board(10,0,0)
     p = Player(2, 1, b, 3) 
 
     # testing: coords set above correctly, and get_coords()
@@ -130,7 +131,7 @@ def test_player_coords():
         p1.validate_coords( 11, 3 )
 
 def test_Player_getMoveDir( monkeypatch ): # under 'player'cover
-    b = Board(5,0,1)
+    b = Board(5,0,0)
     p1 = Player( 3,3,b )
 
     set_monkeypatch(["a", "uu", 1, "D"], monkeypatch)
@@ -147,7 +148,7 @@ def test_Player_getMoveDir( monkeypatch ): # under 'player'cover
     assert p1.get_move_direction() == constants.RIGHT
 
 def test_player_move(monkeypatch): # under 'player'
-    b = Board(5,0,1)
+    b = Board(5,0,0)
 
     # make sure that tiles are free to start
     b.get_coord_tile(1,0).clear_tile()
@@ -233,7 +234,7 @@ def test_player_move(monkeypatch): # under 'player'
 
 # ---------------------Testing Barrier---------------------------------
 def test_barrier():
-    b = Board(10,1,4)
+    b = Board(10,0,0)
 
     # test: Barrier class symbol set/get
     assert Barrier.get_symbol() == "X"
@@ -357,7 +358,7 @@ def test_tile_init_setget_attr():
     assert str( t1 ) == "_"     
 
 def test_tile_setgetcheck_contents(capsys):   
-    b = Board(10,0,4)
+    b = Board(10,0,0)
     p1 = b.get_players()[0]
     tile = b.get_coord_tile( 2,2 )
     # clear target tile & confirm
