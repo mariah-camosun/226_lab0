@@ -100,11 +100,6 @@ def get_tile_details( board ):
 
         return column, row, tile_contains
 
-        source_tile = constants.DELTA | row | column | now_content-empty
-        send_delta( source_tile )
-        target_tile = constants.DELTA | row | column | now_content
-        send_delta( target_tile )
-
 def direct_bin( cmd_byte, board ):
     # print( "Entered direct." )
     # print( "Data in:", cmd_byte, bin(cmd_byte))
