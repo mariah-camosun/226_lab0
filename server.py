@@ -39,12 +39,10 @@ def send_delta( board, isSourse ):
         column = column << 6
         if ( isSourse == True ):
             delta = constants.DELTA | row | column | constants.BLANK
-            print( bin(delta))
-            main.send_cmd( sc, delta, '!H' )
         else:
             delta = constants.DELTA | row | column | constants.PLAYER
-            print( bin(delta))
-            main.send_cmd( sc, delta, '!H' )
+        print( bin(delta))
+        main.send_cmd( sc, delta, '!H' )
 
 def direct_bin( cmd_byte, board ):
     # print( "Entered direct." )
@@ -72,14 +70,15 @@ def direct_bin( cmd_byte, board ):
     else:
         send_delta( board, True )
         player = board.get_player( 1 )
+        cmd = cmd << ( constants.S_OPT_SIZE )
 
-        if ( cmd << ( constants.S_OPT_SIZE ) == (constants.UP_BIN) ):
+        if ( cmd == (constants.UP_BIN) ):
             player.move( constants.UP )
-        elif ( cmd << ( constants.S_OPT_SIZE ) == (constants.DOWN_BIN) ):
+        elif ( cmd == (constants.DOWN_BIN) ):
             player.move( constants.DOWN )     
-        elif ( cmd << ( constants.S_OPT_SIZE ) == (constants.LEFT_BIN) ):
+        elif ( cmd == (constants.LEFT_BIN) ):
             player.move( constants.LEFT )   
-        elif ( (cmd) << ( constants.S_OPT_SIZE ) == (constants.RIGHT_BIN) ):
+        elif ( cmd == (constants.RIGHT_BIN) ):
             player.move( constants.RIGHT )
 
         send_delta( board, False )
@@ -105,6 +104,19 @@ def send_score( scoreOpt ):
         main.send_cmd( sc, fullCmd, '!B' )
         main.send_str( sc, '\n' )
 
+def handle_connection( sc, thread_name, board ):
+    print('Client:', sc.getpeername()) # Client IP and port
+    with sc: 
+        raw_data = recieve_buffer_data( sc, SHORT )
+        data = unpack_data( raw_data )
+
+        print( "recieved (hex):", hex( data ))
+
+        board = direct_bin( data, board )
+        # send_data( data )
+        # sc.sendall( str(output).encode('utf-8') ) 
+        # # Client IP and port implicit due to accept call
+
 with socket(AF_INET, SOCK_STREAM) as sock: # TCP socket
     sock.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1) # Details later
     sock.bind((HOST, PORT)) # Claim messages sent to port "PORT"
@@ -113,17 +125,27 @@ with socket(AF_INET, SOCK_STREAM) as sock: # TCP socket
     print('Server:', sock.getsockname()) # Server IP and port
 
     board = main.new_board( 10 )
-    
+    print( board )
+
     while True:
         sc, _ = sock.accept() # Wait until a connection is established
-        # Thread(target=add_to_total, args=(sc,)).start()
-        with sc: 
-            print('Client:', sc.getpeername()) # Client IP and port
-            raw_data = recieve_buffer_data( sc, SHORT )
-            data = unpack_data( raw_data )
+        thread_list = []
+        thread_counter = 0
+        # for i in range( MAX_CONNECTIONS ):
+        thread_list.append( Thread(target=handle_connection, args=(sc, thread_counter, board)) )
+        thread_counter += 1
+        thread_list[-1].start() 
 
-            print( "recieved (hex):", hex( data ))
-            board = direct_bin( data, board )
-            # send_data( data )
-            # sc.sendall( str(output).encode('utf-8') ) # Client IP and port implicit due to accept call
+
+
+
+
+# def add_to_total( sc ):
+#     with sc: 
+#         data = receive( sc, 1 )
+#         if len(data) != 1:
+#             return
+#         unpacked_data = unpack( '!B' , data)[0]
+#         sc.sendall( pack( '!Q', total_copy )) #yes, intentionally diff from abv
+#                     #best way of guarding the data
 
