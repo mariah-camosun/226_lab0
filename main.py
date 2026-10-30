@@ -1,26 +1,6 @@
 from Board import Board
 import constants
-    # TODO
-    # [~] fix functions that pass in unneccessary variables (eg. Board.Boardsize)
 
-# LAB 4
-# Modify main.py so that
-    # ??? [ ] it creates a 10 x 10 board with max barriers and treasures and 
-            # ??? [ ] prints out the board and player score
-    # [x] it accepts local TCP connections on port 12345
-    #       [ ] and non-local 
-    # [x] it prints out every received byte in hexadecimal form
-    # [ ] it implements the protocol shown in the figures on the next page
-            # [x] if the create board command is received, a board of size x size is created with the maximum number of barriers and treasures, 
-                # [x] and the entire board string is sent back to the client
-            # [ ] if a motion command is received, the command is passed to the board, and two delta messages are sent back to the
-                # client, representing the origin tile's index and value and then the destination tile's index and value; subsequently, the score
-                # message is sent
-    # [~] it ignores incoming messages that do not comply with the protocol
-    # [ ] it closes the connection after every message
-    # [ ] it prints out the board and score after every command is executed
-    # [ ] it is refactored to use functions throughout
-    # [ ] it does not crash
 
 #!/usr/bin/python3.11
 from socket import socket, AF_INET, SOCK_STREAM, SOL_SOCKET, SO_REUSEADDR
@@ -122,38 +102,34 @@ def direct_bin( cmd_byte, board ):
         player = board.get_player( 1 )
         # player.set_score( 4 )
         send_score( player.get_score() )
-        return board
 
     #otherwise its a move command, direction is one of 4
     else:
         send_delta( build_delta( board, True ) )
         player = board.get_player( 1 )
 
-
         if ( cmd << ( constants.S_OPT_SIZE ) == (constants.UP_BIN) ):
             player.move( constants.UP )
             send_delta( build_delta( board, False ) )
             send_score( player.get_score() )
-            show_board_scores(board)           
         elif ( cmd << ( constants.S_OPT_SIZE ) == (constants.DOWN_BIN) ):
             player.move( constants.DOWN )
             send_delta( build_delta( board, False ) )
-            send_score( player.get_score() )
-            show_board_scores(board)            
+            send_score( player.get_score() )         
         elif ( cmd << ( constants.S_OPT_SIZE ) == (constants.LEFT_BIN) ):
             player.move( constants.LEFT )
             send_delta( build_delta( board, False ) )
-            send_score( player.get_score() )
-            show_board_scores(board)           
+            send_score( player.get_score() )       
         elif ( (cmd) << ( constants.S_OPT_SIZE ) == (constants.RIGHT_BIN) ):
             player.move( constants.RIGHT )
             send_delta( build_delta( board, False ) )
             send_score( player.get_score() )
-            show_board_scores(board)
-        return board
+
+    show_board_scores(board) 
+    return board
 
 def show_board_scores(b):
-    print(b)
+    print( b )
     print( b.report_player_scores() )
 
 def new_board( num ):
