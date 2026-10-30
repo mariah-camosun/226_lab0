@@ -406,7 +406,7 @@ class Board:
         '''
         if not isinstance(treasure_number, int ):
             raise TypeError("treasure_number given needs to be an integer")
-        elif ( treasure_number <= 0 ):
+        elif ( treasure_number < 0 ):
             raise ValueError("Cannot have negative treasures")
         # treasures must be <= 5% of board
         elif ( treasure_number > self.get_tile_count() * .05 ):
