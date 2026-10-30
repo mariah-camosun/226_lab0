@@ -8,7 +8,7 @@ from socket import socket, AF_INET, SOCK_STREAM, SOL_SOCKET, SO_REUSEADDR
 from struct import pack, unpack
 from threading import Thread, current_thread, Semaphore
 
-BUF_SIZE = 1024
+BUF_SIZE = 1
 HOST = ''
 PORT = 12345
 SHORT = 1 # num bytes
