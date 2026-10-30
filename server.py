@@ -67,6 +67,8 @@ def direct_bin( cmd_byte, board ):
         send_score( player.get_score() )
 
     #otherwise its a move command, direction is one of 4
+    elif ( cmd >> ( constants.S_CMD_SIZE -1 ) != 1 ):
+             return board
     else:
         send_delta( board, True )
         player = board.get_player( 1 )
