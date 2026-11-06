@@ -8,8 +8,8 @@ import asyncio
 from struct import pack, unpack
 
 BUF_SIZE = 1024
-# HOST = '10.21.75.22' # mine
-HOST = '10.21.75.14'
+HOST = '10.21.75.22' # mine
+# HOST = '10.21.75.14' # Felix
 PORT = 12345
 
 def play_game( sock ):
@@ -163,42 +163,22 @@ def get_board( reply ):
         print("board size:", size)
         board = get_str( size )
         print( board )
-        # print( prettify_board( board, size ) ) 
-
-# def get_response( ): #board_size ):
-#     reply = sock.recv( BUF_SIZE )
-#     # bits = reply.len()
-#     if bits == 8: # recieve score cmd
-#         data = main.unpack_data()
-#         data = unpack(constants.REG_PACK_FLAG, reply)
-#         # get_score()
-#     elif bits == 16: # recieve delta cmd
-#         data = unpack(constants.LONG_PACK_FLAG, reply)
-
-    # elif bits >= board_size*board_size: #???? how pickup string....
-    #        data = get_str()
-    # else:
-    #     print( "incorrect number of bits")
-    
-    # return data
+        print( "\n")
+        print( prettify_board( board, size ) ) 
 
 def prettify_board( board, board_size ):
     newBoard = ''
     col_counter = 0
     for c in board:
-        newBoard += c
+        # newBoard += c
         col_counter += 1
         if col_counter == board_size:
             newBoard += c
+            newBoard += '\n'
+            col_counter = 0
         else:
             newBoard += c
             newBoard += ' '            
-    # for c in board:
-    #     if c == '\n':
-    #         newBoard += c
-    #     else:
-    #         newBoard += c
-    #         newBoard += ' '
     return newBoard
 
 
