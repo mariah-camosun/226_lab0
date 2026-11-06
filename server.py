@@ -109,7 +109,7 @@ def direct_request( cmd_byte, board ):
             send_score( player.get_score() )
         print("exited else move section")
     print("tail of direct")
-    main.show_board_scores(board) 
+    # main.show_board_scores(board) 
     return board
 
 def send_board( board_str ):

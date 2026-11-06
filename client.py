@@ -8,7 +8,8 @@ import asyncio
 from struct import pack, unpack
 
 BUF_SIZE = 1024
-HOST = '10.21.75.22'
+# HOST = '10.21.75.22' # mine
+HOST = '10.21.75.14'
 PORT = 12345
 
 def play_game( sock ):
@@ -69,7 +70,6 @@ def send_user_command( cmd, sock ): #, board_size  ):
     # reply = get_move_reply()
     # print( reply )
 
-
 def send_move_cmd( cmd ):
     cmd = cmd << constants.C_MOVE_TAIL
     print("sending:", bin(cmd))
@@ -105,7 +105,10 @@ def direct_reply():
         get_board( reply )
 
     if cmd == constants.SCORE_CMD:
+        print("score, reply:", reply)
+        print("entered score")
         get_player_score( reply )
+        handle_delta( reply )
 
     if cmd == constants.DELTA_CMD:
         handle_delta( reply )
@@ -127,14 +130,15 @@ def get_str( size ):    # recieve, decode & pass on
     return decoded_reply
 
 def handle_delta( reply ):
-        get_delta_opts( reply )
-    # maybe not the best way to handle this?
-        print("delta no 2")
-        reply_d2, cmd_d2 = get_reply_cmd( )
-        get_delta_opts( reply_d2 )
-        print("delta w score following")
-        reply_score, cmd_score = get_reply_cmd( )
-        get_player_score( reply_score )
+    print("delta, reply:", reply)
+    get_delta_opts( reply )
+# maybe not the best way to handle this?
+    print("delta no 2")
+    reply_d2, cmd_d2 = get_reply_cmd( )
+    get_delta_opts( reply_d2 )
+    print("delta w score following")
+    reply_score, cmd_score = get_reply_cmd( )
+    get_player_score( reply_score )
 
 def get_delta_opts( reply ):
     part2 = sock.recv( constants.SHORT )
