@@ -50,9 +50,9 @@ def direct_request( cmd_byte, board ):
 
 
     # recieve print board cmd
-    if ( cmd_byte == int(constants.PRINT_CMD) ):
+    if ( cmd_byte == int(constants.C_PRINT_CMD) ):
         print("in print board")
-        send_board( board.__str__() )
+        send_board( board )
     else:
         print( "else not print board cmd" )
         # get cmd portion of split cmd bits from remaining opt bits (via bitshifting)
@@ -115,17 +115,20 @@ def direct_request( cmd_byte, board ):
 def send_board( board_str ):
         print("entered send_board")
         
-        build_send_board_meta_cmd()
+        build_send_board_meta_cmd( board.get_size() )
+
+        board_str = str( board )
+        print(board_str)
 
         board_str = board_str.replace(" ", "").replace("\n", "").split("n", 1)
         board_str = board_str[0]
         # print( board_str )
         sc.sendall( board_str.encode( 'utf-8' ) )
 
-def build_send_board_meta_cmd():
-    cmd = 
-     
-     sc.sendall( pack( constants.REG_PACK_FLAG, cmd))
+def build_send_board_meta_cmd( board_size):
+    cmd = constants.PRINT_BOARD | ( board_size << constants.S_PRINT_TAIL )
+    print("board meta command:", bin(cmd)) 
+    sc.sendall( pack( constants.REG_PACK_FLAG, cmd))
      
 def send_score( scoreOpt ):
         # print( "entered send score, score data:", scoreOpt, bin(scoreOpt))

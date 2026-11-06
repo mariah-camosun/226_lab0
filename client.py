@@ -55,7 +55,7 @@ def validate_command( cmd ):
 
 def send_user_command( cmd, sock ): #, board_size  ):
     if cmd == constants.PRINT:
-        sock.sendall( pack ( constants.REG_PACK_FLAG, constants.PRINT_CMD ) )
+        sock.sendall( pack ( constants.REG_PACK_FLAG, constants.C_PRINT_CMD ) )
     elif cmd == constants.UP:
         send_move_cmd( constants.UP_BIN_MIN )       
     elif cmd == constants.DOWN:
@@ -88,7 +88,7 @@ writing our own queue, but can import it.
 '''
 # def get_board():
 #     # send request (already binary string)
-#     sock.sendall( pack ( constants.REG_PACK_FLAG, constants.PRINT_CMD) )
+#     sock.sendall( pack ( constants.REG_PACK_FLAG, constants.C_PRINT_CMD) )
 #     return get_str()
 
 # def show_server_board():
@@ -157,7 +157,9 @@ def get_player_score( reply ):
 def get_board( reply ):
         size = ( reply & constants.S_PRINT_OPT_MASK ) >> constants.S_PRINT_TAIL
         print("board size:", size)
-        print( prettify_board( get_str( size ) ) ) 
+        board = get_str( size )
+        print( board )
+        # print( prettify_board( board, size ) ) 
 
 # def get_response( ): #board_size ):
 #     reply = sock.recv( BUF_SIZE )
