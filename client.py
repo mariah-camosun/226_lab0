@@ -76,28 +76,6 @@ def send_move_cmd( cmd ):
     print("sending-packed:", pack ( constants.REG_PACK_FLAG, cmd ))
     sock.sendall( pack ( constants.REG_PACK_FLAG, cmd ) )
 
-'''
-for interpretting the command - can look at the data can always get one bite
-and that will tell what to do with the rest?
-
-but cant manipulate the ...byte 'blob' until unpacked or decoded
-
-
-----once get to threading
-writing our own queue, but can import it.
-'''
-# def get_board():
-#     # send request (already binary string)
-#     sock.sendall( pack ( constants.REG_PACK_FLAG, constants.C_PRINT_CMD) )
-#     return get_str()
-
-# def show_server_board():
-#     board = direct_reply()
-#     board_size = board.len()
-#     board = prettify_board( board, board_size )
-#     print( board, " size: ", board_size )
-#     return board, board_size
-
 def direct_reply():
     reply, cmd = get_reply_cmd( )
 
@@ -170,17 +148,14 @@ def prettify_board( board, board_size ):
     newBoard = ''
     col_counter = 0
     for c in board:
-        # newBoard += c
+        newBoard += c
         col_counter += 1
         if col_counter == board_size:
-            newBoard += c
             newBoard += '\n'
             col_counter = 0
         else:
-            newBoard += c
             newBoard += ' '            
     return newBoard
-
 
 sock = socket(AF_INET, SOCK_STREAM)
 # create connection

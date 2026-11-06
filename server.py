@@ -13,6 +13,10 @@ HOST = ''
 PORT = 12345
 
 MIN_PACK_BYTES = 2
+'''
+----once get to threading
+writing our own queue, but can import it.
+'''
 
 def recieve_buffer_data( sc, size ): # recieves data in bitecode format
     data = b''
