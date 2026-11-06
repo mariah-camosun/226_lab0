@@ -16,8 +16,8 @@ def play_game( sock ):
 
     while (True):
         cmd = get_player_commands( sock ) #, board_size )
-        direct_user_command( cmd, sock ) #, board_size  )
-        get_reply()
+        send_user_command( cmd, sock ) #, board_size  )
+        direct_reply()
         # print updated board
         # print updated score
 
@@ -38,7 +38,7 @@ def get_player_commands( sock ): #, board_size ):
             # raise
             continue
         else:
-            return direct_user_command( command.upper(), sock ) #, board_size )
+            return send_user_command( command.upper(), sock ) #, board_size )
 
 def validate_command( cmd ):
     if isinstance( cmd, int):
@@ -53,9 +53,9 @@ def validate_command( cmd ):
         else:
             return True
 
-def direct_user_command( cmd, sock ): #, board_size  ):
+def send_user_command( cmd, sock ): #, board_size  ):
     if cmd == constants.PRINT:
-        pass
+        sock.sendall( pack ( constants.REG_PACK_FLAG, constants.PRINT_CMD ) )
     elif cmd == constants.UP:
         send_move_cmd( constants.UP_BIN_MIN )       
     elif cmd == constants.DOWN:
@@ -69,8 +69,9 @@ def direct_user_command( cmd, sock ): #, board_size  ):
     # reply = get_move_reply()
     # print( reply )
 
+
 def send_move_cmd( cmd ):
-    cmd = cmd << constants.S_MOVE_TAIL
+    cmd = cmd << constants.C_MOVE_TAIL
     print("sending:", bin(cmd))
     print("sending-packed:", pack ( constants.REG_PACK_FLAG, cmd ))
     sock.sendall( pack ( constants.REG_PACK_FLAG, cmd ) )
@@ -91,20 +92,13 @@ writing our own queue, but can import it.
 #     return get_str()
 
 # def show_server_board():
-#     board = get_reply()
+#     board = direct_reply()
 #     board_size = board.len()
 #     board = prettify_board( board, board_size )
 #     print( board, " size: ", board_size )
 #     return board, board_size
 
-
-
-def get_str( size ):    # recieve, decode & pass on
-    string = sock.recv( size * size )
-    decoded_reply = string.decode()
-    return decoded_reply
-
-def get_reply():
+def direct_reply():
     reply, cmd = get_reply_cmd( )
 
     if cmd == constants.PRINT_BOARD_CMD:
@@ -116,6 +110,21 @@ def get_reply():
     if cmd == constants.DELTA_CMD:
         handle_delta( reply )
 
+def get_reply_cmd(  ):
+    reply = sock.recv( constants.SHORT )
+    print( "reply-packed: ", reply)#bin(reply) )
+    reply = unpack(constants.REG_PACK_FLAG, reply)[0]
+    print( "reply-unpacked: ", reply, bin(reply) )
+    cmd = reply >> ( constants.BYTE_SIZE - constants.S_CMD_SIZE )
+
+    print( "reply:", reply, "bin: ", bin(reply) )
+    print( "cmd:", cmd, "bin: ", bin(cmd) )
+    return reply, cmd
+
+def get_str( size ):    # recieve, decode & pass on
+    string = sock.recv( size * size )
+    decoded_reply = string.decode()
+    return decoded_reply
 
 def handle_delta( reply ):
         get_delta_opts( reply )
@@ -127,17 +136,6 @@ def handle_delta( reply ):
         reply_score, cmd_score = get_reply_cmd( )
         get_player_score( reply_score )
 
-def get_reply_cmd(  ):
-    reply = sock.recv( constants.SHORT )
-    print( "reply-packed: ", reply)#bin(reply) )
-    reply = unpack(constants.REG_PACK_FLAG, reply)[0]
-    print( "reply-unpacked: ", reply, bin(reply) )
-    cmd = reply >> ( constants.BYTE_SIZE - constants.C_CMD_SIZE )
-
-    print( "reply:", reply, "bin: ", bin(reply) )
-    print( "cmd:", cmd, "bin: ", bin(cmd) )
-    return reply, cmd
-
 def get_delta_opts( reply ):
     part2 = sock.recv( constants.SHORT )
     part2 = unpack(constants.REG_PACK_FLAG, part2)[0]
@@ -147,36 +145,19 @@ def get_delta_opts( reply ):
     reply += part2
     print( "combo:", bin(reply))
 
-    row = ( reply & constants.C_ROW_MASK ) >> constants.C_ROW_TAIL_SIZE
-    col = ( reply & constants.C_COL_MASK ) >> constants.C_COL_TAIL_SIZE
+    row = ( reply & constants.S_ROW_MASK ) >> constants.S_ROW_TAIL_SIZE
+    col = ( reply & constants.S_COL_MASK ) >> constants.S_COL_TAIL_SIZE
     contents = ( reply & constants.TILE_MASK )
     print( "row:", row, ", col:", col, ", contents:", bin(contents))
 
 def get_player_score( reply ):
-        score = ( reply & constants.C_SCORE_MASK ) >> constants.C_SCORE_TAIL
+        score = ( reply & constants.S_SCORE_MASK ) >> constants.S_SCORE_TAIL
         print( "Player score:", score )
 
 def get_board( reply ):
-        size = ( reply & constants.C_PRINT_OPT_MASK ) >> constants.C_PRINT_TAIL
+        size = ( reply & constants.S_PRINT_OPT_MASK ) >> constants.S_PRINT_TAIL
         print("board size:", size)
         print( prettify_board( get_str( size ) ) ) 
-
-# def get_move_reply():
-    # delta1 = sock.recv( BUF_SIZE )
-    # delta1 = unpack(constants.LONG_PACK_FLAG, delta1)[0]
-    # print( bin(delta1) )
-
-    # # NEED TO BE ABLE TO IDENTIFY COMMAND BEFORE DECODING
-    # if ( reply << constants.b):
-
-    # delta2 = sock.recv( BUF_SIZE )
-    # delta2 = unpack(constants.LONG_PACK_FLAG, delta2)[0]
-    # print( bin(delta2) )
-
-    # score = sock.recv( BUF_SIZE )
-    # score = unpack(constants.REG_PACK_FLAG, score)[0]
-    # print( bin(score) )
-
 
 # def get_response( ): #board_size ):
 #     reply = sock.recv( BUF_SIZE )
@@ -194,27 +175,6 @@ def get_board( reply ):
     #     print( "incorrect number of bits")
     
     # return data
-
-
-# def get_delta():
-#     reply = get_response()
-
-#     unpacked = unpack('!H', reply)
-#     return unpacked
-
-# def get_score():
-#     reply = get_response()
-
-#     unpacked = unpack('!B', reply)
-#     return unpacked
-
-# def get_cmd():
-#     reply = get_response()
-
-#     unpacked = main.unpack_data( reply )
-#     return unpacked
-
-
 
 def prettify_board( board, board_size ):
     newBoard = ''
@@ -235,12 +195,13 @@ def prettify_board( board, board_size ):
     #         newBoard += ' '
     return newBoard
 
+
 sock = socket(AF_INET, SOCK_STREAM)
-# with socket(AF_INET, SOCK_STREAM) as sock:
-    # create connection
+# create connection
 sock.connect(( HOST, PORT ))
 # data = argv[1].encode('utf-8')
 
 print( 'Client:', sock.getsockname())
 
 play_game( sock )
+

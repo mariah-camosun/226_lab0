@@ -57,7 +57,7 @@ def direct_request( cmd_byte, board ):
         print( "else not print board cmd" )
         # get cmd portion of split cmd bits from remaining opt bits (via bitshifting)
         print( "recieved command:", cmd_byte, bin(cmd_byte) )
-        cmd = cmd_byte >> ( constants.BYTE_SIZE - constants.S_CMD_SIZE )
+        cmd = cmd_byte >> ( constants.BYTE_SIZE - constants.C_CMD_SIZE )
         print( cmd )
     
         # recieve create board command
@@ -65,9 +65,9 @@ def direct_request( cmd_byte, board ):
             print("in create board")
             print("cmd: ", cmd, bin(cmd) )
             # opt represents board size, in 4 bits
-            opt = ( cmd_byte & constants.S_SIZE_MASK ) # convert cmd bits to 0, using bitmask
+            opt = ( cmd_byte & constants.C_SIZE_MASK ) # convert cmd bits to 0, using bitmask
             print("opt: ", opt, bin(opt) )
-            opt = opt >> ( constants.S_CREATE_TAIL ) # cut off trailing 0 not part of opt
+            opt = opt >> ( constants.C_CREATE_TAIL ) # cut off trailing 0 not part of opt
             print("opt: ", opt, bin(opt) )
             # print( "cmd:",  cmd, bin(cmd), " opt:", opt, bin( opt ) )
 
@@ -81,7 +81,7 @@ def direct_request( cmd_byte, board ):
             send_score( player.get_score() )
 
         # recieve ??? need to clean this one up
-        # elif ( cmd >> ( constants.S_CMD_SIZE -1 ) != 1 ):
+        # elif ( cmd >> ( constants.C_CMD_SIZE -1 ) != 1 ):
         #         print("entered print board? I think?")
         #         return board
 
@@ -91,7 +91,7 @@ def direct_request( cmd_byte, board ):
             send_delta( board, True )
             player = board.get_player( 1 )
             print( bin(cmd) )
-            # cmd = cmd << ( constants.S_MOVE_TAIL )
+            # cmd = cmd << ( constants.C_MOVE_TAIL )
             # print( bin(cmd) )
 
             if ( cmd == (constants.UP_BIN_MIN) ):
@@ -114,15 +114,23 @@ def direct_request( cmd_byte, board ):
 
 def send_board( board_str ):
         print("entered send_board")
+        
+        build_send_board_meta_cmd()
+
         board_str = board_str.replace(" ", "").replace("\n", "").split("n", 1)
         board_str = board_str[0]
         # print( board_str )
-        main.send_str( sc, board_str )
+        sc.sendall( board_str.encode( 'utf-8' ) )
 
+def build_send_board_meta_cmd():
+    cmd = 
+     
+     sc.sendall( pack( constants.REG_PACK_FLAG, cmd))
+     
 def send_score( scoreOpt ):
         # print( "entered send score, score data:", scoreOpt, bin(scoreOpt))
         # scoreOpt = score & 0b001111 # make sure score is only component of cmd that is the 4 bit score sequence
-        scoreOpt = scoreOpt << (constants.C_SCORE_TAIL) # add 2 0s at the end to padd to correct position
+        scoreOpt = scoreOpt << (constants.S_SCORE_TAIL) # add 2 0s at the end to padd to correct position
         fullCmd = (constants.SCORE) | scoreOpt
 
         # print ( "score data: ", scoreOpt, bin(scoreOpt), "cmd: ", fullCmd, bin(fullCmd), " opt: " )
