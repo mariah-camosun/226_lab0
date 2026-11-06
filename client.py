@@ -57,17 +57,23 @@ def direct_user_command( cmd, sock ): #, board_size  ):
     if cmd == constants.PRINT:
         pass
     elif cmd == constants.UP:
-        sock.sendall( pack ( constants.REG_PACK_FLAG, constants.UP_BIN ) )
+        send_move_cmd( constants.UP_BIN_MIN )       
     elif cmd == constants.DOWN:
-        sock.sendall( pack ( constants.REG_PACK_FLAG, constants.DOWN_BIN ) )
+        send_move_cmd( constants.DOWN_BIN_MIN )
     elif cmd == constants.LEFT:
-        sock.sendall( pack ( constants.REG_PACK_FLAG, constants.LEFT_BIN ) )
+        send_move_cmd( constants.LEFT_BIN_MIN )
     elif cmd == constants.RIGHT:
-        sock.sendall( pack ( constants.REG_PACK_FLAG, constants.RIGHT_BIN ) )
+        send_move_cmd( constants.RIGHT_BIN_MIN )
     else:
         return
     # reply = get_move_reply()
     # print( reply )
+
+def send_move_cmd( cmd ):
+    cmd = cmd << constants.S_MOVE_TAIL
+    print("sending:", bin(cmd))
+    print("sending-packed:", pack ( constants.REG_PACK_FLAG, cmd ))
+    sock.sendall( pack ( constants.REG_PACK_FLAG, cmd ) )
 
 '''
 for interpretting the command - can look at the data can always get one bite
@@ -78,8 +84,6 @@ but cant manipulate the ...byte 'blob' until unpacked or decoded
 
 ----once get to threading
 writing our own queue, but can import it.
-
-
 '''
 # def get_board():
 #     # send request (already binary string)
@@ -110,8 +114,12 @@ def get_reply():
         get_player_score( reply )
 
     if cmd == constants.DELTA_CMD:
+        handle_delta( reply )
+
+
+def handle_delta( reply ):
         get_delta_opts( reply )
-# maybe not the best way to handle this?
+    # maybe not the best way to handle this?
         print("delta no 2")
         reply_d2, cmd_d2 = get_reply_cmd( )
         get_delta_opts( reply_d2 )
@@ -119,14 +127,15 @@ def get_reply():
         reply_score, cmd_score = get_reply_cmd( )
         get_player_score( reply_score )
 
-
 def get_reply_cmd(  ):
     reply = sock.recv( constants.SHORT )
+    print( "reply-packed: ", reply)#bin(reply) )
     reply = unpack(constants.REG_PACK_FLAG, reply)[0]
-    cmd = reply >> ( constants.C_OPT_SMALL )
+    print( "reply-unpacked: ", reply, bin(reply) )
+    cmd = reply >> ( constants.BYTE_SIZE - constants.C_CMD_SIZE )
 
-    print( reply, "bin: ", bin(reply) )
-    print( cmd, "bin: ", bin(cmd) )
+    print( "reply:", reply, "bin: ", bin(reply) )
+    print( "cmd:", cmd, "bin: ", bin(cmd) )
     return reply, cmd
 
 def get_delta_opts( reply ):
@@ -144,11 +153,11 @@ def get_delta_opts( reply ):
     print( "row:", row, ", col:", col, ", contents:", bin(contents))
 
 def get_player_score( reply ):
-        score = ( reply & constants.C_SIZE_MASK )
+        score = ( reply & constants.C_SCORE_MASK ) >> constants.C_SCORE_TAIL
         print( "Player score:", score )
 
 def get_board( reply ):
-        size = ( reply & constants.C_SIZE_MASK ) >> constants.C_PRINT_TAIL_SIZE
+        size = ( reply & constants.C_PRINT_OPT_MASK ) >> constants.C_PRINT_TAIL
         print("board size:", size)
         print( prettify_board( get_str( size ) ) ) 
 

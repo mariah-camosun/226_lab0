@@ -56,16 +56,19 @@ def direct_request( cmd_byte, board ):
     else:
         print( "else not print board cmd" )
         # get cmd portion of split cmd bits from remaining opt bits (via bitshifting)
-        print( cmd_byte )
-        cmd = cmd_byte >> ( constants.S_OPT_SIZE )
+        print( "recieved command:", cmd_byte, bin(cmd_byte) )
+        cmd = cmd_byte >> ( constants.BYTE_SIZE - constants.S_CMD_SIZE )
         print( cmd )
     
         # recieve create board command
-        if ( cmd == int(constants.CREATE_BOARD) ):
+        if ( cmd == int(constants.CREATE_BOARD_MIN) ):
             print("in create board")
+            print("cmd: ", cmd, bin(cmd) )
             # opt represents board size, in 4 bits
             opt = ( cmd_byte & constants.S_SIZE_MASK ) # convert cmd bits to 0, using bitmask
-            opt = opt >> ( constants.S_OPT_SIZE - constants.OPT_NUM_SIZE ) # cut off trailing 0 not part of opt
+            print("opt: ", opt, bin(opt) )
+            opt = opt >> ( constants.S_CREATE_TAIL ) # cut off trailing 0 not part of opt
+            print("opt: ", opt, bin(opt) )
             # print( "cmd:",  cmd, bin(cmd), " opt:", opt, bin( opt ) )
 
             board = Board.new_max_board( opt )
@@ -87,18 +90,18 @@ def direct_request( cmd_byte, board ):
             print( " in move command" )
             send_delta( board, True )
             player = board.get_player( 1 )
-            print( cmd )
-            cmd = cmd << ( constants.S_OPT_SIZE )
-            print( cmd )
+            print( bin(cmd) )
+            # cmd = cmd << ( constants.S_MOVE_TAIL )
+            # print( bin(cmd) )
 
-            if ( cmd == (constants.UP_BIN) ):
+            if ( cmd == (constants.UP_BIN_MIN) ):
                 print("entered up")
                 player.move( constants.UP )
-            elif ( cmd == (constants.DOWN_BIN) ):
+            elif ( cmd == (constants.DOWN_BIN_MIN) ):
                 player.move( constants.DOWN )     
-            elif ( cmd == (constants.LEFT_BIN) ):
+            elif ( cmd == (constants.LEFT_BIN_MIN) ):
                 player.move( constants.LEFT )   
-            elif ( cmd == (constants.RIGHT_BIN) ):
+            elif ( cmd == (constants.RIGHT_BIN_MIN) ):
                 player.move( constants.RIGHT )
 
             print("exited move direction section")
@@ -119,7 +122,7 @@ def send_board( board_str ):
 def send_score( scoreOpt ):
         # print( "entered send score, score data:", scoreOpt, bin(scoreOpt))
         # scoreOpt = score & 0b001111 # make sure score is only component of cmd that is the 4 bit score sequence
-        scoreOpt = scoreOpt << (constants.C_OPT_SMALL - constants.OPT_NUM_SIZE) # add 2 0s at the end to padd to correct position
+        scoreOpt = scoreOpt << (constants.C_SCORE_TAIL) # add 2 0s at the end to padd to correct position
         fullCmd = (constants.SCORE) | scoreOpt
 
         # print ( "score data: ", scoreOpt, bin(scoreOpt), "cmd: ", fullCmd, bin(fullCmd), " opt: " )
