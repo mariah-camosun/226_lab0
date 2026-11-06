@@ -111,7 +111,7 @@ def direct_request( cmd_byte, board ):
 
 def send_board( board_str ):
         print("entered send_board")
-        board_str = board_str.replace(" ", "").split("n", 1)
+        board_str = board_str.replace(" ", "").replace("\n", "").split("n", 1)
         board_str = board_str[0]
         # print( board_str )
         main.send_str( sc, board_str )
@@ -173,3 +173,6 @@ with socket(AF_INET, SOCK_STREAM) as sock: # TCP socket
 #         sc.sendall( pack( '!Q', total_copy )) #yes, intentionally diff from abv
 #                     #best way of guarding the data
 
+# olddelta
+# newdelta
+# score

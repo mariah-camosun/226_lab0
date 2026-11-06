@@ -8,22 +8,16 @@ import asyncio
 from struct import pack, unpack
 
 BUF_SIZE = 1024
-# DELTA_BUF_SIZE = 
-# DISPLAY_BUF_SIZE = 
 HOST = '10.21.75.22'
 PORT = 12345
-
-# global board_size
-# board_size = 10
 
 def play_game( sock ):
     # get & output game board
 
-
     while (True):
         cmd = get_player_commands( sock ) #, board_size )
         direct_user_command( cmd, sock ) #, board_size  )
-        get_response()
+        get_reply()
         # print updated board
         # print updated score
 
@@ -61,10 +55,9 @@ def validate_command( cmd ):
 
 def direct_user_command( cmd, sock ): #, board_size  ):
     if cmd == constants.PRINT:
-        get_board()
+        pass
     elif cmd == constants.UP:
         sock.sendall( pack ( constants.REG_PACK_FLAG, constants.UP_BIN ) )
-        get_move_reply()
     elif cmd == constants.DOWN:
         sock.sendall( pack ( constants.REG_PACK_FLAG, constants.DOWN_BIN ) )
     elif cmd == constants.LEFT:
@@ -73,7 +66,7 @@ def direct_user_command( cmd, sock ): #, board_size  ):
         sock.sendall( pack ( constants.REG_PACK_FLAG, constants.RIGHT_BIN ) )
     else:
         return
-    reply = get_move_reply()
+    # reply = get_move_reply()
     # print( reply )
 
 '''
@@ -88,47 +81,110 @@ writing our own queue, but can import it.
 
 
 '''
-def get_board():
-    # send request (already binary string)
-    sock.sendall( pack ( constants.REG_PACK_FLAG, constants.PRINT_CMD) )
-    return get_str()
+# def get_board():
+#     # send request (already binary string)
+#     sock.sendall( pack ( constants.REG_PACK_FLAG, constants.PRINT_CMD) )
+#     return get_str()
 
-def show_server_board():
-    board = get_board()
-    board_size = board.len()
-    board = prettify_board( board )
-    print( board )
-
-def get_move_reply():
-    delta1 = sock.recv( BUF_SIZE )
-    delta1 = unpack(constants.LONG_PACK_FLAG, delta1)[0]
-    print( bin(delta1) )
-
-    delta2 = sock.recv( BUF_SIZE )
-    delta2 = unpack(constants.LONG_PACK_FLAG, delta2)[0]
-    print( bin(delta2) )
-
-    score = sock.recv( BUF_SIZE )
-    score = unpack(constants.REG_PACK_FLAG, score)[0]
-    print( bin(score) )
+# def show_server_board():
+#     board = get_reply()
+#     board_size = board.len()
+#     board = prettify_board( board, board_size )
+#     print( board, " size: ", board_size )
+#     return board, board_size
 
 
-def get_response( ): #board_size ):
-    reply = sock.recv( BUF_SIZE )
-    # bits = reply.len()
-    if bits == 8: # recieve score cmd
-        data = main.unpack_data()
-        data = unpack(constants.REG_PACK_FLAG, reply)
-        # get_score()
-    elif bits == 16: # recieve delta cmd
-        data = unpack(constants.LONG_PACK_FLAG, reply)
+
+def get_str( size ):    # recieve, decode & pass on
+    string = sock.recv( size * size )
+    decoded_reply = string.decode()
+    return decoded_reply
+
+def get_reply():
+    reply, cmd = get_reply_cmd( )
+
+    if cmd == constants.PRINT_BOARD_CMD:
+        get_board( reply )
+
+    if cmd == constants.SCORE_CMD:
+        get_player_score( reply )
+
+    if cmd == constants.DELTA_CMD:
+        get_delta_opts( reply )
+# maybe not the best way to handle this?
+        print("delta no 2")
+        reply_d2, cmd_d2 = get_reply_cmd( )
+        get_delta_opts( reply_d2 )
+        print("delta w score following")
+        reply_score, cmd_score = get_reply_cmd( )
+        get_player_score( reply_score )
+
+
+def get_reply_cmd(  ):
+    reply = sock.recv( constants.SHORT )
+    reply = unpack(constants.REG_PACK_FLAG, reply)[0]
+    cmd = reply >> ( constants.C_OPT_SMALL )
+
+    print( reply, "bin: ", bin(reply) )
+    print( cmd, "bin: ", bin(cmd) )
+    return reply, cmd
+
+def get_delta_opts( reply ):
+    part2 = sock.recv( constants.SHORT )
+    part2 = unpack(constants.REG_PACK_FLAG, part2)[0]
+    print("p1:", bin(reply), ", p2:", bin(part2) )
+
+    reply = reply << constants.BYTE_SIZE
+    reply += part2
+    print( "combo:", bin(reply))
+
+    row = ( reply & constants.C_ROW_MASK ) >> constants.C_ROW_TAIL_SIZE
+    col = ( reply & constants.C_COL_MASK ) >> constants.C_COL_TAIL_SIZE
+    contents = ( reply & constants.TILE_MASK )
+    print( "row:", row, ", col:", col, ", contents:", bin(contents))
+
+def get_player_score( reply ):
+        score = ( reply & constants.C_SIZE_MASK )
+        print( "Player score:", score )
+
+def get_board( reply ):
+        size = ( reply & constants.C_SIZE_MASK ) >> constants.C_PRINT_TAIL_SIZE
+        print("board size:", size)
+        print( prettify_board( get_str( size ) ) ) 
+
+# def get_move_reply():
+    # delta1 = sock.recv( BUF_SIZE )
+    # delta1 = unpack(constants.LONG_PACK_FLAG, delta1)[0]
+    # print( bin(delta1) )
+
+    # # NEED TO BE ABLE TO IDENTIFY COMMAND BEFORE DECODING
+    # if ( reply << constants.b):
+
+    # delta2 = sock.recv( BUF_SIZE )
+    # delta2 = unpack(constants.LONG_PACK_FLAG, delta2)[0]
+    # print( bin(delta2) )
+
+    # score = sock.recv( BUF_SIZE )
+    # score = unpack(constants.REG_PACK_FLAG, score)[0]
+    # print( bin(score) )
+
+
+# def get_response( ): #board_size ):
+#     reply = sock.recv( BUF_SIZE )
+#     # bits = reply.len()
+#     if bits == 8: # recieve score cmd
+#         data = main.unpack_data()
+#         data = unpack(constants.REG_PACK_FLAG, reply)
+#         # get_score()
+#     elif bits == 16: # recieve delta cmd
+#         data = unpack(constants.LONG_PACK_FLAG, reply)
 
     # elif bits >= board_size*board_size: #???? how pickup string....
     #        data = get_str()
-    else:
-        print( "incorrect number of bits")
+    # else:
+    #     print( "incorrect number of bits")
     
-    return data
+    # return data
 
 
 # def get_delta():
@@ -149,20 +205,25 @@ def get_response( ): #board_size ):
 #     unpacked = main.unpack_data( reply )
 #     return unpacked
 
-def get_str():    # recieve, decode & pass on
-    reply = get_response()
 
-    decoded_reply = reply.decode()
-    return decoded_reply
 
-def prettify_board( board ):
+def prettify_board( board, board_size ):
     newBoard = ''
+    col_counter = 0
     for c in board:
-        if c == '\n':
+        newBoard += c
+        col_counter += 1
+        if col_counter == board_size:
             newBoard += c
         else:
             newBoard += c
-            newBoard += ' '
+            newBoard += ' '            
+    # for c in board:
+    #     if c == '\n':
+    #         newBoard += c
+    #     else:
+    #         newBoard += c
+    #         newBoard += ' '
     return newBoard
 
 sock = socket(AF_INET, SOCK_STREAM)
