@@ -14,22 +14,17 @@ def send_str( socket, string ):
     #  print( string.encode( 'UTF-8' ) )
      socket.sendall( string.encode( 'UTF-8' ) ) # Client IP and port implicit due to accept call
 
-def get_tile_details( board ):
-        active_player = board.get_player(1)
-        column, row = active_player.get_coords()
-        tile_contains = board.get_coord_tile( column, row ).get_contents()
-        print( "getTileDetails: col, row", column, row)
+# def get_tile_details( board ):
+#         active_player = board.get_player(1)
+#         column, row = active_player.get_coords()
+#         tile_contains = board.get_coord_tile( column, row ).get_contents()
+#         print( "getTileDetails: col, row", column, row)
 
-        return column, row, tile_contains
-
-def show_board_scores(b):
-    print( b )
-    print( b.report_player_scores() )
-
-def new_board( num ):
-    b = Board.new_max_board(num)
-    show_board_scores(b)
-    return b
+#         return column, row, tile_contains
+# def new_board( num ):
+#     b = Board.new_max_board(num)
+#     show_board_scores(b)
+#     return b
    
 def unpack_data( data ):
     if ( len(data) != constants.SHORT ): 

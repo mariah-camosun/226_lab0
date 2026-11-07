@@ -1,6 +1,5 @@
 from Board import Board
 import constants
-import main
 
 
 #!/usr/bin/python3.11
@@ -29,6 +28,14 @@ def recieve_buffer_data( sc, size ): # recieves data in bitecode format
 
     return data
 
+def get_tile_details( board ):
+        active_player = board.get_player(1)
+        column, row = active_player.get_coords()
+        tile_contains = board.get_coord_tile( column, row ).get_contents()
+        print( "getTileDetails: col, row", column, row)
+
+        return column, row, tile_contains
+
 def send_delta( board, isSourse ):
         '''
         builds, packs, and sends the 'delta' command to the client.
@@ -37,7 +44,7 @@ def send_delta( board, isSourse ):
         :param2: isSource - true if this delta is for the tile player was on, false
         if for the tile the player is going to.
         '''
-        column, row, prev_content = main.get_tile_details( board )
+        column, row, prev_content = get_tile_details( board )
         print( "Send Delta: row, column:", row, column, "in bin", bin(row), bin(column))
         row = row << 10
         column = column << 6
@@ -133,7 +140,16 @@ def build_send_board_meta_cmd( board_size):
     cmd = constants.PRINT_BOARD | ( board_size << constants.S_PRINT_TAIL )
     print("board meta command:", bin(cmd)) 
     sc.sendall( pack( constants.REG_PACK_FLAG, cmd))
-     
+
+def show_board_scores(b):
+    print( b )
+    print( b.report_player_scores() )
+
+def new_board( num ):
+    b = Board.new_max_board(num)
+    show_board_scores(b)
+    return b
+
 def send_score( scoreOpt ):
         # print( "entered send score, score data:", scoreOpt, bin(scoreOpt))
         # scoreOpt = score & 0b001111 # make sure score is only component of cmd that is the 4 bit score sequence
@@ -176,7 +192,8 @@ with socket(AF_INET, SOCK_STREAM) as sock: # TCP socket
 
     print('Server:', sock.getsockname()) # Server IP and port
 
-    board = main.new_board( 10 )
+    board = new_board( 10 )
+   
     # print( board )
 
     while True:
