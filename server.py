@@ -174,16 +174,13 @@ def handle_connection( sc, thread_name, board ):
             # print( "entered socket, while true (always wait/loop) ")
             raw_data = recieve_buffer_data( sc, constants.SHORT )
             # print(raw_data)
-            if raw_data == '':
-                print("Connection Closed")
-            else:
-                # print( "rawdata - handle connection", raw_data )
-                data = unpack( constants.REG_PACK_FLAG, raw_data )[0]
+            # print( "rawdata - handle connection", raw_data )
+            data = unpack( constants.REG_PACK_FLAG, raw_data )[0]
 
-                # print( "data, connection: ", data )
-                # print( "recieved (hex):", hex( data ))
+            # print( "data, connection: ", data )
+            # print( "recieved (hex):", hex( data ))
 
-                board = direct_request( data, board )
+            board = direct_request( data, board )
 
 with socket(AF_INET, SOCK_STREAM) as sock: # TCP socket
     sock.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1) # Details later
