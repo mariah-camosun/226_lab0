@@ -76,8 +76,9 @@ def send_delta( board, isSourse ):
     '''
     column, row, prev_content = get_tile_details( board )
     print( "Send Delta: row, column:", row, column, "in bin", bin(row), bin(column))
-    row = row << 10
-    column = column << 6
+    row = row << constants.S_ROW_TAIL_SIZE
+    column = column << constants.S_COL_TAIL_SIZE
+
     if ( isSourse == True ):
         delta = constants.DELTA | row | column | constants.BLANK
     else:
