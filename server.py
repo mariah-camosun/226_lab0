@@ -19,7 +19,7 @@ writing our own queue, but can import it.
 ###########################  NEW BOARD   ###########################
 def new_board( num ):
     b = Board.new_max_board(num)
-    show_board_scores(b)
+    show_board_and_scores(b)
     return b
 
 ###########################  CLASS INTERACTIONS  ###########################
@@ -27,11 +27,11 @@ def get_tile_details( board ):
         active_player = board.get_player(1)
         column, row = active_player.get_coords()
         tile_contains = board.get_coord_tile( column, row ).get_contents()
-        print( "getTileDetails: col, row", column, row)
+        # print( "getTileDetails: col, row", column, row)
 
         return column, row, tile_contains
 
-def show_board_scores(b):
+def show_board_and_scores(b):
     print( b )
     print( b.report_player_scores() )
 
@@ -49,13 +49,11 @@ def recieve_buffer_data( sc, size ): # recieves data in bitecode format
 
 ###########################  SEND CMDS   ###########################
 def send_board( board_str ):
-    print("entered send_board")
-    
+    # print("entered send_board")
     build_send_board_pre_cmd( board.get_size() )
 
     board_str = str( board )
-    print(board_str)
-
+    # print(board_str)
     board_str = board_str.replace(" ", "").replace("\n", "").split("n", 1)
     board_str = board_str[0]
     # print( board_str )
@@ -63,7 +61,7 @@ def send_board( board_str ):
 
 def build_send_board_pre_cmd( board_size):
     cmd = constants.PRINT_BOARD | ( board_size << constants.S_PRINT_TAIL )
-    print("board meta command:", bin(cmd)) 
+    # print("board meta command:", bin(cmd)) 
     sc.sendall( pack( constants.REG_PACK_FLAG, cmd))
 
 def send_delta( board, isSourse ):
@@ -75,7 +73,7 @@ def send_delta( board, isSourse ):
     if for the tile the player is going to.
     '''
     column, row, prev_content = get_tile_details( board )
-    print( "Send Delta: row, column:", row, column, "in bin", bin(row), bin(column))
+    # print( "Send Delta: row, column:", row, column, "in bin", bin(row), bin(column))
     row = row << constants.S_ROW_TAIL_SIZE
     column = column << constants.S_COL_TAIL_SIZE
 
@@ -83,7 +81,7 @@ def send_delta( board, isSourse ):
         delta = constants.DELTA | row | column | constants.BLANK
     else:
         delta = constants.DELTA | row | column | constants.PLAYER
-    print( bin(delta))
+    # print( bin(delta))
     sc.sendall( pack( constants.LONG_PACK_FLAG, int(delta) ) )
 
 def send_score( scoreOpt ):
@@ -101,30 +99,29 @@ def send_score( scoreOpt ):
 
 ###########################  ROUTING  ###########################
 def direct_request( cmd_byte, board ):
-    print( "Entered direct." )
-    print( "Data in:", cmd_byte, bin(cmd_byte))
-
+    # print( "Entered direct." )
+    # print( "Data in:", cmd_byte, bin(cmd_byte))
 
     # recieve print board cmd
     if ( cmd_byte == int(constants.C_PRINT_CMD) ):
-        print("in print board")
+        # print("in print board")
         send_board( board )
     else:
-        print( "else not print board cmd" )
+        # print( "else not print board cmd" )
         # get cmd portion of split cmd bits from remaining opt bits (via bitshifting)
-        print( "recieved command:", cmd_byte, bin(cmd_byte) )
+        # print( "recieved command:", cmd_byte, bin(cmd_byte) )
         cmd = cmd_byte >> ( constants.BYTE_SIZE - constants.C_CMD_SIZE )
-        print( cmd )
+        # print( cmd )
     
         # recieve create board command
         if ( cmd == int(constants.CREATE_BOARD_MIN) ):
-            print("in create board")
-            print("cmd: ", cmd, bin(cmd) )
+            # print("in create board")
+            # print("cmd: ", cmd, bin(cmd) )
             # opt represents board size, in 4 bits
             opt = ( cmd_byte & constants.C_SIZE_MASK ) # convert cmd bits to 0, using bitmask
-            print("opt: ", opt, bin(opt) )
+            # print("opt: ", opt, bin(opt) )
             opt = opt >> ( constants.C_CREATE_TAIL ) # cut off trailing 0 not part of opt
-            print("opt: ", opt, bin(opt) )
+            # print("opt: ", opt, bin(opt) )
             # print( "cmd:",  cmd, bin(cmd), " opt:", opt, bin( opt ) )
 
             board = Board.new_max_board( opt )
@@ -143,15 +140,15 @@ def direct_request( cmd_byte, board ):
 
         #otherwise its a move command, direction is one of 4
         else:
-            print( " in move command" )
+            # print( " in move command" )
             send_delta( board, True )
             player = board.get_player( 1 )
-            print( bin(cmd) )
+            # print( bin(cmd) )
             # cmd = cmd << ( constants.C_MOVE_TAIL )
             # print( bin(cmd) )
 
             if ( cmd == (constants.UP_BIN_MIN) ):
-                print("entered up")
+                # print("entered up")
                 player.move( constants.UP )
             elif ( cmd == (constants.DOWN_BIN_MIN) ):
                 player.move( constants.DOWN )     
@@ -160,36 +157,33 @@ def direct_request( cmd_byte, board ):
             elif ( cmd == (constants.RIGHT_BIN_MIN) ):
                 player.move( constants.RIGHT )
 
-            print("exited move direction section")
+            # print("exited move direction section")
             send_delta( board, False )
             send_score( player.get_score() )
-        print("exited else move section")
-    print("tail of direct")
-    # main.show_board_scores(board) 
+        # print("exited else move section")
+    # print("tail of direct")
+    show_board_and_scores(board) 
     return board
 
 ###########################  CONNECTION  ###########################
 def handle_connection( sc, thread_name, board ):
     print('Client:', sc.getpeername()) # Client IP and port
-    print("entered handle connection")
+    # print("entered handle connection")
     with sc: 
         while (True):
-            print( "entered socket, while true (always wait/loop) ")
+            # print( "entered socket, while true (always wait/loop) ")
             raw_data = recieve_buffer_data( sc, constants.SHORT )
-            print(raw_data)
+            # print(raw_data)
             if raw_data == '':
                 print("Connection Closed")
             else:
-                print( "rawdata - handle connection", raw_data )
+                # print( "rawdata - handle connection", raw_data )
                 data = unpack( constants.REG_PACK_FLAG, raw_data )[0]
 
-                print( "data, connection: ", data )
-                print( "recieved (hex):", hex( data ))
+                # print( "data, connection: ", data )
+                # print( "recieved (hex):", hex( data ))
 
                 board = direct_request( data, board )
-            # send_data( data )
-            # sc.sendall( str(output).encode('utf-8') ) 
-            # # Client IP and port implicit due to accept call
 
 with socket(AF_INET, SOCK_STREAM) as sock: # TCP socket
     sock.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1) # Details later
