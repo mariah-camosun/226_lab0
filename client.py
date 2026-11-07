@@ -13,16 +13,23 @@ BUF_SIZE = 1024
 HOST = '10.21.75.16' #
 PORT = 12345
 
-def play_game( sock ):
-    # get & output game board
+###########################  ROUTING  ###########################
+def direct_reply():
+    reply, cmd = get_reply_cmd( )
 
-    while (True):
-        cmd = get_player_commands( sock ) #, board_size )
-        send_user_command( cmd, sock ) #, board_size  )
-        direct_reply()
-        # print updated board
-        # print updated score
+    if cmd == constants.PRINT_BOARD_CMD:
+        get_board( reply )
 
+    if cmd == constants.SCORE_CMD:
+        print("score, reply:", reply)
+        print("entered score")
+        get_player_score( reply )
+        handle_delta( reply )
+
+    if cmd == constants.DELTA_CMD:
+        handle_delta( reply )
+
+###########################  SEND CMDS   ###########################
 def get_player_commands( sock ): #, board_size ):    
     '''
     Prompt user for command: print or move direction.
@@ -77,21 +84,7 @@ def send_move_cmd( cmd ):
     print("sending-packed:", pack ( constants.REG_PACK_FLAG, cmd ))
     sock.sendall( pack ( constants.REG_PACK_FLAG, cmd ) )
 
-def direct_reply():
-    reply, cmd = get_reply_cmd( )
-
-    if cmd == constants.PRINT_BOARD_CMD:
-        get_board( reply )
-
-    if cmd == constants.SCORE_CMD:
-        print("score, reply:", reply)
-        print("entered score")
-        get_player_score( reply )
-        handle_delta( reply )
-
-    if cmd == constants.DELTA_CMD:
-        handle_delta( reply )
-
+###########################  RECIEVE CMDS  ###########################
 def get_reply_cmd(  ):
     reply = sock.recv( constants.SHORT )
     print( "reply-packed: ", reply)#bin(reply) )
@@ -183,6 +176,17 @@ def prettify_board( board, board_size ):
             newBoard += ' '            
     return newBoard
 
+###########################  CONNECTION  ###########################
+def play_game( sock ):
+    # get & output game board
+
+    while (True):
+        cmd = get_player_commands( sock ) #, board_size )
+        send_user_command( cmd, sock ) #, board_size  )
+        direct_reply()
+        # print updated board
+        # print updated score
+
 with socket(AF_INET, SOCK_STREAM) as sock:
     sock = socket(AF_INET, SOCK_STREAM)
     # create connection
@@ -194,7 +198,6 @@ with socket(AF_INET, SOCK_STREAM) as sock:
     reply, cmd = get_reply_cmd()
     get_board(reply)
 
-
 with socket(AF_INET, SOCK_STREAM) as sock:
     sock = socket(AF_INET, SOCK_STREAM)
     # create connection
@@ -203,4 +206,3 @@ with socket(AF_INET, SOCK_STREAM) as sock:
 
     print( 'Client:', sock.getsockname())
     play_game( sock )
-
