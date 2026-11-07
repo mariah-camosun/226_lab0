@@ -139,10 +139,12 @@ def send_score( scoreOpt ):
         # scoreOpt = score & 0b001111 # make sure score is only component of cmd that is the 4 bit score sequence
         scoreOpt = scoreOpt << (constants.S_SCORE_TAIL) # add 2 0s at the end to padd to correct position
         fullCmd = (constants.SCORE) | scoreOpt
+        megaCmd = fullCmd << constants.BYTE_SIZE
 
         # print ( "score data: ", scoreOpt, bin(scoreOpt), "cmd: ", fullCmd, bin(fullCmd), " opt: " )
-        sc.sendall( pack ( constants.REG_PACK_FLAG, fullCmd ) ) # Client IP and port implicit due to accept call
-
+        # sc.sendall( pack ( constants.REG_PACK_FLAG, fullCmd ) ) # Client IP and port implicit due to accept call
+        sc.sendall( pack ( constants.LONG_PACK_FLAG, megaCmd ) ) # Client IP and port implicit due to accept call
+        
         # main.send_str( sc, '\n' )
 
 def handle_connection( sc, thread_name, board ):
@@ -152,13 +154,17 @@ def handle_connection( sc, thread_name, board ):
         while (True):
             print( "entered socket, while true (always wait/loop) ")
             raw_data = recieve_buffer_data( sc, constants.SHORT )
-            print( "rawdata - handle connection", raw_data )
-            data = unpack( constants.REG_PACK_FLAG, raw_data )[0]
+            print(raw_data)
+            if raw_data == '':
+                print("Connection Closed")
+            else:
+                print( "rawdata - handle connection", raw_data )
+                data = unpack( constants.REG_PACK_FLAG, raw_data )[0]
 
-            print( "data, connection: ", data )
-            print( "recieved (hex):", hex( data ))
+                print( "data, connection: ", data )
+                print( "recieved (hex):", hex( data ))
 
-            board = direct_request( data, board )
+                board = direct_request( data, board )
             # send_data( data )
             # sc.sendall( str(output).encode('utf-8') ) 
             # # Client IP and port implicit due to accept call

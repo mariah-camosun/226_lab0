@@ -8,8 +8,9 @@ import asyncio
 from struct import pack, unpack
 
 BUF_SIZE = 1024
-HOST = '10.21.75.22' # mine
+# HOST = '10.21.75.22' # mine
 # HOST = '10.21.75.14' # Felix
+HOST = '10.21.75.16' #
 PORT = 12345
 
 def play_game( sock ):
@@ -102,6 +103,25 @@ def get_reply_cmd(  ):
     print( "cmd:", cmd, "bin: ", bin(cmd) )
     return reply, cmd
 
+def get_large_reply_cmd(  ):
+    reply = sock.recv( constants.SHORT )
+    print( "reply-packed: ", reply)#bin(reply) )
+    reply = unpack(constants.REG_PACK_FLAG, reply)[0]
+    print( "reply-unpacked: ", reply, bin(reply) )
+    cmd = reply >> ( constants.BYTE_SIZE - constants.S_CMD_SIZE )
+
+    reply2 = sock.recv( constants.SHORT )
+    print( "reply2-packed: ", reply2)#bin(reply) )
+    reply2 = unpack(constants.REG_PACK_FLAG, reply2)[0]
+    print( "reply2-unpacked: ", reply2, bin(reply2) )    
+
+    print( "reply:", reply, "bin: ", bin(reply) )
+    print( "reply2:", reply2, "bin: ", bin(reply2) )
+    print( "cmd:", cmd, "bin: ", bin(cmd) )
+    mega_score = reply << constants.BYTE_SIZE | reply2
+    print('mega-score:', mega_score)
+    return reply, cmd
+
 def get_str( size ):    # recieve, decode & pass on
     string = sock.recv( size * size )
     decoded_reply = string.decode()
@@ -116,6 +136,7 @@ def handle_delta( reply ):
     get_delta_opts( reply_d2 )
     print("delta w score following")
     reply_score, cmd_score = get_reply_cmd( )
+    get_reply_cmd() #just clears the buffer, doesnt actually add to score... not implementing large score yet
     get_player_score( reply_score )
 
 def get_delta_opts( reply ):
@@ -134,7 +155,12 @@ def get_delta_opts( reply ):
 
 def get_player_score( reply ):
         score = ( reply & constants.S_SCORE_MASK ) >> constants.S_SCORE_TAIL
+        print("score", score)
+        # mega_score = score >> constants.BYTE_SIZE
+        # print("megascore", mega_score)
+
         print( "Player score:", score )
+        # print( "Player score:", mega_score )
 
 def get_board( reply ):
         size = ( reply & constants.S_PRINT_OPT_MASK ) >> constants.S_PRINT_TAIL
@@ -157,12 +183,24 @@ def prettify_board( board, board_size ):
             newBoard += ' '            
     return newBoard
 
-sock = socket(AF_INET, SOCK_STREAM)
-# create connection
-sock.connect(( HOST, PORT ))
-# data = argv[1].encode('utf-8')
+with socket(AF_INET, SOCK_STREAM) as sock:
+    sock = socket(AF_INET, SOCK_STREAM)
+    # create connection
+    sock.connect(( HOST, PORT ))
+    # data = argv[1].encode('utf-8')
 
-print( 'Client:', sock.getsockname())
+    print( 'Client:', sock.getsockname())
+    sock.sendall( pack ( constants.REG_PACK_FLAG, constants.C_PRINT_CMD ) )
+    reply, cmd = get_reply_cmd()
+    get_board(reply)
 
-play_game( sock )
+
+with socket(AF_INET, SOCK_STREAM) as sock:
+    sock = socket(AF_INET, SOCK_STREAM)
+    # create connection
+    sock.connect(( HOST, PORT ))
+    # data = argv[1].encode('utf-8')
+
+    print( 'Client:', sock.getsockname())
+    play_game( sock )
 
