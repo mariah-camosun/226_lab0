@@ -185,22 +185,25 @@ def handle_connection( sc, thread_name, board ):
 
                 board = direct_request( data, board )
 
-with socket(AF_INET, SOCK_STREAM) as sock: # TCP socket
-    sock.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1) # Details later
-    sock.bind((HOST, PORT)) # Claim messages sent to port "PORT"
-    sock.listen(1) # Server only supports a single 3-way handshake at a time
+def main():
+    with socket(AF_INET, SOCK_STREAM) as sock: # TCP socket
+        sock.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1) # Details later
+        sock.bind((HOST, PORT)) # Claim messages sent to port "PORT"
+        sock.listen(1) # Server only supports a single 3-way handshake at a time
 
-    print('Server:', sock.getsockname()) # Server IP and port
+        print('Server:', sock.getsockname()) # Server IP and port
 
-    board = new_board( 10 )
-   
-    # print( board )
+        board = new_board( 10 )
+    
+        # print( board )
 
-    while True:
-        sc, _ = sock.accept() # Wait until a connection is established
-        thread_list = []
-        thread_counter = 0
-        # for i in range( MAX_CONNECTIONS ):
-        thread_list.append( Thread(target=handle_connection, args=(sc, thread_counter, board)) )
-        thread_counter += 1
-        thread_list[-1].start() 
+        while True:
+            sc, _ = sock.accept() # Wait until a connection is established
+            thread_list = []
+            thread_counter = 0
+            # for i in range( MAX_CONNECTIONS ):
+            thread_list.append( Thread(target=handle_connection, args=(sc, thread_counter, board)) )
+            thread_counter += 1
+            thread_list[-1].start() 
+
+main()
