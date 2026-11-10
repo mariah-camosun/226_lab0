@@ -1,10 +1,10 @@
 from Board import Board
 import constants
 
-
 #!/usr/bin/python3.11
 from socket import socket, AF_INET, SOCK_STREAM, SOL_SOCKET, SO_REUSEADDR
 from struct import pack, unpack
+from queue import Queue
 from threading import Thread, current_thread, Semaphore
 
 BUF_SIZE = 1
@@ -12,15 +12,32 @@ HOST = ''
 PORT = 12345
 
 MIN_PACK_BYTES = 2
+MAX_CONNECTIONS = 2
+
+input_queue = Queue()
+output_queue = Queue()
+board_queue = Queue()
+
 '''
 ----once get to threading
 writing our own queue, but can import it.
 '''
-###########################  NEW BOARD   ###########################
+###########################  BOARD   ###########################
 def new_board( num ):
     b = Board.new_max_board(num)
     show_board_and_scores(b)
     return b
+
+def activate_board( sc, board ):
+    while not board_queue.empty():
+        action = board_queue.get()
+        action()
+
+def get_input_queue():
+    while not input_queue.empty():
+        cmd = input_queue.get()
+        direct_request( cmd, board )
+
 
 ###########################  CLASS INTERACTIONS  ###########################
 def get_tile_details( board ):
@@ -64,7 +81,7 @@ def build_send_board_pre_cmd( board_size):
     # print("board meta command:", bin(cmd)) 
     sc.sendall( pack( constants.REG_PACK_FLAG, cmd))
 
-def send_delta( board, isSourse ):
+def queue_delta( board, isSourse ):
     '''
     builds, packs, and sends the 'delta' command to the client.
 
@@ -84,19 +101,24 @@ def send_delta( board, isSourse ):
     # print( bin(delta))
     sc.sendall( pack( constants.LONG_PACK_FLAG, int(delta) ) )
 
-def send_score( scoreOpt ):
+def queue_score( scoreOpt ):
     # print( "entered send score, score data:", scoreOpt, bin(scoreOpt))
     # scoreOpt = score & 0b001111 # make sure score is only component of cmd that is the 4 bit score sequence
     scoreOpt = scoreOpt << (constants.S_SCORE_TAIL) # add 2 0s at the end to padd to correct position
     fullCmd = (constants.SCORE) | scoreOpt
     megaCmd = fullCmd << constants.BYTE_SIZE
+    output_queue.put( megaCmd )
 
     # print ( "score data: ", scoreOpt, bin(scoreOpt), "cmd: ", fullCmd, bin(fullCmd), " opt: " )
     # sc.sendall( pack ( constants.REG_PACK_FLAG, fullCmd ) ) # Client IP and port implicit due to accept call
-    sc.sendall( pack ( constants.LONG_PACK_FLAG, megaCmd ) ) # Client IP and port implicit due to accept call
+    # sc.sendall( pack ( constants.LONG_PACK_FLAG, megaCmd ) ) # Client IP and port implicit due to accept call
     
     # main.send_str( sc, '\n' )
 
+def send_output_queue( sc ):
+    while not output_queue.empty():
+        send_cmd = output_queue.get()
+        sc.sendall( pack ( constants.LONG_PACK_FLAG, send_cmd ) ) 
 ###########################  ROUTING  ###########################
 def direct_request( cmd_byte, board ):
     # print( "Entered direct." )
@@ -166,38 +188,47 @@ def direct_request( cmd_byte, board ):
     return board
 
 ###########################  CONNECTION  ###########################
-def handle_connection( sc, thread_name, board ):
-    print('Client:', sc.getpeername()) # Client IP and port
+def handle_connection( sc, thread_name ):
+    print('Client:', sc.getpeername(), "player", thread_name + 1 ) # Client IP and port
     # print("entered handle connection")
+
     with sc: 
         while (True):
             # print( "entered socket, while true (always wait/loop) ")
             raw_data = recieve_buffer_data( sc, constants.SHORT )
             # print(raw_data)
-            # print( "rawdata - handle connection", raw_data )
+            print( "rawdata - handle connection", raw_data )
             data = unpack( constants.REG_PACK_FLAG, raw_data )[0]
-
+            input_queue.put( data )
             # print( "data, connection: ", data )
             # print( "recieved (hex):", hex( data ))
 
-            board = direct_request( data, board )
+            # board = 
+            # direct_request( data, board )
 
-with socket(AF_INET, SOCK_STREAM) as sock: # TCP socket
-    sock.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1) # Details later
-    sock.bind((HOST, PORT)) # Claim messages sent to port "PORT"
-    sock.listen(1) # Server only supports a single 3-way handshake at a time
+def main():
+    with socket(AF_INET, SOCK_STREAM) as sock: # TCP socket
+        sock.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1) # Details later
+        sock.bind((HOST, PORT)) # Claim messages sent to port "PORT"
+        sock.listen(1) # Server only supports a single 3-way handshake at a time
 
-    print('Server:', sock.getsockname()) # Server IP and port
+        board = Board()
 
-    board = new_board( 10 )
+        game_thread = Thread(target=activate_board, args=(sc, board)) #, board)) )
+
+        while True:
+            for i in range( MAX_CONNECTIONS ):
+                sc, _ = sock.accept() # Wait until a connection is established
+                thread_list = []
+                thread_counter = 0
+                thread_list.append( Thread(target=handle_connection, args=(sc, thread_counter), daemon=True)) #, board)) )
+                thread_counter += 1
+                thread_list[-1].start()
+
+main()
+
+#     print('Server:', sock.getsockname()) # Server IP and port
+
+#     board = new_board( 10 )
    
-    # print( board )
-
-    while True:
-        sc, _ = sock.accept() # Wait until a connection is established
-        thread_list = []
-        thread_counter = 0
-        # for i in range( MAX_CONNECTIONS ):
-        thread_list.append( Thread(target=handle_connection, args=(sc, thread_counter, board)) )
-        thread_counter += 1
-        thread_list[-1].start() 
+#     # print( board )
