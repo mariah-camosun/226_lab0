@@ -7,6 +7,9 @@ from struct import pack, unpack
 from queue import Queue
 from threading import Thread, current_thread, Semaphore
 
+# resource https://www.geeksforgeeks.org/python/python-implementation-of-queues-in-multi-threading/
+
+
 BUF_SIZE = 1
 HOST = ''
 PORT = 12345
