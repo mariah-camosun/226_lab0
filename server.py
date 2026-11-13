@@ -136,7 +136,7 @@ def direct_request( cmd_byte, board ):
     return board
 
 ###########################  CONNECTION  ###########################
-def receive_from_client( sock, thread_name ):
+def receive_from_client( sock ):
     # print('Client:', sock.getpeername()) # Client IP and port
     with sock: 
         while (True):
@@ -163,22 +163,24 @@ def send_to_client( client_threads ):
 
     while True:
         data = output_queue.get()
-        prev_is_show_board = curr_is_show_board
+        if data:
+            prev_is_show_board = curr_is_show_board
 
-        if (unpack( '!B', data ) >> 6) == 0:
-            curr_is_show_board = True
-        else:
-            curr_is_show_board = False
+            # check first byte cmd, set curr_is_show_board to true if cmd == print/show board
+            leading_slice = data[:1]
+            if (unpack( '!B', leading_slice )[0] >> 6) == 0:
+                curr_is_show_board = True
+            else:
+                curr_is_show_board = False
 
-        # if both prev and curr send are 'show board' dont send
-        if not ( prev_is_show_board == True and curr_is_show_board == True):
-            for client in client_threads:
-                cli, sock_connector = client
-                try:
-                    sock_connector.sendall( data )
-                    print("sent data", data, "to client", cli)
-                except OSError:
-                    print('socket was closed pre-maturely')
+            # if both prev and curr send are 'show board' dont send
+            if not ( prev_is_show_board == True and curr_is_show_board == True):
+                for client in client_threads:
+                    cli, sock_connector = client
+                    try:
+                        sock_connector.sendall( data )
+                    except OSError:
+                        print('socket was closed pre-maturely')
 
 def main():
     sock_listener = socket(AF_INET, SOCK_STREAM) # TCP socket - REMOVED 'WITH' SO doesnt close at end of func
