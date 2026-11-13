@@ -4,6 +4,7 @@ from threading import Thread, current_thread, Semaphore
 from struct import pack, unpack
 from queue import Queue
 from Board import Board
+import sys
 import constants
 
 BUF_SIZE = 1
@@ -46,6 +47,7 @@ def recieve_buffer_data( sc, size ): # recieves data in bitecode format
         if curr_data == b'': #closed connection
             print('closing connection')
             sc.close()
+            sys.exit()
             return #data
         data += curr_data
 
@@ -135,14 +137,23 @@ def direct_request( cmd_byte, board ):
 
 ###########################  CONNECTION  ###########################
 def receive_from_client( sock ):
-    with sock: 
-        while (True):
-            raw_data = recieve_buffer_data( sock, constants.SHORT )
-            if raw_data == b'':
-                print( "did socket close?", sock.getpeername() )
-            else:
-                data = unpack( constants.REG_PACK_FLAG, raw_data )[0]
-                game_queue.put( data ) 
+    with sock:
+        try:
+            while (True):
+                raw_data = recieve_buffer_data( sock, constants.SHORT )
+                if raw_data == b'' or raw_data == None:
+                    print( "Connection was closed" )
+                    sock.close()
+                    sys.exit()
+                    return
+                else:
+                    data = unpack( constants.REG_PACK_FLAG, raw_data )[0]
+                    game_queue.put( data )
+        except ConnectionResetError:
+            print('Connection reset by peer')
+            sock.close()
+            sys.exit()
+            return
 
 def handle_game_queue(game_queue, board):
     while True:
@@ -160,6 +171,8 @@ def send_to_client( client_threads ):
 
             # check first byte cmd, set curr_is_show_board to true if cmd == print/show board
             leading_slice = data[:1]
+            # print( 'first byte to send:', bin(unpack( '!B', leading_slice )[0]) )
+            # if (unpack( '!B', leading_slice )[0] ) == constants.C_PRINT_CMD:
             if (unpack( '!B', leading_slice )[0] >> 6) == 0:
                 curr_is_show_board = True
             else:
@@ -170,34 +183,42 @@ def send_to_client( client_threads ):
                 for client in client_threads:
                     cli, sock_connector = client
                     try:
+                        # try:
+                        #     # udata = unpack( '!H', data )
+                        #     # print( 'sending:', data, bin(udata) )
+                        # except:
+                        #     # print( 'sending:', data )
                         sock_connector.sendall( data )
                     except OSError:
                         print('socket was closed pre-maturely')
+                        sys.exit()
 
 def main():
-    sock_listener = socket(AF_INET, SOCK_STREAM) # TCP socket - REMOVED 'WITH' SO doesnt close at end of func
-    sock_listener.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1) # Details later
-    sock_listener.bind((HOST, PORT)) # Claim messages sent to port "PORT"
-    sock_listener.listen(1) # Server only supports a single 3-way handshake at a time
+    with socket(AF_INET, SOCK_STREAM) as sock_listener: # TCP socket - REMOVED 'WITH' SO doesnt close at end of func
+        # sock_listener = socket(AF_INET, SOCK_STREAM) # TCP socket - REMOVED 'WITH' SO doesnt close at end of func
+        sock_listener.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1) # Details later
+        sock_listener.bind((HOST, PORT)) # Claim messages sent to port "PORT"
+        sock_listener.listen(1) # Server only supports a single 3-way handshake at a time
 
-    print('Server:', sock_listener.getsockname()) # Server IP and port
+        print('Server:', sock_listener.getsockname()) # Server IP and port
 
-    client_threads = [] # contents are tupples: { thread, accepted_socket }
+        client_threads = [] # contents are tupples: { thread, accepted_socket }
 
-    for i in range( MAX_PLAYERS ):
-        sock_connector, _ = sock_listener.accept() # Wait until a connection is established
-        print('Client:', sock_connector.getpeername()) # Client IP and port
-        cli_thread = ( Thread(target=receive_from_client, args=(sock_connector,)) )
-        client_threads.append( (cli_thread, sock_connector) )
-        cli_thread.start() 
+        for i in range( MAX_PLAYERS ):
+            sock_connector, _ = sock_listener.accept() # Wait until a connection is established
+            print('Client:', sock_connector.getpeername()) # Client IP and port
+            cli_thread = ( Thread(target=receive_from_client, args=(sock_connector,) ))
+            client_threads.append( (cli_thread, sock_connector) )
+            cli_thread.start() 
 
-    
-    out_thread = Thread( target=send_to_client, args=(client_threads,) )
-    out_thread.start()
+        
+        out_thread = Thread( target=send_to_client, args=(client_threads,), daemon=True )
+        out_thread.start()
 
-    board = new_board( 10 )
-    game_thread = Thread( target=handle_game_queue, args=(game_queue, board) )
-    game_thread.start()
-    return sock_listener
+        board = new_board( 10 )
+        game_thread = Thread( target=handle_game_queue, args=(game_queue, board), daemon=True )
+        game_thread.start()
 
-server_socket = main()
+        sys.exit()
+
+main()
