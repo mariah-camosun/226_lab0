@@ -235,7 +235,7 @@ def receive_from_client( sock, thread_name, game_queue ):
                 game_queue.put( data ) 
             # direct_request( data, board )
 
-def handle_game_queue(game_queue, board, output_queue):
+def handle_game_queue(game_queue, board):
     # print('started handle game queue')
     while True:
         # if not game_queue.empty():
@@ -246,28 +246,30 @@ def handle_game_queue(game_queue, board, output_queue):
             # but what about the output_queue?
             # print('used a cmd in game queue')
 
-def send_to_client( from_client_threads, output_queue ):
+def send_to_client( client_threads ):
     # print("started/entered send to client")
+
+    prev_is_show_board = False
+    curr_is_show_board = False
 
     while True:
         data = output_queue.get()
-        print( "sending data", data)
+        prev_is_show_board = curr_is_show_board
 
-        for client in from_client_threads:
-            cli, sock_connector = client
-            try:
-                sock_connector.sendall( data )
-                print("sent data", data, "to client", cli)
-            except OSError:
-                print('socket was closed pre-maturely')
-    # with sock_connector:
-    #     while True:
-    #         # print("entered with sock connectior - send to client")
-    #         # while not output_queue.empty():
-    #         data = output_queue.get()
-    #         print( "sending:", data ) #, bin(data) )
-    #         sock_connector.sendall( data )
-    #         # print("sent to client", thread_counter, "data:", data, bin(data) )
+        if (unpack( '!B', data ) >> 6) == 0:
+            curr_is_show_board = True
+        else:
+            curr_is_show_board = False
+
+        # if both prev and curr send are 'show board' dont send
+        if not ( prev_is_show_board == True and curr_is_show_board == True):
+            for client in client_threads:
+                cli, sock_connector = client
+                try:
+                    sock_connector.sendall( data )
+                    print("sent data", data, "to client", cli)
+                except OSError:
+                    print('socket was closed pre-maturely')
 
 def main():
     sock_listener = socket(AF_INET, SOCK_STREAM) # TCP socket - REMOVED WITH SO doesnt close at end of func
