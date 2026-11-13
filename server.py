@@ -20,11 +20,11 @@ MAX_PLAYERS = 2
 writing our own queue, but can import it.
 '''
 ###########################  NEW BOARD   ###########################
-def new_board( num, to_client ):
+def new_board( num ):
     # print("entered new board")
     b = Board.new_max_board(num)
     show_board_and_scores(b)
-    queue_show_board(b, to_client)
+    # queue_show_board(b, output_queue)
     return b
 
 ###########################  CLASS INTERACTIONS  ###########################
@@ -50,13 +50,14 @@ def recieve_buffer_data( sc, size ): # recieves data in bitecode format
         curr_data = sc.recv(size - len(data)) # recvfrom not needed since address known
         if curr_data == b'': #closed connection
             print('closing connection')
+            sc.close()
             return #data
         data += curr_data
 
     return data
 
 ###########################  SEND CMDS   ###########################
-def queue_show_board( board, to_client ):
+def queue_show_board( board, output_queue ):
     # print("entered queue_show_board (to queue)")
     board_size = board.get_size()
     cmd = constants.PRINT_BOARD | ( board_size << constants.S_PRINT_TAIL )
@@ -68,16 +69,16 @@ def queue_show_board( board, to_client ):
     board_str = board_str[0]
     # print("pre-board str to output")
 
-    for b in to_client:
-        thread, sc, queue = b
-        queue.put( packed_send_precmd + board_str.encode( 'utf-8' ) )
-        print( "queued show board to cli", thread, "; data:", packed_send_precmd + board_str.encode( 'utf-8' ))
+    # for b in to_client:
+        # thread, sc, queue = b
+    output_queue.put( packed_send_precmd + board_str.encode( 'utf-8' ) )
+        # print( "queued show board to cli", thread, "; data:", packed_send_precmd + board_str.encode( 'utf-8' ))
 
     # board.get_output_queue.put( packed_send_precmd + board_str.encode( 'utf-8' ) )
     # print("post-board str to output")
     # sc.sendall( board_str.encode( 'utf-8' ) )
 
-def queue_delta( board, player_num, isSourse, to_client ):
+def queue_delta( board, player_num, isSourse, output_queue ):
     '''
     builds, packs, and sends the 'delta' command to the client.
 
@@ -103,14 +104,14 @@ def queue_delta( board, player_num, isSourse, to_client ):
 
     # print( bin(delta))
 
-    for b in to_client:
-        thread, sc, queue = b
-        data = pack( constants.LONG_PACK_FLAG, int(delta) )
-        queue.put( data )
+    # for b in to_client:
+    #     thread, sc, queue = b
+    data = pack( constants.LONG_PACK_FLAG, int(delta) )
+    output_queue.put( data )
         # print( "queued delta to cli", thread, "; data:", data, bin(data))
     # sc.sendall( pack( constants.LONG_PACK_FLAG, int(delta) ) )
 
-def queue_score( board, to_clients ):
+def queue_score( board, output_queue ):
     scoreOpt = (0b01) << ( 8 + 6 ) 
     p1_bits = board.get_player( 1 ).get_score() << (4 + 6)
     p2_bits = board.get_player( 2 ).get_score() << ( 6 )
@@ -123,10 +124,10 @@ def queue_score( board, to_clients ):
     # print ( "score data: ", scoreOpt, bin(scoreOpt), "cmd: ", fullCmd, bin(fullCmd), " opt: " )
     # sc.sendall( pack ( constants.REG_PACK_FLAG, fullCmd ) ) # Client IP and port implicit due to accept call
     
-    for b in to_clients:
-        thread, sc, queue = b
-        queue.put( pack ( constants.LONG_PACK_FLAG, cmd_out ) )
-        print( "queued score to cli", thread, "; data:", pack( constants.LONG_PACK_FLAG, cmd_out ))
+    # for b in to_clients:
+    #     thread, sc, queue = b
+    output_queue.put( pack ( constants.LONG_PACK_FLAG, cmd_out ) )
+    print( "queued score:", pack( constants.LONG_PACK_FLAG, cmd_out ))
         # print( "score to queue for cli", thread)
     
     # sc.sendall( pack ( constants.LONG_PACK_FLAG, megaCmd ) ) # Client IP and port implicit due to accept call
@@ -134,7 +135,7 @@ def queue_score( board, to_clients ):
     # main.send_str( sc, '\n' )
 
 ###########################  ROUTING  ###########################
-def direct_request( cmd_byte, board, to_client_threads ):
+def direct_request( cmd_byte, board, output_queue ):
     # print("entered direct request")
     # print( "Entered direct." )
     # print( "Data in:", cmd_byte, bin(cmd_byte))
@@ -142,7 +143,7 @@ def direct_request( cmd_byte, board, to_client_threads ):
     # recieve print board cmd
     if ( cmd_byte == int(constants.C_PRINT_CMD) ):
         # print("in print board")
-        queue_show_board( board, to_client_threads )
+        queue_show_board( board, output_queue )
     else:
         # print( "else not print board cmd" )
         # get cmd portion of split cmd bits from remaining opt bits (via bitshifting)
@@ -169,7 +170,8 @@ def direct_request( cmd_byte, board, to_client_threads ):
             # queue_show_board( board )
             # player = board.get_player( 1 )
             # queue_score( player.get_score() )
-            board = new_board( opt, to_client_threads )
+            board = new_board( opt )
+            queue_show_board( board, output_queue )
 
         # recieve ??? need to clean this one up
         # elif ( cmd >> ( constants.C_CMD_SIZE -1 ) != 1 ):
@@ -185,7 +187,7 @@ def direct_request( cmd_byte, board, to_client_threads ):
             player = board.get_player( player_byte + 1 )
 
             # print( " in move command" )
-            queue_delta( board, player_byte + 1 , True, to_client_threads )
+            queue_delta( board, player_byte + 1 , True, output_queue )
             # print( bin(cmd) )
             # cmd = cmd << ( constants.C_MOVE_TAIL )
             # print( bin(cmd) )
@@ -201,8 +203,8 @@ def direct_request( cmd_byte, board, to_client_threads ):
                 player.move( constants.RIGHT )
 
             # print("exited move direction section")
-            queue_delta( board, player_byte + 1, False, to_client_threads )
-            queue_score( board, to_client_threads )
+            queue_delta( board, player_byte + 1, False, output_queue )
+            queue_score( board, output_queue )
         # print("exited else move section")
     # print("tail of direct")
     show_board_and_scores(board) 
@@ -233,66 +235,82 @@ def receive_from_client( sock, thread_name, game_queue ):
                 game_queue.put( data ) 
             # direct_request( data, board )
 
-def handle_game_queue(game_queue, board, to_client_threads):
+def handle_game_queue(game_queue, board, output_queue):
     # print('started handle game queue')
     while True:
         # if not game_queue.empty():
             cmd = game_queue.get()
-            direct_request( cmd, board, to_client_threads )
+            direct_request( cmd, board, output_queue )
             # need something to lock the queue while being accessed? 
             # only 1 thread for the board (using get) so should be fine?
             # but what about the output_queue?
             # print('used a cmd in game queue')
 
-def send_to_client( sock_connector, thread_counter, output_queue ):
+def send_to_client( from_client_threads, output_queue ):
     # print("started/entered send to client")
-    with sock_connector:
-        while True:
-            # print("entered with sock connectior - send to client")
-            # while not output_queue.empty():
-            data = output_queue.get()
-            print( "sending:", data ) #, bin(data) )
-            sock_connector.sendall( data )
-            # print("sent to client", thread_counter, "data:", data, bin(data) )
+
+    while True:
+        data = output_queue.get()
+        print( "sending data", data)
+
+        for client in from_client_threads:
+            cli, sock_connector = client
+            try:
+                sock_connector.sendall( data )
+                print("sent data", data, "to client", cli)
+            except OSError:
+                print('socket was closed pre-maturely')
+    # with sock_connector:
+    #     while True:
+    #         # print("entered with sock connectior - send to client")
+    #         # while not output_queue.empty():
+    #         data = output_queue.get()
+    #         print( "sending:", data ) #, bin(data) )
+    #         sock_connector.sendall( data )
+    #         # print("sent to client", thread_counter, "data:", data, bin(data) )
 
 def main():
-    with socket(AF_INET, SOCK_STREAM) as sock_listener: # TCP socket
-        sock_listener.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1) # Details later
-        sock_listener.bind((HOST, PORT)) # Claim messages sent to port "PORT"
-        sock_listener.listen(1) # Server only supports a single 3-way handshake at a time
+    sock_listener = socket(AF_INET, SOCK_STREAM) # TCP socket - REMOVED WITH SO doesnt close at end of func
+    sock_listener.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1) # Details later
+    sock_listener.bind((HOST, PORT)) # Claim messages sent to port "PORT"
+    sock_listener.listen(1) # Server only supports a single 3-way handshake at a time
 
-        print('Server:', sock_listener.getsockname()) # Server IP and port
+    print('Server:', sock_listener.getsockname()) # Server IP and port
 
-        game_queue = Queue()
-        output_queue = Queue()
+    game_queue = Queue()
+    output_queue = Queue()
 
-        # output_queue_p2 = Queue()
-        # print( board )
-        # while True:
-        
-        from_client_threads = [] # contents are tupples: { in_thread, accepted_socket }
-        to_client_threads = [] # contents are tupples: { out_thread, accepted_socket_copy, output_queue }
-        thread_counter = 0
+    # output_queue_p2 = Queue()
+    # print( board )
+    # while True:
+    
+    from_client_threads = [] # contents are tupples: { thread, accepted_socket }
+    # to_client_threads = [] # contents are tupples: { out_thread, accepted_socket_copy, output_queue }
+    thread_counter = 0
 
-        for i in range( MAX_PLAYERS ):
-            sock_connector, _ = sock_listener.accept() # Wait until a connection is established
-            # print( "sock_connector", sock_connector )
-            from_cli_thread = ( Thread(target=receive_from_client, args=(sock_connector, thread_counter, game_queue)) )
-            from_client_threads.append( (from_cli_thread, sock_connector) )
-            # from_client_threads.append( Thread(target=receive_from_client, args=(sock_connector, thread_counter, game_queue)) )
-            sock_connector_copy = sock_connector.dup() # without this, cant have both send & recv threads use the same socket; they need their own copy of the descriptor
-            output_queue = Queue()
-            to_cli_thread = ( Thread(target=send_to_client, args=(sock_connector_copy, thread_counter, output_queue)) )
-            to_client_threads.append( (to_cli_thread, sock_connector_copy, output_queue) )
-            # to_client_threads.append( Thread(target=send_to_client, args=(sock_connector_copy, thread_counter, output_queue, board)) )
-            thread_counter += 1
-            from_cli_thread.start() 
-            to_cli_thread.start() 
-        
-        board = new_board( 10, to_client_threads )
-        game_thread = Thread( target=handle_game_queue, args=(game_queue, board, to_client_threads) )
-        game_thread.start()
-        # print('socket & thread setup complete')
+    for i in range( MAX_PLAYERS ):
+        sock_connector, _ = sock_listener.accept() # Wait until a connection is established
+        # print( "sock_connector", sock_connector )
+        from_cli_thread = ( Thread(target=receive_from_client, args=(sock_connector, thread_counter, game_queue)) )
+        from_client_threads.append( (from_cli_thread, sock_connector) )
+        # from_client_threads.append( Thread(target=receive_from_client, args=(sock_connector, thread_counter, game_queue)) )
+        # sock_connector_copy = sock_connector.dup() # without this, cant have both send & recv threads use the same socket; they need their own copy of the descriptor
+        # output_queue = Queue()
+        # to_cli_thread = ( Thread(target=send_to_client, args=(sock_connector_copy, thread_counter, output_queue)) )
+        # to_client_threads.append( (to_cli_thread, sock_connector_copy, output_queue) )
+        # to_client_threads.append( Thread(target=send_to_client, args=(sock_connector_copy, thread_counter, output_queue, board)) )
+        thread_counter += 1
+        from_cli_thread.start() 
+        # to_cli_thread.start() 
+    
+    out_thread = Thread( target=send_to_client, args=(from_client_threads, output_queue) )
+    out_thread.start()
+
+    board = new_board( 10, output_queue )
+    game_thread = Thread( target=handle_game_queue, args=(game_queue, board, output_queue) )
+    game_thread.start()
+    return sock_listener
+    # print('socket & thread setup complete')
 
 # output_queue = Queue()
-main()
+server_socket = main()
