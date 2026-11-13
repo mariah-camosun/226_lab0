@@ -47,14 +47,62 @@ PRINT   = "P"
 SHORT           = 1 # num bytes
 BYTE_SIZE       = 8
 NUMBER_BIT_CT    = 4
+SIZE_BIT_CT     = 4
+POSN_BIT_CT     = SIZE_BIT_CT
+SCORE_BIT_CT    = SIZE_BIT_CT
+
+
+# CLIENT TO SERVER
+#     CREATE BOARD    000 | BBBB |0
+#     PRINT BOARD     001 | 00000
+
+# #   MOVE            1__ | PPPP | 0
+# ''' MOVE UP         _00 | PPPP | 0
+#     MOVE DOWN       _01 | PPPP | 0
+#     MOVE LEFT       _10 | PPPP | 0 **** check all - was typoed
+#     MOVE RIGHT      _11 | PPPP | 0
+#         (of note: all move cmds start w 1...)
 
 # CLIENT SENDS 
+# FRAGMENTS
+C_CREATE_SHORT  = 0b000
+C_PRINT_SHORT   = 0b001
+C_MOVE_U_SHORT  = 0b100
+C_MOVE_D_SHORT  = 0b101
+C_MOVE_L_SHORT  = 0b110
+C_MOVE_R_SHORT  = 0b111
+# board size is set as bin of # up to 15
+C_P1_SHORT      = 0b0
+C_P2_SHORT      = 0b1
+
 C_CMD_SIZE      = 3
+C_CMD_SHIFT     = BYTE_SIZE - C_CMD_SIZE
+C_PRINT_SHIFT   = C_CMD_SHIFT
+
+C_CREATE_B_SHIFT    = C_CMD_SHIFT
+C_CREATE_SIZE_SHIFT = C_CMD_SHIFT - SIZE_BIT_CT
+
+C_MOVE_SHIFT    = C_CMD_SHIFT
+
+C_P_SIZE        = 4
+C_MOVE_P_SHIFT  = C_MOVE_SHIFT - C_P_SIZE
 
 C_CREATE_TAIL   = BYTE_SIZE - NUMBER_BIT_CT
 C_MOVE_TAIL     = BYTE_SIZE - C_CMD_SIZE
 
 C_SIZE_MASK     = 0b00011110
+
+# Commands & Command Fragments
+# FROM CLIENT
+C_PRINT_CMD       = 0b00100000
+CREATE_BOARD_MIN    = 0b000
+UP_BIN_MIN          = 0b100
+DOWN_BIN_MIN        = 0b101
+LEFT_BIN_MIN        = 0b110
+RIGHT_BIN_MIN       = 0b111
+
+MV_PLAYER1          = 0b00000
+MV_PLAYER2          = 0b00010
 
 # SERVER SENDS
 S_CMD_SIZE      = 2
@@ -77,17 +125,7 @@ S_COL_MASK      = 0b0000001111000000
 S_ROW_TAIL_SIZE = 10
 S_COL_TAIL_SIZE = 6
 
-# Commands & Command Fragments
-# FROM CLIENT
-C_PRINT_CMD       = 0b00100000
-CREATE_BOARD_MIN    = 0b000
-UP_BIN_MIN          = 0b100
-DOWN_BIN_MIN        = 0b101
-LEFT_BIN_MIN        = 0b110
-RIGHT_BIN_MIN       = 0b111
 
-MV_PLAYER1          = 0b00000
-MV_PLAYER2          = 0b00010
 
 # FROM SERVER
 PRINT_BOARD     = 0b00000000
