@@ -220,7 +220,8 @@ class Player:
             target_tile = board.get_coord_tile( x2,y2 ) # tile to move to
             is_barrier, _ = target_tile.check_if_barrier()
             is_treasure = target_tile.check_is_treasure()
-            if is_barrier: 
+            is_player = target_tile.check_is_player()
+            if is_barrier or is_player: 
             # or target_tile.checkTilePlayer(): #Second check doesnt actually exist yet
                 print(f"entered tile is barrier or player: {target_tile.get_contents()}")
                 return

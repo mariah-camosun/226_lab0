@@ -105,6 +105,11 @@ class Tile:
         else:
             return 0
 
+    def check_is_player(self):
+        contents = self.get_contents()
+        is_player = isinstance( contents, Player )
+        return is_player
+
     def set_to_treasure( self, treasure_value: int )->bool:
         '''
         Add or change tile contents to Treasure
