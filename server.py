@@ -71,7 +71,6 @@ def queue_delta( board, player_num, isSourse ):
     :param2: isSource - true if this delta is for the tile player was on, false
     if for the tile the player is going to.
     '''
-    print("entered send delta")
     column, row, prev_content = get_tile_details( board, player_num )
     row = row << constants.S_ROW_TAIL_SIZE
     column = column << constants.S_COL_TAIL_SIZE
@@ -98,7 +97,6 @@ def queue_score( board ):
 
 ###########################  ROUTING  ###########################
 def direct_request( cmd_byte, board ):
-    # recieve print board cmd
     if ( cmd_byte == int(constants.C_PRINT_CMD) ):
         queue_show_board( board )
     else:
@@ -137,7 +135,6 @@ def direct_request( cmd_byte, board ):
 
 ###########################  CONNECTION  ###########################
 def receive_from_client( sock ):
-    # print('Client:', sock.getpeername()) # Client IP and port
     with sock: 
         while (True):
             raw_data = recieve_buffer_data( sock, constants.SHORT )
@@ -145,19 +142,14 @@ def receive_from_client( sock ):
                 print( "did socket close?", sock.getpeername() )
             else:
                 data = unpack( constants.REG_PACK_FLAG, raw_data )[0]
-                print("unpacked raw data from client (to game_queue)", thread_name, ":", data, bin(data))
-
                 game_queue.put( data ) 
 
 def handle_game_queue(game_queue, board):
-    # print('started handle game queue')
     while True:
             cmd = game_queue.get()
             board = direct_request( cmd, board )
 
 def send_to_client( client_threads ):
-    # print("started/entered send to client")
-
     prev_is_show_board = False
     curr_is_show_board = False
 
@@ -194,7 +186,7 @@ def main():
 
     for i in range( MAX_PLAYERS ):
         sock_connector, _ = sock_listener.accept() # Wait until a connection is established
-
+        print('Client:', sock_connector.getpeername()) # Client IP and port
         cli_thread = ( Thread(target=receive_from_client, args=(sock_connector,)) )
         client_threads.append( (cli_thread, sock_connector) )
         cli_thread.start() 
