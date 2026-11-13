@@ -87,6 +87,8 @@ C_MOVE_SHIFT    = C_CMD_SHIFT
 C_P_SIZE        = 4
 C_MOVE_P_SHIFT  = C_MOVE_SHIFT - C_P_SIZE
 
+# ---------- cleanup up to here ----------
+
 C_CREATE_TAIL   = BYTE_SIZE - NUMBER_BIT_CT
 C_MOVE_TAIL     = BYTE_SIZE - C_CMD_SIZE
 
