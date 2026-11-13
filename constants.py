@@ -86,6 +86,9 @@ DOWN_BIN_MIN        = 0b101
 LEFT_BIN_MIN        = 0b110
 RIGHT_BIN_MIN       = 0b111
 
+MV_PLAYER1          = 0b00000
+MV_PLAYER2          = 0b00010
+
 # FROM SERVER
 PRINT_BOARD     = 0b00000000
 SCORE           = 0b01000000
@@ -102,7 +105,8 @@ TILE_MASK       = 0b110000
 
 BLANK           = 0b000000
 BARRIER         = 0b010000
-PLAYER          = 0b100000
+PLAYER1          = 0b100000
+PLAYER2          = 0b110000
 
 REG_PACK_FLAG  = '!B'
 LONG_PACK_FLAG  = '!H'

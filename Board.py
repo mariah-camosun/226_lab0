@@ -72,6 +72,7 @@ class Board:
         # self.players.append( self.make_new_player() )
         self.players = [ ]        
         p1 = self.make_initial_player()
+        p2 = self.make_new_player()
 
     def __str__(self)->str:
         '''
