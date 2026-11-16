@@ -21,13 +21,13 @@ writing our own queue, but can import it.
 game_queue = Queue()
 output_queue = Queue()
 
-###########################  NEW BOARD   ###########################
+
+###########################  CLASS INTERACTIONS  ###########################
 def new_board( num ):
     b = Board.new_max_board(num)
     show_board_and_scores(b)
     return b
 
-###########################  CLASS INTERACTIONS  ###########################
 def get_tile_details( board, player ):
         active_player = board.get_player( player )
         column, row = active_player.get_coords()
@@ -53,7 +53,26 @@ def recieve_buffer_data( sc, size ): # recieves data in bitecode format
 
     return data
 
-###########################  SEND CMDS   ###########################
+def receive_from_client( sock ):
+    with sock:
+        try:
+            while (True):
+                raw_data = recieve_buffer_data( sock, constants.SHORT )
+                if raw_data == b'' or raw_data == None:
+                    print( "Connection was closed" )
+                    sock.close()
+                    sys.exit()
+                    return
+                else:
+                    data = unpack( constants.REG_PACK_FLAG, raw_data )[0]
+                    game_queue.put( data )
+        except ConnectionResetError:
+            print('Connection reset by peer')
+            sock.close()
+            sys.exit()
+            return
+
+###########################  SEND TO QUEUE   ###########################
 def queue_show_board( board ):
     board_size = board.get_size()
     cmd = constants.PRINT_BOARD | ( board_size << constants.S_PRINT_TAIL )
@@ -136,25 +155,6 @@ def direct_request( cmd_byte, board ):
     return board
 
 ###########################  CONNECTION  ###########################
-def receive_from_client( sock ):
-    with sock:
-        try:
-            while (True):
-                raw_data = recieve_buffer_data( sock, constants.SHORT )
-                if raw_data == b'' or raw_data == None:
-                    print( "Connection was closed" )
-                    sock.close()
-                    sys.exit()
-                    return
-                else:
-                    data = unpack( constants.REG_PACK_FLAG, raw_data )[0]
-                    game_queue.put( data )
-        except ConnectionResetError:
-            print('Connection reset by peer')
-            sock.close()
-            sys.exit()
-            return
-
 def handle_game_queue(game_queue, board):
     while True:
             cmd = game_queue.get()

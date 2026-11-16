@@ -46,7 +46,7 @@ PRINT   = "P"
 
 SHORT           = 1 # num bytes
 BYTE_SIZE       = 8
-NUMBER_BIT_CT    = 4
+NUMBER_BIT_CT   = 4
 SIZE_BIT_CT     = 4
 POSN_BIT_CT     = SIZE_BIT_CT
 SCORE_BIT_CT    = SIZE_BIT_CT
