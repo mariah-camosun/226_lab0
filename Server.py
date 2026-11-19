@@ -26,21 +26,28 @@ class Server:
         self.clients = []
         self.client_queues = {} # dictionary of clients & their queues
 
-        self.set_server( start_server() )
+        
 
-    ####################### INITIALIZATION HELPERS #######################
-    async def start_server(self):
-        server = await start_server( self.new_client, self.HOST, self.PORT )
-        await server.serve_forever()
-        return server
+    ####################### INITIALIZERS #######################
+    async def start(self):
+        self.set_server( await start_server( self.new_client, self.HOST, self.PORT) )
+        await self.server.serve_forever()
 
     async def new_client( self, reader: StreamReader, writer: StreamWriter)-> None:
-        to_client_queue = Queue()
+        # to_client_queue = Queue()
         client_name = writer.get_extra_info('peername')
         print( "connected to client:", client_name)
-        self.add_client({ client_name, reader, writer })
+        self.__add_client({ client_name, reader, writer })
         client_cmd = create_task( self.receive_from_client( client_name, reader, writer ) )
-        to_cli_task = create_task( self.send_to_client( to_client_queue, client_name, reader, writer ) )
+        to_cli_task = create_task( self.route_to_client_send_queue() )
+
+    # async def new_client( self, reader: StreamReader, writer: StreamWriter)-> None:
+    #     # to_client_queue = Queue()
+    #     client_name = writer.get_extra_info('peername')
+    #     print( "connected to client:", client_name)
+        
+    #     client_cmd = create_task( self.receive_from_client( client_name, reader, writer ) )
+    #     to_cli_task = create_task( self.send_to_client( to_client_queue, client_name, reader, writer ) )
 
     ####################### GETTERS & SETTERS #######################
     def get_input_queue(self):
@@ -72,7 +79,7 @@ class Server:
         self.clients.append( new_client )
 
     # this one probably wont work right as written....
-    def del_client( self, del_client ):
+    def __del_client( self, del_client ):
         self.clients.remove( del_client )
 
     #expect prob  w  .append & dictionary
@@ -106,10 +113,6 @@ class Server:
             else:
                 pass
                 # error? print? both? "client closed"
-
-
-
-
 
         #             for client in client_threads:
         #                 cli, sock_connector = client

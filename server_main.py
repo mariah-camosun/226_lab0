@@ -7,7 +7,9 @@ from struct import pack, unpack
 from Board import Board
 # import sys
 import constants
-from game.Server_class import Server
+from Server import Server
+
+
 BUF_SIZE = 1 # in bytes
 HOST = ''
 PORT = 12345
@@ -188,9 +190,9 @@ async def consume_game_commands( reader: StreamReader, writer: StreamWriter) -> 
         print( "processed a board action")
 
         # put response in output queue
-        await output_queue_cli1.put()
-        await output_queue_cli2.put()
-        print( "queued output")
+        # await output_queue_cli1.put()
+        # await output_queue_cli2.put()
+        # print( "queued output")
 
 
 
@@ -198,7 +200,8 @@ async def consume_game_commands( reader: StreamReader, writer: StreamWriter) -> 
 
 async def main()->None:
     server = Server()
-#         board = new_board( 10 )
+    await server.start()
+    board = new_board( 10 )
 #         game_thread = Thread( target=handle_game_queue, args=(game_queue, board), daemon=True )            
 
     
@@ -238,4 +241,4 @@ run( main() )
 
         # sys.exit()
 
-main()
+# main()
