@@ -7,7 +7,7 @@ from struct import pack, unpack
 from Board import Board
 # import sys
 import constants
-
+from Server import Server
 BUF_SIZE = 1 # in bytes
 HOST = ''
 PORT = 12345
@@ -161,46 +161,6 @@ def handle_game_queue(game_queue, board):
             cmd_data, reader, writer = game_queue.get()
             board = direct_request( cmd_data, reader, writer, board )
 
-async def send_to_client( to_client_queue, client_name, reader, writer ):
-    # pass
-    # prev_is_show_board = False
-    # curr_is_show_board = False
-
-    while True:
-        cmd, writer = await output_queue.get()
-        if writer:
-            writer.write( cmd )
-            await writer.drain()
-    #         # send to only the one writer
-        else:
-            pass
-            # send to both
-
-
-    #             for client in client_threads:
-    #                 cli, sock_connector = client
-    #                 try:
-    #                     # try:
-    #                     #     # udata = unpack( '!H', data )
-    #                     #     # print( 'sending:', data, bin(udata) )
-    #                     # except:
-    #                     #     # print( 'sending:', data )
-    #                     sock_connector.sendall( data )
-    #                 except OSError:
-    #                     print('socket was closed pre-maturely')
-    #                     sys.exit()
-
-async def receive_from_client( client_name, reader, writer ) -> None:
-    '''
-    get client requests and passes them to handler to proccess, queues processed cmd
-    '''
-    # get raw data
-    while True:
-        raw_data = await reader.read( BUF_SIZE )
-        data = unpack( constants.REG_PACK_FLAG, raw_data )[0]
-        print( "client:", client_name, "raw data recieved:", raw_data, "unpacked:", data, bin(data) )
-        await game_queue.put( {data, reader, writer} )
-
 #----\/-----suitable for clientside---------------------------------------------------------------------------
 # whoops, client out is only ever 1 byte - got server/cli out mixed up again
 # async def process_cmd( raw_data, reader ):
@@ -211,22 +171,6 @@ async def receive_from_client( client_name, reader, writer ) -> None:
 #         data_pt2 = await reader.read( BUF_SIZE ) 
 #         data_pt2 = unpack( constants.REG_PACK_FLAG, data_pt2 )[0]
 #         return ( data << constants.BYTE_SIZE | data_pt2 )
-
-async def new_client( reader: StreamReader, writer: StreamWriter)-> None:
-    to_client_queue = Queue()
-    client_name = writer.get_extra_info('peername')
-    print( "connected to client:", client_name)
-    client_cmd = create_task( receive_from_client( client_name, reader, writer ) )
-    to_cli_task = create_task( send_to_client( to_client_queue, client_name, reader, writer ) )
- 
-
-
-    # abv includes processing and queueing (convert it to cmds) 
-    # break down?
-        # process 
-        # queue it
-    # await queue.put( processed_cmd )
-    # print( "queued client command" )
 
 async def consume_game_commands( reader: StreamReader, writer: StreamWriter) -> None:
     '''
@@ -248,42 +192,14 @@ async def consume_game_commands( reader: StreamReader, writer: StreamWriter) -> 
         await output_queue_cli2.put()
         print( "queued output")
 
-# async def send_to_client(client)->None:
-#     while True:
-        
-#         # get from queue, if nothing, wait
-#         out = await output_queue.get()
-
-#         # send
-#         send_to_clients()
-
-#         # mark complete
-#         output_queue.task_done()
-#         print("sent output command")
 
 
-# main 
-
-#     data = await reader.readline()
-#     message = data.decode()
-
-#             cli_thread = ( Thread(target=receive_from_client, args=(sock_connector,) ))
-#         out_thread = Thread( target=send_to_client, args=(client_threads,), daemon=True )
-#         # out_thread.start()
-
-#         board = new_board( 10 )
-#         game_thread = Thread( target=handle_game_queue, args=(game_queue, board), daemon=True )            
 
 
 async def main()->None:
-
-# game_queue = Queue()
-# output_queue_cli1 = Queue()
-# output_queue_cli2 = Queue()
-
-    # start tcp server
-    server = await start_server( new_client, HOST, PORT )
-    await server.serve_forever()
+    server = Server()
+#         board = new_board( 10 )
+#         game_thread = Thread( target=handle_game_queue, args=(game_queue, board), daemon=True )            
 
     
     # client_tasks = [ create_task( get_client_requests( player_num ) ) for i in range( MAX_PLAYERS ) ]
