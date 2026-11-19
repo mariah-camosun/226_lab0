@@ -23,31 +23,19 @@ class Server:
 
         self.input_queue = Queue()
         self.output_queue = Queue()
-        self.clients = []
-        self.client_queues = {} # dictionary of clients & their queues
-
-        
+        self.clients = {}
 
     ####################### INITIALIZERS #######################
     async def start(self):
-        self.set_server( await start_server( self.new_client, self.HOST, self.PORT) )
+        self.__set_server( await start_server( self.new_client, self.HOST, self.PORT) )
         await self.server.serve_forever()
 
     async def new_client( self, reader: StreamReader, writer: StreamWriter)-> None:
-        # to_client_queue = Queue()
         client_name = writer.get_extra_info('peername')
         print( "connected to client:", client_name)
-        self.__add_client({ client_name, reader, writer })
-        client_cmd = create_task( self.receive_from_client( client_name, reader, writer ) )
-        to_cli_task = create_task( self.route_to_client_send_queue() )
-
-    # async def new_client( self, reader: StreamReader, writer: StreamWriter)-> None:
-    #     # to_client_queue = Queue()
-    #     client_name = writer.get_extra_info('peername')
-    #     print( "connected to client:", client_name)
-        
-    #     client_cmd = create_task( self.receive_from_client( client_name, reader, writer ) )
-    #     to_cli_task = create_task( self.send_to_client( to_client_queue, client_name, reader, writer ) )
+        self.__add_client(client_name, reader, writer, Queue()) # creates & records a new queue per client
+        client_cmd = create_task( self.receive_from_client( client_name, reader, writer ), name=f"{client_name}-IN" )
+        to_cli_task = create_task( self.route_to_client_send_queue(), name=f"{client_name}-OUT" )
 
     ####################### GETTERS & SETTERS #######################
     def get_input_queue(self):
@@ -61,7 +49,7 @@ class Server:
 
     def get_server(self):
         return self.server
-    def set_server(self, server):
+    def __set_server(self, server):
         self.server = server
 
     def get_clients(self):
@@ -69,22 +57,25 @@ class Server:
     def __set_clients(self, client_array):
         self.clients = client_array
 
-    def get_client_queues(self):
-        return self.client_queues
-    def set_client_queues(self, queue_array):
-        self.client_queues = queue_array
-
     # ~~~~~~~~~~~~~~~~~~~~~~~ EXPANDED GETTERS & SETTERS ~~~~~~~~~~~~~~~~~~~~~~~
-    def __add_client( self, new_client ):
-        self.clients.append( new_client )
+    def __add_client( self, client_name, reader, writer, cli_queue ):
+        self.clients[client_name] = {
+            "reader": reader,
+            "writer": writer,
+            "queue": cli_queue
+        }
 
     # this one probably wont work right as written....
     def __del_client( self, del_client ):
-        self.clients.remove( del_client )
+        return self.clients.pop( del_client )
 
-    #expect prob  w  .append & dictionary
-    def __add_client_queue( self, new_client_queue ):
-        self.client_queues.append( new_client_queue ) # dont think append works w dictionary...
+    def get_a_client_queue(self, client_name):
+        return self.clients[client_name]["queue"]
+
+    def get_a_client_info(self, client_name):
+        client_info = self.clients.get( client_name )
+        if client_info:
+            reader, writer, queue = client_info
 
     ####################### TRANSFER DATA #######################
     async def route_to_client_send_queue( self ):
