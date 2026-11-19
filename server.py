@@ -207,6 +207,17 @@ async def receive_from_client( client_name, reader, writer ) -> None:
         print( "client:", client_name, "raw data recieved:", raw_data, "unpacked:", data, bin(data) )
         await game_queue.put( {data, reader, writer} )
 
+#----\/-----suitable for clientside---------------------------------------------------------------------------
+# whoops, client out is only ever 1 byte - got server/cli out mixed up again
+# async def process_cmd( raw_data, reader ):
+#     data = unpack( constants.REG_PACK_FLAG, raw_data )[0]
+#     if data == 0b00111100:
+#         return data
+#     else:
+#         data_pt2 = await reader.read( BUF_SIZE ) 
+#         data_pt2 = unpack( constants.REG_PACK_FLAG, data_pt2 )[0]
+#         return ( data << constants.BYTE_SIZE | data_pt2 )
+
 async def new_client( reader: StreamReader, writer: StreamWriter)-> None:
     to_client_queue = Queue()
     client_name = writer.get_extra_info('peername')
