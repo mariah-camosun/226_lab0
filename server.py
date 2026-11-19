@@ -21,7 +21,7 @@ writing our own queue, but can import it.
 '''
 game_queue = Queue()
 
-output_queue_cli2 = Queue()
+output_queue = Queue()
 
 
 ###########################  CLASS INTERACTIONS  ###########################
@@ -75,7 +75,7 @@ def show_board_and_scores(b):
             return
 
 ###########################  SEND TO QUEUE   ###########################
-async def queue_show_board( board ):
+async def queue_show_board( board, writer ):
     board_size = board.get_size()
     cmd = constants.PRINT_BOARD | ( board_size << constants.S_PRINT_TAIL )
     packed_send_precmd = pack( constants.REG_PACK_FLAG, cmd)
@@ -84,7 +84,7 @@ async def queue_show_board( board ):
     board_str = board_str.replace(" ", "").replace("\n", "").split("n", 1)
     board_str = board_str[0]
 
-    await output_queue.put( packed_send_precmd + board_str.encode( 'utf-8' ) )
+    await output_queue.put( { packed_send_precmd + board_str.encode( 'utf-8' ), writer } )
     
 async def queue_delta( board, player_num, isSourse ):
     '''
@@ -108,7 +108,7 @@ async def queue_delta( board, player_num, isSourse ):
         delta = constants.DELTA | row | column | constants.PLAYER2
 
     data = pack( constants.LONG_PACK_FLAG, int(delta) )
-    await output_queue.put( data )
+    await output_queue.put( { data, } )
 
 async def queue_score( board ):
     scoreOpt = (0b01) << ( 8 + 6 ) 
@@ -116,12 +116,12 @@ async def queue_score( board ):
     p2_bits = board.get_player( 2 ).get_score() << ( 6 )
 
     cmd_out = scoreOpt | p1_bits | p2_bits
-    await output_queue.put( pack ( constants.LONG_PACK_FLAG, cmd_out ) )
+    await output_queue.put( { pack ( constants.LONG_PACK_FLAG, cmd_out ), } )
 
 ###########################  ROUTING  ###########################
-def direct_request( cmd_byte, board ):
+def direct_request( cmd_byte, reader, writer, board ):
     if ( cmd_byte == int(constants.C_PRINT_CMD) ):
-        queue_show_board( board )
+        queue_show_board( board, writer )
     else:
         # get cmd portion of split cmd bits from remaining opt bits (via bitshifting)
         cmd = cmd_byte >> ( constants.BYTE_SIZE - constants.C_CMD_SIZE )
@@ -159,30 +159,25 @@ def direct_request( cmd_byte, board ):
 ###########################  CONNECTION  ###########################
 def handle_game_queue(game_queue, board):
     while True:
-            cmd = game_queue.get()
-            board = direct_request( cmd, board )
+            cmd_data, reader, writer = game_queue.get()
+            board = direct_request( cmd_data, reader, writer, board )
 
 async def send_to_client( to_client_queue, client_name, reader, writer ):
-    pass
+    # pass
     # prev_is_show_board = False
     # curr_is_show_board = False
 
-    # while True:
-    #     data = output_queue.get()
-    #     if data:
-    #         prev_is_show_board = curr_is_show_board
+    while True:
+        cmd, writer = await output_queue.get()
+        if writer:
+            writer.write( cmd )
+            await writer.drain()
+    #         # send to only the one writer
+        else:
+            pass
+            # send to both
 
-    #         # check first byte cmd, set curr_is_show_board to true if cmd == print/show board
-    #         leading_slice = data[:1]
-    #         # print( 'first byte to send:', bin(unpack( '!B', leading_slice )[0]) )
-    #         # if (unpack( '!B', leading_slice )[0] ) == constants.C_PRINT_CMD:
-    #         if (unpack( '!B', leading_slice )[0] >> 6) == 0:
-    #             curr_is_show_board = True
-    #         else:
-    #             curr_is_show_board = False
 
-    #         # if both prev and curr send are 'show board' dont send
-    #         if not ( prev_is_show_board == True and curr_is_show_board == True):
     #             for client in client_threads:
     #                 cli, sock_connector = client
     #                 try:
