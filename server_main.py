@@ -7,7 +7,7 @@ from struct import pack, unpack
 from Board import Board
 # import sys
 import constants
-from Server import Server
+from game.Server_class import Server
 BUF_SIZE = 1 # in bytes
 HOST = ''
 PORT = 12345
