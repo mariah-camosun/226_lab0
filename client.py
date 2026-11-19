@@ -12,8 +12,8 @@ from queue import Queue
 import constants
 
 BUF_SIZE = 1024
-# HOST = '10.21.75.22' # mine
-HOST = '10.21.75.50' # bbcli
+HOST = '10.21.75.22' # mine
+# HOST = '10.21.75.50' # bbcli
 # HOST = '10.21.75.14' # Felix
 # HOST = '10.21.75.16' #
 PORT = 12345
