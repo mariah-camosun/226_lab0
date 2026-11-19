@@ -88,19 +88,9 @@ class Server:
                 for client in self.get_client_queues().values():
                     client.put( cmd )
             elif client in self.get_client_queues():
-                    self.client_queues[client].put(cmd)                
-            else:
-                # error? print? both? "client closed"
-
-
-    # async def send_to_client( self, to_client_queue, client_name, reader, writer ):
-    #     while True:
-    #         cmd, writer = await self.output_queue.get()
-    #         if writer:
-    #             writer.write( cmd )
-    #             await writer.drain()
-    #     #         # send to only the one writer
-    #         else:
+                    self.client_queues[client].put(cmd)
+    #           prev abv was:
+    #         elif:
     #             # this is not *entirely* how i'd want to do it....
     #             # separate client queues so that lag in one doesnt affect
     #             # the other would be better, but for now this will do
@@ -108,11 +98,17 @@ class Server:
     #             # is for one or both? the game itself doesnt see the server/clients directly
     #             # just the queue. or does async take care of this? hard to tell...
     #             # test with a sleep and prints to see!
-    #             for client in self.get_clients():
+    #             for client in self.get_clients():  # send to both  
     #                 name, reader, writer = client
     #                 writer.write( cmd )
     #                 await writer.drain()
-    #             # send to both
+    #                              
+            else:
+                pass
+                # error? print? both? "client closed"
+
+
+
 
 
         #             for client in client_threads:
