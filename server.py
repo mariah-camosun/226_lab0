@@ -20,9 +20,8 @@ MAX_PLAYERS = 2
 writing our own queue, but can import it.
 '''
 game_queue = Queue()
-
 output_queue = Queue()
-
+clients = []
 
 ###########################  CLASS INTERACTIONS  ###########################
 def new_board( num ):
@@ -220,25 +219,6 @@ async def new_client( reader: StreamReader, writer: StreamWriter)-> None:
     client_cmd = create_task( receive_from_client( client_name, reader, writer ) )
     to_cli_task = create_task( send_to_client( to_client_queue, client_name, reader, writer ) )
  
-
-# def receive_from_client( sock ):
-#     with sock:
-#         try:
-#             while (True):
-#                 raw_data = recieve_buffer_data( sock, constants.SHORT )
-#                 if raw_data == b'' or raw_data == None:
-#                     print( "Connection was closed" )
-#                     sock.close()
-#                     sys.exit()
-#                     return
-#                 else:
-#                     
-#                     
-#         except ConnectionResetError:
-#             print('Connection reset by peer')
-#             sock.close()
-#             sys.exit()
-#             return
 
 
     # abv includes processing and queueing (convert it to cmds) 
