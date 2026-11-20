@@ -5,9 +5,10 @@ from sys import argv
 import constants
 import time
 from struct import pack, unpack
-from threading import Thread, current_thread, Semaphore
+# from threading import Thread, current_thread, Semaphore
 from struct import pack, unpack
-from queue import Queue
+# from queue import Queue
+from asyncio import run, open_connection, create_task
 
 import constants
 
@@ -24,14 +25,6 @@ def direct_reply():
 
     if cmd == constants.PRINT_BOARD_CMD:
         board = get_board( reply )
-        
-
-    # if cmd == constants.SCORE_CMD:
-    #     print("score, reply:", reply)
-    #     print("entered score")
-    #     get_player_score( reply )
-    #     handle_delta( reply )
-
     elif cmd == constants.DELTA_CMD:
         handle_delta( reply )
     elif cmd == constants.SCORE_CMD:
@@ -71,35 +64,36 @@ def validate_command( cmd ):
         else:
             return True
 
-def send_user_cmd( sock ):
-    send_user_command( sock )
+def send_user_cmd( writer ):
+    send_user_command( writer )
 
-def send_user_command( sock ):
+def send_user_command( writer ):
     while (True):
         cmd = get_player_commands() #, board_size )
 
-        send_command( cmd, sock )
+        send_command( cmd, writer )
 
-def send_command( cmd, sock ): #, board_size  ):
+def send_command( cmd, writer ): #, board_size  ):
     if cmd == constants.PRINT:
-        sock.sendall( pack ( constants.REG_PACK_FLAG, constants.C_PRINT_CMD ) )
+        writer.write( pack ( constants.REG_PACK_FLAG, constants.C_PRINT_CMD ) )
+        # sock.sendall( pack ( constants.REG_PACK_FLAG, constants.C_PRINT_CMD ) )
     elif cmd == constants.UP:
-        send_move_cmd( constants.UP_BIN_MIN )       
+        send_move_cmd( constants.UP_BIN_MIN, writer )       
     elif cmd == constants.DOWN:
-        send_move_cmd( constants.DOWN_BIN_MIN )
+        send_move_cmd( constants.DOWN_BIN_MIN, writer )
     elif cmd == constants.LEFT:
-        send_move_cmd( constants.LEFT_BIN_MIN )
+        send_move_cmd( constants.LEFT_BIN_MIN, writer )
     elif cmd == constants.RIGHT:
-        send_move_cmd( constants.RIGHT_BIN_MIN )
+        send_move_cmd( constants.RIGHT_BIN_MIN, writer )
     else:
         return
 
-def send_move_cmd( cmd ):
+def send_move_cmd( cmd, writer ):
     cmd = cmd << constants.C_MOVE_TAIL
     pl_cmd = (player - 1) << constants.C_MOVE_P_SHIFT
     complete_cmd = cmd | pl_cmd
     print( 'sending: cmd lead', bin(cmd), 'player', bin(pl_cmd), 'complete', bin(complete_cmd) )
-    sock.sendall( pack ( constants.REG_PACK_FLAG, complete_cmd ) )
+    writer.write( pack ( constants.REG_PACK_FLAG, complete_cmd ) )
 
 ###########################  RECIEVE CMDS  ###########################
 def get_cmd():
@@ -203,48 +197,51 @@ def prettify_board( board, board_size ):
     return newBoard
 
 ###########################  CONNECTION  ###########################
-def play_game( sock ):
+def play_game( writer ):
     while (True):
         cmd = get_player_commands() #, board_size )
-        send_user_command( cmd, sock ) #, board_size  )
+        send_user_command( writer ) #, board_size  )
         direct_reply()
 
-def recieve_server_cmds( sock ):
+async def recieve_server_cmds( reader ):
      while (True):
+         await reader.read()
+         print('recieved cmd from server')
         #  print('entered rec server cmds')
          direct_reply()
          print( "Choose one of: re-print board (p), or move up(u), down(d), left(l), right(r)\n" )
-         
+
+async def main():
+    reader, writer = await open_connection( HOST, PORT)
+    print('connected')
+    listener_task = create_task( recieve_server_cmds( reader ))
+    play_game( writer )
+
+    # with socket(AF_INET, SOCK_STREAM) as sock:
+    #     sock = socket(AF_INET, SOCK_STREAM)
+    #     # create connection
+    #     sock.connect(( HOST, PORT ))
+
+    #     print( 'Client:', sock.getsockname())
+    #     # action_out_thread = Thread( target=send_user_cmd, args=(sock,) )
+    #     in_thread = Thread( target=recieve_server_cmds, args=(sock,) )
+
+    #     # action_out_thread.start()
+    #     in_thread.start()
+
+    #     send_command( constants.PRINT, sock )
+    #     # time.sleep(0.2)
+    #     send_user_command( sock )
+    #     # send_user_cmd( sock )
+
+    #     # play_game( sock )
+
+
+
 
 try:
     player = int(argv[1])
 except:
     print( 'Missing player number argument, enter 1 or 2' )
 else:
-    # initial connect, print, and disconnect
-    # with socket(AF_INET, SOCK_STREAM) as sock:
-    #     sock = socket(AF_INET, SOCK_STREAM)
-    #     # create connection
-    #     sock.connect(( HOST, PORT ))
-    #     sock.sendall( pack ( constants.REG_PACK_FLAG, constants.C_PRINT_CMD ) )
-    #     reply, cmd = get_cmd()
-    #     get_board(reply)
-
-    with socket(AF_INET, SOCK_STREAM) as sock:
-        sock = socket(AF_INET, SOCK_STREAM)
-        # create connection
-        sock.connect(( HOST, PORT ))
-
-        print( 'Client:', sock.getsockname())
-        # action_out_thread = Thread( target=send_user_cmd, args=(sock,) )
-        in_thread = Thread( target=recieve_server_cmds, args=(sock,) )
-
-        # action_out_thread.start()
-        in_thread.start()
-
-        send_command( constants.PRINT, sock )
-        # time.sleep(0.2)
-        send_user_command( sock )
-        # send_user_cmd( sock )
-
-        # play_game( sock )
+    run( main() )

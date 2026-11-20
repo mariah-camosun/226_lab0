@@ -100,15 +100,7 @@ class Server:
                     await client['queue'].put( cmd )
             else:
                 await self.get_a_client_queue( client ).put(cmd)
-
-    #           prev abv was:
-    #         elif:
-
-    #             for client in self.get_clients():  # send to both  
-    #                 name, reader, writer = client
-    #                 writer.write( cmd )
-    #                 await writer.drain()
-    #                              
+   #                              
                 # error? print? both? "client closed"
 
         #             for client in client_threads:
@@ -157,7 +149,7 @@ class Server:
         
         while True:
             cmd = await queue.get()
-            print("got cmd from to-client queue")
+            print("got cmd from to-client queue of", client_name)
             # buffer get
             writer.write( cmd )
             await writer.drain()
