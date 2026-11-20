@@ -204,6 +204,18 @@ def prettify_board( board, board_size ):
 #         await send_user_command( writer ) #, board_size  )
 #         direct_reply()
 
+
+#----\/-----suitable for clientside---------------------------------------------------------------------------
+# whoops, client out is only ever 1 byte - got server/cli out mixed up again
+# async def process_cmd( raw_data, reader ):
+#     data = unpack( constants.REG_PACK_FLAG, raw_data )[0]
+#     if data == 0b00111100:
+#         return data
+#     else:
+#         data_pt2 = await reader.read( BUF_SIZE ) 
+#         data_pt2 = unpack( constants.REG_PACK_FLAG, data_pt2 )[0]
+#         return ( data << constants.BYTE_SIZE | data_pt2 )
+
 async def recieve_server_cmds( reader ):
      while (True):
          await reader.read()
@@ -237,8 +249,6 @@ async def main():
     #     # send_user_cmd( sock )
 
     #     # play_game( sock )
-
-
 
 
 try:

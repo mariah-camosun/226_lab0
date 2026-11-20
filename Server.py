@@ -190,8 +190,7 @@ class Server:
                 for client in self.get_all_clients_info():
                     await client['queue'].put( cmd )
             else:
-                await self.get_a_client_queue( client ).put(cmd)
-   #                              
+                await self.get_a_client_queue( client ).put(cmd)         
                 # error? print? both? "client closed"
 
         #             for client in client_threads:

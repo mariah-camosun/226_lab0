@@ -59,6 +59,7 @@ async def send_delta( server, board, player_num, isSourse, client ):
     :param2: isSource - true if this delta is for the tile player was on, false
     if for the tile the player is going to.
     '''
+    print('send delta')
     column, row, prev_content = get_tile_details( board, player_num )
     row = row << constants.S_ROW_TAIL_SIZE
     column = column << constants.S_COL_TAIL_SIZE
@@ -77,15 +78,19 @@ async def send_delta( server, board, player_num, isSourse, client ):
     return data
 
 async def send_score( server, board, client ):
+    print('send score')
     scoreOpt = (0b01) << ( 8 + 6 ) 
     p1_bits = board.get_player( 1 ).get_score() << (4 + 6)
     p2_bits = board.get_player( 2 ).get_score() << ( 6 )
 
     cmd_out = scoreOpt | p1_bits | p2_bits
     data = pack ( constants.LONG_PACK_FLAG, cmd_out )
+    print("send score pre-queue Queue contents:", list(server.get_output_queue()._queue))
     await queue_send_cmd( server, (data, None) )
+    print("send score post-queue Queue contents:", list(server.get_output_queue()._queue))
 
 async def queue_send_cmd( server, cmd_tupple ):
+    print('queue cmd')
     await server.get_output_queue().put( cmd_tupple )
 
 ###########################  ROUTING  ###########################
@@ -100,7 +105,7 @@ async def process_action(server, board, data, client):
 
 
     if cmd >> 2 == 0b1: # move
-        # print("in if move")
+        print("in if move")
         # print("player/'opt':", opt, bin)
         player = board.get_player( opt + 1 )
         await send_delta( server, board, opt + 1 , True, client )
@@ -132,17 +137,6 @@ async def process_action(server, board, data, client):
     return board
 
 ###########################  CONNECTION  ###########################
-#----\/-----suitable for clientside---------------------------------------------------------------------------
-# whoops, client out is only ever 1 byte - got server/cli out mixed up again
-# async def process_cmd( raw_data, reader ):
-#     data = unpack( constants.REG_PACK_FLAG, raw_data )[0]
-#     if data == 0b00111100:
-#         return data
-#     else:
-#         data_pt2 = await reader.read( BUF_SIZE ) 
-#         data_pt2 = unpack( constants.REG_PACK_FLAG, data_pt2 )[0]
-#         return ( data << constants.BYTE_SIZE | data_pt2 )
-
 async def consume_game_commands( server, board, game_action_queue ): #, reader: StreamReader, writer: StreamWriter) -> None:
     '''
     consumes items in the game move queue
@@ -151,12 +145,12 @@ async def consume_game_commands( server, board, game_action_queue ): #, reader: 
         while True:
             # get from queue; waits if empty
             action, client = await game_action_queue.get()
-            print("starting processing of game command")
+            # print("starting processing of game command")
             print("queue item:", action, "for client:", client)
 
             #process # function also includes adding server response to out_queue
             await process_action(server, board, action, client) 
-            print( "processed a board action")
+            # print( "processed a board action")
     except Exception:
         traceback.print_exc()
 
