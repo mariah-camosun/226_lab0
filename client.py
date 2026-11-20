@@ -33,7 +33,7 @@ def direct_reply():
         print('unknown command')
 
 ###########################  SEND CMDS   ###########################
-def get_player_commands(): #, board_size ):    
+async def get_player_commands(): #, board_size ):    
     '''
     Prompt user for command: print or move direction.
     Repeat until a valid option is entered
@@ -64,12 +64,12 @@ def validate_command( cmd ):
         else:
             return True
 
-def send_user_cmd( writer ):
-    send_user_command( writer )
+async def send_user_cmd( writer ):
+    await send_user_command( writer )
 
-def send_user_command( writer ):
+async def send_user_command( writer ):
     while (True):
-        cmd = get_player_commands() #, board_size )
+        cmd = await get_player_commands() #, board_size )
 
         send_command( cmd, writer )
 
@@ -197,11 +197,12 @@ def prettify_board( board, board_size ):
     return newBoard
 
 ###########################  CONNECTION  ###########################
-def play_game( writer ):
-    while (True):
-        cmd = get_player_commands() #, board_size )
-        send_user_command( writer ) #, board_size  )
-        direct_reply()
+# async def play_game( writer ):
+#     while (True):
+#         cmd = await get_player_commands() #, board_size )
+#         print( cmd )
+#         await send_user_command( writer ) #, board_size  )
+#         direct_reply()
 
 async def recieve_server_cmds( reader ):
      while (True):
@@ -214,8 +215,9 @@ async def recieve_server_cmds( reader ):
 async def main():
     reader, writer = await open_connection( HOST, PORT)
     print('connected')
+    player_cmd_task = create_task( send_user_command(writer))
     listener_task = create_task( recieve_server_cmds( reader ))
-    play_game( writer )
+    # await play_game( writer )
 
     # with socket(AF_INET, SOCK_STREAM) as sock:
     #     sock = socket(AF_INET, SOCK_STREAM)
