@@ -1,15 +1,15 @@
-#!/usr/bin/python3.11
+# #!/usr/bin/python3.11
 
-from cryptography.fernet import Fernet
-key = Fernet.generate_key()
-print(key)
+# from cryptography.fernet import Fernet
+# key = Fernet.generate_key()
+# print(key)
 
-f = Fernet(key)
-
-
-encrypted = f.encrypt(b"Hello World")
-print(encrypted)
+# f = Fernet(key)
 
 
-decrypted = f.decrypt(encrypted)
-print(decrypted)
+# encrypted = f.encrypt(b"Hello World")
+# print(encrypted)
+
+
+# decrypted = f.decrypt(encrypted)
+# print(decrypted)
