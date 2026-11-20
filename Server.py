@@ -62,20 +62,19 @@ class Server:
         '''
         try:
             client_name = writer.get_extra_info('peername')
-            self.add_client(client_name, reader, writer, Queue()) # creates & records a new queue per client
+            print('new client:', client_name)
         except Exception:
-            # print("problem setting up client")
+            print("problem connecting client")
             return
 
         try:            
-            client_cmd = create_task( self.receive_from_client( client_name ), name=f"{client_name}-IN" )
-            to_cli_task = create_task( self.send_to_client( client_name ), name=f"{client_name}-OUT" )
+            client_info = self.add_client(client_name, reader, writer, Queue()) # creates & records a new queue per client
+            client_info['from_cli_task'] = create_task( self.receive_from_client( client_name ), name=f"{client_name}-IN" )
+            client_info['to_cli_task'] = create_task( self.send_to_client( client_name ), name=f"{client_name}-OUT" )
         except Exception:
-            # print("problem setting up client")
-            self.del_client()
+            self.del_client( client_name )
 
     #~##################### GETTERS & SETTERS #######################
-
     def get_input_queue(self):
         '''
         gets & returns the server instance's input queue
@@ -139,7 +138,8 @@ class Server:
         :param client_name: string, client name
         :param reader: Streamreader for client
         :param writer: Streamwriter for client
-        :param cli_queue: Queue, outgoing queue for this client 
+        :param cli_queue: Queue, outgoing queue for this client
+        :returns dictionary: the contents of the client_name key
         '''
         self.clients_connected += 1
         self.clients[client_name] = {
@@ -148,6 +148,7 @@ class Server:
             "writer": writer,
             "queue": cli_queue
         }
+        return self.clients[client_name]
 
     def del_client( self, del_client ):
         '''
@@ -156,9 +157,21 @@ class Server:
         :return: dictionary, client dictionary (values) of removed client
         '''
         try:
-            return self.clients.pop( del_client )
+            deleted = self.clients.pop( del_client )
+            if not deleted:
+                return
+            
+            writer = deleted['writer']
+            if writer:
+                writer.close()
+
+            deleted['from_cli_task'].cancel()
+            deleted['to_cli_task'].cancel()
+
+            print(f'client {del_client} disconnected')
+            return deleted
         except Exception:
-            # print(f"client {del_client} already disconnected")
+            print(f"problem disconnecting {del_client}")
             return           
 
     def get_a_client_info(self, client_name):
@@ -170,7 +183,7 @@ class Server:
         try:
             return self.clients.get( client_name )
         except Exception:
-            # print(f"client {client_name} disconnected")
+            self.del_client(client_name)
             return    
 
     def get_a_client_queue(self, client_name):
@@ -229,24 +242,21 @@ class Server:
         try:
             reader = self.get_a_client_info( client_name )['reader']
         except Exception:
-            # print(f"user {client_name} not connected")
+            self.del_client(client_name)
             return
 
         try:
             while True:
                 raw_data = await reader.read( self.BUF_SIZE )
-                # print("raw data recieved:", raw_data)
 
-                if raw_data:
+                try:
                     data = unpack( constants.REG_PACK_FLAG, raw_data )[0]
-                else:
+                except Exception:
                     self.del_client(client_name)
-                    # print(f"client {client_name} disconnected")
                     break
 
                 await self.input_queue.put( (data, client_name) )
         except Exception:
-            # print(f"client {client_name} disconnected")
             self.del_client(client_name)
             return
 
@@ -259,16 +269,13 @@ class Server:
             queue = self.get_a_client_info( client_name )['queue']
             writer = self.get_a_client_info( client_name )['writer']
         except Exception:
-            # print(f"user {client_name} not connected")
+            self.del_client( client_name )
             return
         try:
             while True:
                 cmd = await queue.get()
-                print('got cmd from cli queue:', cmd)
-                # print("got cmd from to-client queue of", client_name)
-                print("to cli post-dequeue cli Queue contents:", list(self.get_a_client_queue( client_name )._queue))
                 writer.write( cmd )
                 await writer.drain()
         except Exception:
-            # print(f"client {client_name} disconnected")
+            self.del_client( client_name )
             return

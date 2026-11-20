@@ -21,7 +21,7 @@ def new_board( num ):
     :return: Board, the created board
     '''
     b = Board.new_max_board(num)
-    # show_board_and_scores(b)
+    show_board_and_scores(b)
     return b
 
 def get_tile_details( board, player ):
@@ -38,9 +38,9 @@ def get_tile_details( board, player ):
 
     return column, row, tile_contains
 
-# def show_board_and_scores(b):
-#     print( b )
-#     print( b.report_player_scores() )
+def show_board_and_scores(b):
+    print( b )
+    print( b.report_player_scores() )
 
 ###########################  SEND TO QUEUE   ###########################
 async def send_board( server, board, client ):
@@ -111,7 +111,8 @@ async def send_score( server, board ):
     try:
         await queue_send_cmd( server, (data, None) )
     except Exception:
-        print("problem queueing score")    
+        # print("problem queueing score")
+        return
 
 async def queue_send_cmd( server, cmd_tupple ):
     '''
@@ -149,6 +150,7 @@ async def process_action(server, board, data, client):
         elif ( cmd == (constants.RIGHT_BIN_MIN) ): # move right
             player.move( constants.RIGHT )
             
+        show_board_and_scores(board)
         await send_delta( server, board, opt + 1, False )
         await send_score( server, board )
         return # no need to send board
@@ -160,7 +162,7 @@ async def process_action(server, board, data, client):
         return 
     
     await send_board( server, board, client )
-    # show_board_and_scores(board)
+    show_board_and_scores(board)
     return board
 
 ###########################  CONNECTION  ###########################
@@ -175,6 +177,7 @@ async def consume_game_commands( server, board, game_action_queue ): #, reader: 
         while True:
             # get from queue; waits if empty
             action, client = await game_action_queue.get()
+            print( 'command recieved:', hex( action ))
 
             #process # function also includes adding server response to out_queue
             await process_action(server, board, action, client) 

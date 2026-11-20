@@ -8,8 +8,8 @@ import traceback
 import constants
 
 BUF_SIZE = 1024
-# HOST = '10.21.75.22' # mine
-HOST = '10.21.75.50' # bbcli
+HOST = '10.21.75.22' # mine
+# HOST = '10.21.75.50' # bbcli
 # HOST = '10.21.75.14' # Felix
 # HOST = '10.21.75.16' #
 PORT = 12345
@@ -40,13 +40,13 @@ class User_Input:
 
         :return: str, command letter
         '''
-        # print("\nChoose one of: re-print board (p), or move up(u), down(d), left(l), right(r)")
+        prompt_command()
         while (True):
             try:
                 command = await to_thread( input, "" )   
                 self.validate_command( command.upper() )
             except ValueError:
-                # print(f"Invalid entry, choose one of: P, U, D, L, R") # will also accept lower case
+                print(f"Invalid entry, choose one of: P, U, D, L, R") # will also accept lower case
                 continue
             else:
                 try:
@@ -72,7 +72,6 @@ class User_Input:
                 raise ValueError                
             else:
                 return True
-
 ###########################  SUB CLASS ENDS  ###########################
 
 
@@ -91,7 +90,7 @@ async def send_command( cmd, player, writer ):
             writer.write( pack ( constants.REG_PACK_FLAG, constants.C_PRINT_CMD ) )
             await writer.drain()
         except Exception:
-            # print("problem sending board")
+            print('server disconnected')
             return
     elif ( cmd == constants.UP or cmd == constants.DOWN or cmd == constants.LEFT or cmd == constants.RIGHT):
         dir = ''
@@ -107,7 +106,7 @@ async def send_command( cmd, player, writer ):
         try:
             await send_move_cmd( dir, player, writer )
         except Exception:
-            # print("problem sending move cmd")
+            print('server disconnected')
             return
     else:
         return
@@ -127,8 +126,11 @@ async def send_move_cmd( cmd, player, writer ):
         writer.write( pack ( constants.REG_PACK_FLAG, complete_cmd ) )
         await writer.drain()
     except Exception:
-        # print("problem sending move command")
+        print('server disconnected')
         return
+
+def prompt_command():
+    print( "\nChoose one of: re-print board (p), or move up(u), down(d), left(l), right(r)" )
 
 ###########################  ROUTING  ###########################
 async def direct_reply( data, reader ):
@@ -164,7 +166,7 @@ async def handle_delta( reply ):
     row = ( reply & constants.S_ROW_MASK ) >> constants.S_ROW_TAIL_SIZE
     col = ( reply & constants.S_COL_MASK ) >> constants.S_COL_TAIL_SIZE
     contents = ( reply & constants.TILE_MASK )
-    # print( 'delta: row:', (row), 'col:', (col), 'contents', bin(contents) )
+    print( 'delta: row:', (row), 'col:', (col), 'contents', bin(contents) )
     return row, col, contents
 
 async def handle_score( reply ):
@@ -179,9 +181,9 @@ async def handle_score( reply ):
     p2_score = reply >> ( constants.S_SCORE_TAIL )
     p2_score = p2_score & constants.P2_SCORE_MASK
     # print('player 1 score:', bin(p1_score), 'player 2 score:', bin(p2_score))
-    # print('player 1 score:', p1_score)
-    # print('player 2 score:', p2_score)
-    # print( "\nChoose one of: re-print board (p), or move up(u), down(d), left(l), right(r)" )
+    print('player 1 score:', p1_score)
+    print('player 2 score:', p2_score)
+    prompt_command()
     return p1_score, p2_score    
 
 async def get_board( reply, reader ):
@@ -196,11 +198,11 @@ async def get_board( reply, reader ):
     try:
         data = await reader.read( size * size )
     except Exception:
-        # print('problem getting board data')
+        print('server disconnected')
         return
     board = data.decode()
-    # print( prettify_board( board, size ) )
-    # print( "\nChoose one of: re-print board (p), or move up(u), down(d), left(l), right(r)" )
+    print( prettify_board( board, size ) )
+    prompt_command()
     return board
 
 def prettify_board( board, board_size ):
@@ -236,7 +238,7 @@ async def recieve_server_cmds( reader ):
                 await direct_reply( reply, reader )
                 
             except Exception:
-                # traceback.print_exc()
+                print('server disconnected')
                 return
 
 async def send_user_command( input, player, writer ):
@@ -252,38 +254,34 @@ async def send_user_command( input, player, writer ):
             cmd = await input.get_cmd_queue().get()
             await send_command( cmd, player, writer )
     except Exception:
-        # print( 'problem sending user command')
-        return
+        print('server disconnected')
     
-async def setup( player ):
+async def setup():
     '''
-    setup and run player client
+    checks that client has chosen a player number, or else returns an error. 
+    Then sets up and runs player client
+    sends initial print board command
+    '''
+    try:
+        player = int(argv[1])
+    except:
+        print( 'Missing player number argument, enter 1 or 2' )
+        return
 
-    :param player: player number entered ( per board, 1 indexed ) 
-    '''
     try:
         reader, writer = await open_connection( HOST, PORT)
         input = User_Input()
         
         get_cmd_task = create_task( input.queue_player_commands() )
-        send_cmd_task = create_task( send_user_command(input, player, writer))
         listener_task = create_task( recieve_server_cmds( reader ))
+        send_cmd_task = create_task( send_user_command(input, player, writer))
+        try:
+            await send_command( constants.PRINT, player, writer )
+        except Exception:
+            print('server disconnected')
         await gather( get_cmd_task, send_cmd_task, listener_task)
     except Exception:
-        # print( 'problem seting up')
+        print( 'problem seting up')
         return
 
-###########################  Main  ###########################
-def main():
-    '''
-    checks that client has chosen a player number and starts up client
-    '''
-    try:
-        player = int(argv[1])
-    except:
-        # print( 'Missing player number argument, enter 1 or 2' )
-        return
-    else:
-        run( setup( player ) )
-
-run( main() )
+run( setup() )
