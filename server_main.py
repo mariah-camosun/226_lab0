@@ -161,7 +161,7 @@ async def main()->None:
     await server.start()
 
     
-#         game_thread = Thread( target=handle_game_queue, args=(game_queue, board), daemon=True )            
+    # game_thread = Thread( target=handle_game_queue, args=(game_queue, board), daemon=True )            
 
     
     # client_tasks = [ create_task( get_client_requests( player_num ) ) for i in range( MAX_PLAYERS ) ]
@@ -172,9 +172,6 @@ async def main()->None:
 
     # gather is wait for them to *finish* (lol nope; maybe if time setup closes)
     # await asyncio.gather( get_client_requests(), get_client_requests() );
-
-
-
 
 run( main() )
     # with socket(AF_INET, SOCK_STREAM) as sock_listener: # TCP socket - REMOVED 'WITH' SO doesnt close at end of func
@@ -199,5 +196,3 @@ run( main() )
         # game_thread.start()
 
         # sys.exit()
-
-# main()

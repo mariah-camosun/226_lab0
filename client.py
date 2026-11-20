@@ -8,179 +8,135 @@ from struct import pack, unpack
 # from threading import Thread, current_thread, Semaphore
 from struct import pack, unpack
 # from queue import Queue
-from asyncio import run, open_connection, create_task
+from asyncio import run, open_connection, create_task, gather, Queue, to_thread
+import traceback
 
 import constants
 
 BUF_SIZE = 1024
-HOST = '10.21.75.22' # mine
-# HOST = '10.21.75.50' # bbcli
+# HOST = '10.21.75.22' # mine
+HOST = '10.21.75.50' # bbcli
 # HOST = '10.21.75.14' # Felix
 # HOST = '10.21.75.16' #
 PORT = 12345
 
-###########################  ROUTING  ###########################
-def direct_reply():
-    reply, cmd = get_cmd( )
+###########################  SUB CLASS USER INPUT  ###########################
+class User_Input:
+    def __init__(self):
+        self.cmd_queue = Queue()
 
-    if cmd == constants.PRINT_BOARD_CMD:
-        board = get_board( reply )
-    elif cmd == constants.DELTA_CMD:
-        handle_delta( reply )
-    elif cmd == constants.SCORE_CMD:
-        handle_score( reply )
-    else:
-        print('unknown command')
+    def get_cmd_queue(self):
+        return self.cmd_queue
+
+    async def get_player_commands(self): #, board_size ):    
+        '''
+        Prompt user for command: print or move direction.
+        Repeat until a valid option is entered
+
+        :return: str, command letter
+        '''
+        print("\nChoose one of: re-print board (p), or move up(u), down(d), left(l), right(r)")
+        while (True):
+            try:
+                command = await to_thread( input, "" )   
+                self.validate_command( command.upper() )
+            except ValueError:
+                print(f"Invalid entry, choose one of: P, U, D, L, R") # will also accept lower case
+                continue
+            else:
+                await self.cmd_queue.put( command.upper() )
+
+    def validate_command( self, cmd ):
+        '''
+        Checks if command is one of the valid options
+        :param cmd: str, command
+        :return: bool, True if valid, else raises an error
+        '''
+        if isinstance( cmd, int):
+            raise ValueError
+        else:
+            cmd = cmd.upper()
+
+            if not ( cmd == constants.PRINT or cmd == constants.UP or 
+                    cmd == constants.DOWN or cmd == constants.LEFT or 
+                    cmd == constants.RIGHT ):
+                raise ValueError                
+            else:
+                return True
+
+###########################  SUB CLASS ENDS  ###########################
+
+
 
 ###########################  SEND CMDS   ###########################
-async def get_player_commands(): #, board_size ):    
-    '''
-    Prompt user for command: print or move direction.
-    Repeat until a valid option is entered
-
-    :return: str, command letter
-    '''
-    while (True):
-        try:
-            command = input( "Choose one of: re-print board (p), or move up(u), down(d), left(l), right(r)\n" )
-            # print(f"command entered: {command}")            
-            validate_command( command )
-        except ValueError:
-            print(f"Invalid entry, choose one of: P, U, D, L, R") # will also accept lower case
-            continue
-        else:
-            return command.upper() #, board_size )
-
-def validate_command( cmd ):
-    if isinstance( cmd, int):
-        raise ValueError
-    else:
-        cmd = cmd.upper()
-
-        if not ( cmd == constants.PRINT or cmd == constants.UP or 
-                cmd == constants.DOWN or cmd == constants.LEFT or 
-                cmd == constants.RIGHT ):
-            raise ValueError                
-        else:
-            return True
-
-async def send_user_cmd( writer ):
-    await send_user_command( writer )
-
-async def send_user_command( writer ):
-    while (True):
-        cmd = await get_player_commands() #, board_size )
-
-        send_command( cmd, writer )
-
-def send_command( cmd, writer ): #, board_size  ):
+async def send_command( cmd, player, writer ):
     if cmd == constants.PRINT:
         writer.write( pack ( constants.REG_PACK_FLAG, constants.C_PRINT_CMD ) )
-        # sock.sendall( pack ( constants.REG_PACK_FLAG, constants.C_PRINT_CMD ) )
-    elif cmd == constants.UP:
-        send_move_cmd( constants.UP_BIN_MIN, writer )       
-    elif cmd == constants.DOWN:
-        send_move_cmd( constants.DOWN_BIN_MIN, writer )
-    elif cmd == constants.LEFT:
-        send_move_cmd( constants.LEFT_BIN_MIN, writer )
-    elif cmd == constants.RIGHT:
-        send_move_cmd( constants.RIGHT_BIN_MIN, writer )
+        await writer.drain()
+    elif ( cmd == constants.UP or cmd == constants.DOWN or cmd == constants.LEFT or cmd == constants.RIGHT):
+        dir = ''
+        if cmd == constants.UP:
+            dir = constants.UP_BIN_MIN
+        elif cmd == constants.DOWN:
+            dir = constants.DOWN_BIN_MIN
+        elif cmd == constants.LEFT:
+            dir = constants.LEFT_BIN_MIN
+        elif cmd == constants.RIGHT:
+            dir = constants.RIGHT_BIN_MIN
+
+        await send_move_cmd( dir, player, writer )
     else:
         return
 
-def send_move_cmd( cmd, writer ):
+async def send_move_cmd( cmd, player, writer ):
     cmd = cmd << constants.C_MOVE_TAIL
     pl_cmd = (player - 1) << constants.C_MOVE_P_SHIFT
     complete_cmd = cmd | pl_cmd
-    print( 'sending: cmd lead', bin(cmd), 'player', bin(pl_cmd), 'complete', bin(complete_cmd) )
     writer.write( pack ( constants.REG_PACK_FLAG, complete_cmd ) )
+    await writer.drain()
+
+###########################  ROUTING  ###########################
+async def direct_reply( data, reader ):
+    temp_data = unpack( constants.REG_PACK_FLAG, data )[0]
+    cmd = temp_data >> ( constants.BYTE_SIZE - constants.S_CMD_SIZE )
+    if cmd == 0b00:
+        await get_board( temp_data, reader )
+        return
+
+    elif cmd == 0b01 or cmd == 0b10:
+        data_pt2 = await reader.read( 1 )
+        data_pt2 = unpack( constants.REG_PACK_FLAG, data_pt2 )[0]
+        full_cmd = ( temp_data << constants.BYTE_SIZE | data_pt2 )
+        if cmd == 0b10:
+            await handle_delta(full_cmd)
+        else:
+            await handle_score(full_cmd)
 
 ###########################  RECIEVE CMDS  ###########################
-def get_cmd():
-    reply = sock.recv( constants.SHORT )
-    reply = unpack(constants.REG_PACK_FLAG, reply)[0]
-    cmd = reply >> ( constants.BYTE_SIZE - constants.S_CMD_SIZE )
-    # print('cmd', cmd, bin(cmd))
-    if cmd == 0b01 or cmd == 0b10:
-        # print('\nentered if cmd score or delta')
-        pt2 = sock.recv( constants.SHORT )
-        pt2 = unpack(constants.REG_PACK_FLAG, pt2)[0]
-        # print('pt2:', pt2a, pt2, bin(pt2))
-        # print('reply preshift', bin(reply))
-        reply = reply << constants.BYTE_SIZE
-        # print('reply shifted', bin(reply), 'pt2:', bin(pt2))
-        reply = reply | pt2
-        # print('reply compl', bin(reply))
-    # print("\ncmd in rec'd:", bin(reply), "cmd:", bin(cmd))
-    return reply, cmd
-
-def get_large_reply_cmd(  ):
-    reply = sock.recv( constants.SHORT )
-    # print( "reply-packed: ", reply)#bin(reply) )
-    reply = unpack(constants.REG_PACK_FLAG, reply)[0]
-    # print( "reply-unpacked: ", reply, bin(reply) )
-    cmd = reply >> ( constants.BYTE_SIZE - constants.S_CMD_SIZE )
-
-    reply2 = sock.recv( constants.SHORT )
-    # print( "reply2-packed: ", reply2)#bin(reply) )
-    reply2 = unpack(constants.REG_PACK_FLAG, reply2)[0]
-    # print( "reply2-unpacked: ", reply2, bin(reply2) )    
-
-    # print( "reply:", reply, "bin: ", bin(reply) )
-    # print( "reply2:", reply2, "bin: ", bin(reply2) )
-    # print( "cmd:", cmd, "bin: ", bin(cmd) )
-    mega_score = reply << constants.BYTE_SIZE | reply2
-    # print('mega-score:', mega_score)
-    return reply, cmd
-
-def handle_delta( reply ):
-    # print('delta reply all', bin(reply))
+async def handle_delta( reply ):
     row = ( reply & constants.S_ROW_MASK ) >> constants.S_ROW_TAIL_SIZE
     col = ( reply & constants.S_COL_MASK ) >> constants.S_COL_TAIL_SIZE
     contents = ( reply & constants.TILE_MASK )
-    # print( 'cmd recd:', bin(reply), '\n', 'delta: row:', bin(row), 'col:', bin(col), 'contents', bin(contents) )
     print( 'delta: row:', (row), 'col:', (col), 'contents', bin(contents) )
+    return row, col, contents
 
-def handle_score( reply ):
-    print('scsore reply all', bin(reply))
+async def handle_score( reply ):
     p1_score = reply >> ( 6 + 4 )
     p1_score = p1_score & 0b001111
     p2_score = reply >> ( 6 )
     p2_score = p2_score & 0b0000001111
-    print('player 1 score:', bin(p1_score), 'player 2 score:', bin(p2_score))
-    print('player 1 score:', p1_score, 'player 2 score:', p2_score)
+    # print('player 1 score:', bin(p1_score), 'player 2 score:', bin(p2_score))
+    print('player 1 score:', p1_score)
+    print('player 2 score:', p2_score)
+    print( "\nChoose one of: re-print board (p), or move up(u), down(d), left(l), right(r)" )
     return p1_score, p2_score    
 
-    # get_cmd() #just clears the buffer, doesnt actually add to score... not implementing large score yet
-
-def get_delta_opts( reply ):
-    part2 = sock.recv( constants.SHORT )
-    part2 = unpack(constants.REG_PACK_FLAG, part2)[0]
-    # print("p1:", bin(reply), ", p2:", bin(part2) )
-
-    reply = reply << constants.BYTE_SIZE
-    reply += part2
-    # print( "combo:", bin(reply))
-
-    row = ( reply & constants.S_ROW_MASK ) >> constants.S_ROW_TAIL_SIZE
-    col = ( reply & constants.S_COL_MASK ) >> constants.S_COL_TAIL_SIZE
-    contents = ( reply & constants.TILE_MASK )
-    # print( "row:", row, ", col:", col, ", contents:", bin(contents))
-
-def get_player_score( reply ):
-        score = ( reply & constants.S_SCORE_MASK ) >> constants.S_SCORE_TAIL
-        print("score", score)
-        # mega_score = score >> constants.BYTE_SIZE
-        # print("megascore", mega_score)
-
-        print( "Player score:", score )
-        # print( "Player score:", mega_score )
-
-def get_board( reply ):
+async def get_board( reply, reader ):
     size = ( reply & constants.S_PRINT_OPT_MASK ) >> constants.S_PRINT_TAIL
-    data = sock.recv( size * size )
+    data = await reader.read( size * size )
     board = data.decode()
     print( prettify_board( board, size ) )
+    print( "\nChoose one of: re-print board (p), or move up(u), down(d), left(l), right(r)" )
     return board
 
 def prettify_board( board, board_size ):
@@ -197,63 +153,37 @@ def prettify_board( board, board_size ):
     return newBoard
 
 ###########################  CONNECTION  ###########################
-# async def play_game( writer ):
-#     while (True):
-#         cmd = await get_player_commands() #, board_size )
-#         print( cmd )
-#         await send_user_command( writer ) #, board_size  )
-#         direct_reply()
-
-
-#----\/-----suitable for clientside---------------------------------------------------------------------------
-# whoops, client out is only ever 1 byte - got server/cli out mixed up again
-# async def process_cmd( raw_data, reader ):
-#     data = unpack( constants.REG_PACK_FLAG, raw_data )[0]
-#     if data == 0b00111100:
-#         return data
-#     else:
-#         data_pt2 = await reader.read( BUF_SIZE ) 
-#         data_pt2 = unpack( constants.REG_PACK_FLAG, data_pt2 )[0]
-#         return ( data << constants.BYTE_SIZE | data_pt2 )
-
 async def recieve_server_cmds( reader ):
-     while (True):
-         await reader.read()
-         print('recieved cmd from server')
-        #  print('entered rec server cmds')
-         direct_reply()
-         print( "Choose one of: re-print board (p), or move up(u), down(d), left(l), right(r)\n" )
+        while (True):
+            try:
+                reply = await reader.read(1)
+                await direct_reply( reply, reader )
+                
+            except Exception:
+                pass
+                # traceback.print_exc()
 
-async def main():
+async def send_user_command( input, player, writer ):
+    while (True):
+        cmd = await input.get_cmd_queue().get()
+        await send_command( cmd, player, writer )
+
+async def setup( player ):
     reader, writer = await open_connection( HOST, PORT)
-    print('connected')
-    player_cmd_task = create_task( send_user_command(writer))
+    input = User_Input()
+    
+    get_cmd_task = create_task( input.get_player_commands() )
+    send_cmd_task = create_task( send_user_command(input, player, writer))
     listener_task = create_task( recieve_server_cmds( reader ))
-    # await play_game( writer )
+    await gather( get_cmd_task, send_cmd_task, listener_task)
 
-    # with socket(AF_INET, SOCK_STREAM) as sock:
-    #     sock = socket(AF_INET, SOCK_STREAM)
-    #     # create connection
-    #     sock.connect(( HOST, PORT ))
+###########################  Main  ###########################
+def main():
+    try:
+        player = int(argv[1])
+    except:
+        print( 'Missing player number argument, enter 1 or 2' )
+    else:
+        run( setup( player ) )
 
-    #     print( 'Client:', sock.getsockname())
-    #     # action_out_thread = Thread( target=send_user_cmd, args=(sock,) )
-    #     in_thread = Thread( target=recieve_server_cmds, args=(sock,) )
-
-    #     # action_out_thread.start()
-    #     in_thread.start()
-
-    #     send_command( constants.PRINT, sock )
-    #     # time.sleep(0.2)
-    #     send_user_command( sock )
-    #     # send_user_cmd( sock )
-
-    #     # play_game( sock )
-
-
-try:
-    player = int(argv[1])
-except:
-    print( 'Missing player number argument, enter 1 or 2' )
-else:
-    run( main() )
+run( main() )

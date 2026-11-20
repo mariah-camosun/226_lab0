@@ -15,9 +15,10 @@ input_queue, and will accept commands from an output_queue and send those to cli
 command interpretation is handled by main program
 server instances must be created, and then '.start()'ed to run 
 '''
-class Server:
     # MIN_PACK_BYTES = 2
     # member functions
+class Server:
+
     def __init__(self, BUF_SIZE = 1, HOST = '', PORT = 12345, MAX_CLIENTS = 2):
         '''
         initializes server instance variables and task to route from a single out-going
@@ -40,7 +41,7 @@ class Server:
 
         create_task( self.route_to_client_send_queue(), name="game-out-to-cli-queues" )
 
-    ####################### INITIALIZERS #######################
+    #~##################### INITIALIZERS #######################
     async def start(self):
         '''
         sets up and starts the server listener task. Sets to always open, quickly makes closed ports re-available.
@@ -62,7 +63,8 @@ class Server:
         client_cmd = create_task( self.receive_from_client( client_name ), name=f"{client_name}-IN" )
         to_cli_task = create_task( self.send_to_client( client_name ), name=f"{client_name}-OUT" )
 
-    ####################### GETTERS & SETTERS #######################
+    #~##################### GETTERS & SETTERS #######################
+
     def get_input_queue(self):
         '''
         gets & returns the server instance's input queue
@@ -175,7 +177,7 @@ class Server:
         '''
         return list( self.get_clients().values() )
 
-    ####################### TRANSFER DATA #######################
+    #~##################### TRANSFER DATA #######################
     async def route_to_client_send_queue( self ):
         '''
         moves commands in outgoing queue to client queues. Client queue
@@ -187,10 +189,14 @@ class Server:
             print("attempting route from board-out to to-client queues")
 
             if client is None:
+                print('none client')
                 for client in self.get_all_clients_info():
                     await client['queue'].put( cmd )
             else:
-                await self.get_a_client_queue( client ).put(cmd)         
+                print('specific client')
+                print("to cli pre-queue cli Queue contents:", list(self.get_a_client_queue( client )._queue))
+                await self.get_a_client_queue( client ).put(cmd)
+                print("to cli post-queue cli Queue contents:", list(self.get_a_client_queue( client )._queue))
                 # error? print? both? "client closed"
 
         #             for client in client_threads:
@@ -241,6 +247,8 @@ class Server:
         
         while True:
             cmd = await queue.get()
+            print('got cmd from cli queue:', cmd)
             # print("got cmd from to-client queue of", client_name)
+            print("to cli post-dequeue cli Queue contents:", list(self.get_a_client_queue( client_name )._queue))
             writer.write( cmd )
             await writer.drain()
