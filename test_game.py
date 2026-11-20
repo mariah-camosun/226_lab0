@@ -45,7 +45,7 @@ def test_player_multi_creation():
 
     p4 = m.make_new_player()
     assert Player.get_player_count() == 9
-    assert p3.get_name() == 9
+    assert p4.get_name() == 9
 
     assert p1.get_board() == m
     assert p2.get_board() == m
@@ -558,20 +558,21 @@ def test_board_multiplayer(capsys):
     p1 = playerList[0]    # create p1 container
     p2 = playerList[1]    # create p2 container
     assert playerList[2] == p3
-    assert playerList[2] == p4
+    assert playerList[3] == p4
 
     capsys.readouterr() # clear
     m.show_players()    
     capture = capsys.readouterr()
-    assert capture.out.strip() == "Current players: 1, 2, 9"
+    assert capture.out.strip() == "Current players: 1, 2, 3, 9"
 
     p1.set_score(-30)
     p2.set_score(83)
     assert m.report_a_player_score( p1 ) == "player 1 score: -30"
     assert m.report_a_player_score( p2 ) == "player 2 score: 83"
-    assert m.report_a_player_score( p3 ) == "player 9 score: 0"
+    assert m.report_a_player_score( p3 ) == "player 3 score: 0"
+    assert m.report_a_player_score( p4 ) == "player 9 score: 0"
 
-    assert m.report_player_scores() == "player 1 score: -30\nplayer 2 score: 83\nplayer 9 score: 0\n"
+    assert m.report_player_scores() == "player 1 score: -30\nplayer 2 score: 83\nplayer 3 score: 0\nplayer 9 score: 0\n"
 
 def test_barrier_increase_wrap_probability():
     b = Board(5,1,1)
