@@ -15,27 +15,30 @@ input_queue, and will accept commands from an output_queue and send those to cli
 class Server:
     # MIN_PACK_BYTES = 2
     # member functions
-    def __init__(self, BUF_SIZE = 1, HOST = '', PORT = 12345, MAX_PLAYERS = 2):
+    def __init__(self, BUF_SIZE = 1, HOST = '', PORT = 12345, MAX_CLIENTS = 2):
         self.BUF_SIZE = BUF_SIZE
         self.HOST = HOST
         self.PORT = PORT
-        self.MAX_PLAYERS = MAX_PLAYERS
+        self.MAX_CLIENTS = MAX_CLIENTS
 
         self.input_queue = Queue()
         self.output_queue = Queue()
         self.clients = {}
+        self.clients_connected = 0 # all-time, not current!
+
+        create_task( self.route_to_client_send_queue(), name="game-out-to-cli-queues" )
 
     ####################### INITIALIZERS #######################
     async def start(self):
-        self.__set_server( await start_server( self.new_client, self.HOST, self.PORT) )
+        self.set_server( await start_server( self.new_client, self.HOST, self.PORT, reuse_address=True) )
         await self.server.serve_forever()
 
     async def new_client( self, reader: StreamReader, writer: StreamWriter)-> None:
         client_name = writer.get_extra_info('peername')
         print( "connected to client:", client_name)
-        self.__add_client(client_name, reader, writer, Queue()) # creates & records a new queue per client
-        client_cmd = create_task( self.receive_from_client( client_name, reader, writer ), name=f"{client_name}-IN" )
-        to_cli_task = create_task( self.route_to_client_send_queue(), name=f"{client_name}-OUT" )
+        self.add_client(client_name, reader, writer, Queue()) # creates & records a new queue per client
+        client_cmd = create_task( self.receive_from_client( client_name ), name=f"{client_name}-IN" )
+        to_cli_task = create_task( self.send_to_client( client_name ), name=f"{client_name}-OUT" )
 
     ####################### GETTERS & SETTERS #######################
     def get_input_queue(self):
@@ -49,60 +52,63 @@ class Server:
 
     def get_server(self):
         return self.server
-    def __set_server(self, server):
+    def set_server(self, server):
         self.server = server
 
     def get_clients(self):
         return self.clients
-    def __set_clients(self, client_array):
+    def set_clients(self, client_array):
         self.clients = client_array
 
+    def get_clients_connected(self):
+        return self.clients_connected
+    
     # ~~~~~~~~~~~~~~~~~~~~~~~ EXPANDED GETTERS & SETTERS ~~~~~~~~~~~~~~~~~~~~~~~
-    def __add_client( self, client_name, reader, writer, cli_queue ):
+    def add_client( self, client_name, reader, writer, cli_queue ):
+        self.clients_connected += 1
         self.clients[client_name] = {
+            "id": self.get_clients_connected(),
             "reader": reader,
             "writer": writer,
             "queue": cli_queue
         }
 
     # this one probably wont work right as written....
-    def __del_client( self, del_client ):
+    def del_client( self, del_client ):
         return self.clients.pop( del_client )
 
     def get_a_client_queue(self, client_name):
         return self.clients[client_name]["queue"]
 
     def get_a_client_info(self, client_name):
-        client_info = self.clients.get( client_name )
-        if client_info:
-            reader, writer, queue = client_info
+        return self.clients.get( client_name )
+
+    def get_all_clients_names(self):
+        return list( self.get_clients().keys() )
+
+    def get_all_clients_info(self):
+        return list( self.get_clients().values() )
 
     ####################### TRANSFER DATA #######################
     async def route_to_client_send_queue( self ):
         while True:
-            client, cmd = await self.get_output_queue().get()
+            cmd, client = await self.get_output_queue().get()
+            print("attempting route from board-out to to-client queues")
 
             if client is None:
-                for client in self.get_client_queues().values():
-                    client.put( cmd )
-            elif client in self.get_client_queues():
-                    self.client_queues[client].put(cmd)
+                for client in self.get_all_clients_info():
+                    await client['queue'].put( cmd )
+            else:
+                await self.get_a_client_queue( client ).put(cmd)
+
     #           prev abv was:
     #         elif:
-    #             # this is not *entirely* how i'd want to do it....
-    #             # separate client queues so that lag in one doesnt affect
-    #             # the other would be better, but for now this will do
-    #             # ... add iniv client queues and copy to them depending on if the command
-    #             # is for one or both? the game itself doesnt see the server/clients directly
-    #             # just the queue. or does async take care of this? hard to tell...
-    #             # test with a sleep and prints to see!
+
     #             for client in self.get_clients():  # send to both  
     #                 name, reader, writer = client
     #                 writer.write( cmd )
     #                 await writer.drain()
     #                              
-            else:
-                pass
                 # error? print? both? "client closed"
 
         #             for client in client_threads:
@@ -116,29 +122,42 @@ class Server:
         #                     sock_connector.sendall( data )
         #                 except OSError:
         #                     print('socket was closed pre-maturely')
-        #                     sys.exit()
+        #                     sys.exit()    
 
-    async def receive_from_client( self, client_name, reader, writer ) -> None:
+    async def receive_from_client( self, client_name ) -> None:
         '''
         get client requests and passes them to handler to proccess, queues processed cmd
         '''
+        reader = self.get_a_client_info( client_name )['reader']
+        # manual_print = pack( constants.REG_PACK_FLAG, constants.C_PRINT_CMD)
+        # await self.input_queue.put( (constants.C_PRINT_CMD, client_name) )
+
+        # print("manually put print board when client connected")
+
         # get raw data
         while True:
             raw_data = await reader.read( self.BUF_SIZE )
-            data = unpack( constants.REG_PACK_FLAG, raw_data )[0]
+            print("raw data recieved:", raw_data)
+
+            if raw_data:
+                data = unpack( constants.REG_PACK_FLAG, raw_data )[0]
+            else:
+                self.del_client(client_name)
+                print(f"client {client_name} disconnected")
+                break
+          
             print( "client:", client_name, "raw data recieved:", raw_data, "unpacked:", data, bin(data) )
-            await self.input_queue.put( {data, reader, writer} )
 
+            await self.input_queue.put( (data, client_name) )
+            print("put cmd into input queue")
 
-# async def send_to_client(client)->None:
-#     while True:
+    async def send_to_client(self, client_name):
+        queue = self.get_a_client_info( client_name )['queue']
+        writer = self.get_a_client_info( client_name )['writer']
         
-#         # get from queue, if nothing, wait
-#         out = await output_queue.get()
-
-#         # send
-#         send_to_clients()
-
-#         # mark complete
-#         output_queue.task_done()
-#         print("sent output command")
+        while True:
+            cmd = await queue.get()
+            print("got cmd from to-client queue")
+            # buffer get
+            writer.write( cmd )
+            await writer.drain()
