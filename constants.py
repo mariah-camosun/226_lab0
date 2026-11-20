@@ -36,7 +36,6 @@ SERVER TO CLIENT
 #    SCORE           01 | SSSS | ssss | 000000
 #    DELTA           10 | RRRR | CCCC | XX | 0000
 
-
 UP      = "U"
 DOWN    = "D"
 RIGHT   = "R"
@@ -71,9 +70,13 @@ C_MOVE_U_SHORT  = 0b100
 C_MOVE_D_SHORT  = 0b101
 C_MOVE_L_SHORT  = 0b110
 C_MOVE_R_SHORT  = 0b111
+C_MOVE_CROPPED  = 0b1
 # board size is set as bin of # up to 15
 C_P1_SHORT      = 0b0
 C_P2_SHORT      = 0b1
+
+P1_SCORE_MASK   = 0b001111 # post bit-shifting
+P2_SCORE_MASK   = 0b0000001111 # post bit-shifting
 
 C_CMD_SIZE      = 3
 C_CMD_SHIFT     = BYTE_SIZE - C_CMD_SIZE
@@ -98,22 +101,25 @@ C_SIZE_MASK     = 0b00011110
 # FROM CLIENT
 C_PRINT_CMD       = 0b00100000
 CREATE_BOARD_MIN    = 0b000
+SHOW_BOARD_MIN      = 0b001
 UP_BIN_MIN          = 0b100
 DOWN_BIN_MIN        = 0b101
 LEFT_BIN_MIN        = 0b110
 RIGHT_BIN_MIN       = 0b111
 
+C_OPT_MASK          = 0b00011110
+
 MV_PLAYER1          = 0b00000
 MV_PLAYER2          = 0b00010
 
 # SERVER SENDS
-S_CMD_SIZE      = 2
+S_CMD_SIZE      = 2 # bits for command portion
 S_PRINT_OPT_SIZE = NUMBER_BIT_CT
 S_PRINT_TAIL    = BYTE_SIZE - S_CMD_SIZE - S_PRINT_OPT_SIZE
 S_PRINT_OPT_MASK = 0b00111100
 
 S_SCORE_OPT_SIZE    = 4
-S_SCORE_TAIL    = BYTE_SIZE - S_CMD_SIZE - S_SCORE_OPT_SIZE
+S_SCORE_TAIL    = BYTE_SIZE*2 - S_CMD_SIZE - S_SCORE_OPT_SIZE*2
 S_SCORE_MASK    = S_PRINT_OPT_MASK
 
 S_COORD_SIZE    = 4
@@ -135,7 +141,7 @@ SCORE           = 0b01000000
 DELTA           = 0b1000000000000000
 
 PRINT_BOARD_CMD = 0b00
-SCORE_CMD       = 0b01
+S_SCORE_CMD     = 0b01
 DELTA_CMD       = 0b10
 
 TILE_MASK       = 0b110000

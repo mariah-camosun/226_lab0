@@ -39,15 +39,18 @@ class Server:
         self.clients = {}
         self.clients_connected = 0 # all-time per instance, not current!
 
-        create_task( self.route_to_client_send_queue(), name="game-out-to-cli-queues" )
-
     #~##################### INITIALIZERS #######################
     async def start(self):
         '''
         sets up and starts the server listener task. Sets to always open, quickly makes closed ports re-available.
         '''
-        self.set_server( await start_server( self.new_client, self.HOST, self.PORT, reuse_address=True) )
-        await self.server.serve_forever()
+        self.task_to_cli_queue = create_task( self.route_to_client_send_queue(), name="game-out-to-cli-queues" )
+        try:
+            self.set_server( await start_server( self.new_client, self.HOST, self.PORT, reuse_address=True) )
+            await self.server.serve_forever()
+        except Exception:
+            # print(f'server not running')
+            return
 
     async def new_client( self, reader: StreamReader, writer: StreamWriter)-> None:
         '''
@@ -57,11 +60,19 @@ class Server:
         :param reader: asyncio reader (listener component) for the new client
         :param writer: asyncio writer (sender component) for the new client
         '''
-        client_name = writer.get_extra_info('peername')
-        print( "connected to client:", client_name)
-        self.add_client(client_name, reader, writer, Queue()) # creates & records a new queue per client
-        client_cmd = create_task( self.receive_from_client( client_name ), name=f"{client_name}-IN" )
-        to_cli_task = create_task( self.send_to_client( client_name ), name=f"{client_name}-OUT" )
+        try:
+            client_name = writer.get_extra_info('peername')
+            self.add_client(client_name, reader, writer, Queue()) # creates & records a new queue per client
+        except Exception:
+            # print("problem setting up client")
+            return
+
+        try:            
+            client_cmd = create_task( self.receive_from_client( client_name ), name=f"{client_name}-IN" )
+            to_cli_task = create_task( self.send_to_client( client_name ), name=f"{client_name}-OUT" )
+        except Exception:
+            # print("problem setting up client")
+            self.del_client()
 
     #~##################### GETTERS & SETTERS #######################
 
@@ -95,6 +106,7 @@ class Server:
         :return: Server type? reference to server task
         '''
         return self.server
+
     def set_server(self, server):
         '''
         sets self.server variable to reference to the server - possibly redundant/unneeded code
@@ -111,8 +123,6 @@ class Server:
         :return: dictionary of connected clients  
         '''
         return self.clients
-    # def set_clients(self, client_array):
-    #     self.clients = client_array
 
     def get_clients_connected(self):
         '''
@@ -145,7 +155,11 @@ class Server:
         :param del_client: string, name of client to be removed
         :return: dictionary, client dictionary (values) of removed client
         '''
-        return self.clients.pop( del_client )
+        try:
+            return self.clients.pop( del_client )
+        except Exception:
+            # print(f"client {del_client} already disconnected")
+            return           
 
     def get_a_client_info(self, client_name):
         '''
@@ -153,7 +167,11 @@ class Server:
         :param client_name: dictionary, client to find information of
         :return: dictionary, client information
         '''
-        return self.clients.get( client_name )
+        try:
+            return self.clients.get( client_name )
+        except Exception:
+            # print(f"client {client_name} disconnected")
+            return    
 
     def get_a_client_queue(self, client_name):
         '''
@@ -161,7 +179,11 @@ class Server:
         :param client_name: string, name of client
         :return: Queue, outgoing queue for specified client 
         '''
-        return self.clients[client_name]["queue"]
+        try:
+            return self.clients[client_name]["queue"]
+        except Exception:
+            # print(f"client {client_name} disconnected")
+            return
 
     def get_all_clients_names(self):
         '''
@@ -184,33 +206,18 @@ class Server:
         decided by contents in second half of command tupple, client name
         if none, sends to all clients
         '''
-        while True:
-            cmd, client = await self.get_output_queue().get()
-            print("attempting route from board-out to to-client queues")
+        try:
+            while True:
+                cmd, client = await self.get_output_queue().get()
 
-            if client is None:
-                print('none client')
-                for client in self.get_all_clients_info():
-                    await client['queue'].put( cmd )
-            else:
-                print('specific client')
-                print("to cli pre-queue cli Queue contents:", list(self.get_a_client_queue( client )._queue))
-                await self.get_a_client_queue( client ).put(cmd)
-                print("to cli post-queue cli Queue contents:", list(self.get_a_client_queue( client )._queue))
-                # error? print? both? "client closed"
-
-        #             for client in client_threads:
-        #                 cli, sock_connector = client
-        #                 try:
-        #                     # try:
-        #                     #     # udata = unpack( '!H', data )
-        #                     #     # print( 'sending:', data, bin(udata) )
-        #                     # except:
-        #                     #     # print( 'sending:', data )
-        #                     sock_connector.sendall( data )
-        #                 except OSError:
-        #                     print('socket was closed pre-maturely')
-        #                     sys.exit()    
+                if client is None:
+                    for client in self.get_all_clients_info():
+                        await client['queue'].put( cmd )
+                else:
+                    await self.get_a_client_queue( client ).put(cmd)
+        except Exception:
+            # print( "cancelled task" )
+            return
 
     async def receive_from_client( self, client_name ) -> None:
         '''
@@ -219,36 +226,49 @@ class Server:
         if disconnected.
         :param client_name: string, client name of relevant client
         '''
-        reader = self.get_a_client_info( client_name )['reader']
-        # get raw data
-        while True:
-            raw_data = await reader.read( self.BUF_SIZE )
-            # print("raw data recieved:", raw_data)
+        try:
+            reader = self.get_a_client_info( client_name )['reader']
+        except Exception:
+            # print(f"user {client_name} not connected")
+            return
 
-            if raw_data:
-                data = unpack( constants.REG_PACK_FLAG, raw_data )[0]
-            else:
-                self.del_client(client_name)
-                # print(f"client {client_name} disconnected")
-                break
-          
-            print( "client:", client_name, "raw data recieved:", raw_data, "unpacked:", data, bin(data) )
+        try:
+            while True:
+                raw_data = await reader.read( self.BUF_SIZE )
+                # print("raw data recieved:", raw_data)
 
-            await self.input_queue.put( (data, client_name) )
-            # print("put cmd into input queue")
+                if raw_data:
+                    data = unpack( constants.REG_PACK_FLAG, raw_data )[0]
+                else:
+                    self.del_client(client_name)
+                    # print(f"client {client_name} disconnected")
+                    break
+
+                await self.input_queue.put( (data, client_name) )
+        except Exception:
+            # print(f"client {client_name} disconnected")
+            self.del_client(client_name)
+            return
 
     async def send_to_client(self, client_name):
         '''
         takes commands in *client specific* outgoing queue and sends to client
         :param client_name: string, client name of relevant client
         '''
-        queue = self.get_a_client_info( client_name )['queue']
-        writer = self.get_a_client_info( client_name )['writer']
-        
-        while True:
-            cmd = await queue.get()
-            print('got cmd from cli queue:', cmd)
-            # print("got cmd from to-client queue of", client_name)
-            print("to cli post-dequeue cli Queue contents:", list(self.get_a_client_queue( client_name )._queue))
-            writer.write( cmd )
-            await writer.drain()
+        try:
+            queue = self.get_a_client_info( client_name )['queue']
+            writer = self.get_a_client_info( client_name )['writer']
+        except Exception:
+            # print(f"user {client_name} not connected")
+            return
+        try:
+            while True:
+                cmd = await queue.get()
+                print('got cmd from cli queue:', cmd)
+                # print("got cmd from to-client queue of", client_name)
+                print("to cli post-dequeue cli Queue contents:", list(self.get_a_client_queue( client_name )._queue))
+                writer.write( cmd )
+                await writer.drain()
+        except Exception:
+            # print(f"client {client_name} disconnected")
+            return
