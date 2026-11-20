@@ -33,21 +33,24 @@ def test_player_multi_creation():
     m = Board(5, 0, 0)
     playerList = m.get_players()
     p1 = playerList[0]
+    p2 = playerList[1]
 
-    assert Player.get_player_count() == 1
-
-    p2 = m.make_new_player()
     assert Player.get_player_count() == 2
+
+    p3 = m.make_new_player()
+    assert Player.get_player_count() == 3
 
     Player.set_player_count( 8 )
     assert Player.get_player_count() == 8
 
-    p3 = m.make_new_player()
+    p4 = m.make_new_player()
     assert Player.get_player_count() == 9
     assert p3.get_name() == 9
 
     assert p1.get_board() == m
     assert p2.get_board() == m
+    assert p3.get_board() == m
+    assert p4.get_board() == m
 
     # check name, symbol, print output
     # there is no 'set name' or 'set symbol'
@@ -59,15 +62,19 @@ def test_player_multi_creation():
     assert p2.get_symbol() == "2"
     assert str(p2) == "2"
 
-    assert p3.get_name() == 9
-    assert p3.get_symbol() == "9"
-    assert str(p3) == "9"
+    assert p3.get_name() == 3
+    assert p3.get_symbol() == "3"
+    assert str(p3) == "3"
+
+    assert p4.get_name() == 9
+    assert p4.get_symbol() == "9"
+    assert str(p4) == "9"
 
 def test_player_multi_score():
     m = Board(5, 0, 0)
     playerList = m.get_players()
     p1 = playerList[0]
-    p2 = m.make_new_player()
+    p2 = playerList[1]
 
     # testing score & score reporting for 2p
     # no validate score, as set is always set by the program
@@ -515,39 +522,43 @@ def test_board_counts():
     b.decrement_treasure_count()
     assert b.get_treasure_count() == -1 
 
-def test_board_2player(capsys):
-    # make empty board (+1 player, +1treasure (minimum))
+def test_board_multiplayer(capsys):
+    # make empty board (+2 player (initial players), +1treasure (minimum))
     m = Board(5, 0, 1)
     boardOutputArr = (m.__str__()).replace("\n", "").replace(" ", "").split("n", 1)
     boardOutput = boardOutputArr[0]
-    assert boardOutput.count("_") == 23
+    assert boardOutput.count("_") == 22
     assert boardOutput.count("X") == 0
     assert boardOutput.count("$") == 1
     assert boardOutput.count("1") == 1
-    # test adding second player
-    p2 = m.make_new_player()
-    boardOutputArr = (m.__str__()).replace("\n", "").replace(" ", "").split("n", 1)
-    boardOutput = boardOutputArr[0]
-    assert boardOutput.count("1") == 1
     assert boardOutput.count("2") == 1
-
-    #make 3rd player, changed count
-    Player.set_player_count(8)
+    # test adding additional player
     p3 = m.make_new_player()
     boardOutputArr = (m.__str__()).replace("\n", "").replace(" ", "").split("n", 1)
     boardOutput = boardOutputArr[0]
     assert boardOutput.count("1") == 1
     assert boardOutput.count("2") == 1
+    assert boardOutput.count("3") == 1
+
+    #make 4th player, changed count
+    Player.set_player_count(8)
+    p4 = m.make_new_player()
+    boardOutputArr = (m.__str__()).replace("\n", "").replace(" ", "").split("n", 1)
+    boardOutput = boardOutputArr[0]
+    assert boardOutput.count("1") == 1
+    assert boardOutput.count("2") == 1
+    assert boardOutput.count("3") == 1
     assert boardOutput.count("9") == 1
 
     #fix Player Count to what it should be...
-    Player.set_player_count(8)
+    Player.set_player_count(4)
 
     # get player array
     playerList = m.get_players()
-    p1 = playerList[0]    # create p1
-    assert playerList[1] == p2
+    p1 = playerList[0]    # create p1 container
+    p2 = playerList[1]    # create p2 container
     assert playerList[2] == p3
+    assert playerList[2] == p4
 
     capsys.readouterr() # clear
     m.show_players()    
