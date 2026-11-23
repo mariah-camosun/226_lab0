@@ -36,9 +36,19 @@ def create_player(request, pl_tag, row, col):
     result = 'player ' + str(player) + ' created' # calls the __str__ func written
     return HttpResponse(result)
 
-# class CreatePlayer(CreateView):
-#     model=Player
-#     fields=
+def move_player(request, pl_tag, direction):
+    player = Player.objects.get(pl_tag = pl_tag)
+
+    match direction:
+        case 'up':
+            player.row -= 1
+        case 'down':
+            player.row += 1
+        case 'right':
+            player.col += 1
+        case 'left':
+            player.col -= 1
+    
 
 class PlayerCreate(CreateView):
     model=Player

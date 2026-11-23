@@ -10,6 +10,7 @@ urlpatterns = [
     path('player/create/', views.PlayerCreate.as_view(), name='player_create'),
     path('player/update/<int:pk>/', views.PlayerUpdate.as_view(), name='player_update'),
     path('player/create/<str:pl_tag>/<int:row>/<int:col>/', views.create_player, name='create_player'),
+    path('player/move/<str:pl_tag>/<str:direction>/', views.move_player, name='move_player')
 ]
 
 # BECOMES PICKY about the trailing slash or not
