@@ -1,11 +1,11 @@
 #!/usr/bin/python3.11
 from socket import socket, AF_INET, SOCK_STREAM
 from sys import argv
-import constants
+import game.treasureweb.game.gameProg.constants as constants
 from struct import pack, unpack
 from asyncio import run, open_connection, create_task, gather, Queue, to_thread
 import traceback
-import constants
+import game.treasureweb.game.gameProg.constants as constants
 
 BUF_SIZE = 1024
 HOST = '10.21.75.22' # mine

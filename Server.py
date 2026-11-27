@@ -4,9 +4,9 @@
 from asyncio import run, start_server, StreamReader, StreamWriter, Queue, create_task #, #open_connection
 from struct import pack, unpack
 # from queue import Queue
-from Board import Board
+from game.treasureweb.game.gameProg.Board import Board
 # import sys
-import constants
+import game.treasureweb.game.gameProg.constants as constants
 '''
 Server class that will connect to specified number of clients and hand off commands to a 
 input_queue, and will accept commands from an output_queue and send those to clients 

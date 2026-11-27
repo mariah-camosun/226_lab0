@@ -1,10 +1,10 @@
-import constants
+import game.treasureweb.game.gameProg.constants as constants
 import pytest
-from Board import Board
-from Player import Player
-from Barrier import Barrier
-from Treasure import Treasure
-from Tile import Tile
+from game.treasureweb.game.gameProg.Board import Board
+from game.treasureweb.game.gameProg.Player import Player
+from game.treasureweb.game.gameProg.Barrier import Barrier
+from game.treasureweb.game.gameProg.Treasure import Treasure
+from game.treasureweb.game.gameProg.Tile import Tile
 
 def set_monkeypatch( input_values, monkeypatch ):
     user_inputs = iter( input_values )

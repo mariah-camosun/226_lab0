@@ -1,6 +1,6 @@
-from Barrier import Barrier
-from Treasure import Treasure
-from Player import Player
+from game.treasureweb.game.gameProg.Barrier import Barrier
+from game.treasureweb.game.gameProg.Treasure import Treasure
+from game.treasureweb.game.gameProg.Player import Player
 
 class Tile:
     

@@ -1,8 +1,8 @@
 #!/usr/bin/python3.11
 from asyncio import run, create_task #open_connection
 from struct import pack
-from Board import Board
-import constants
+from game.treasureweb.game.gameProg.Board import Board
+import game.treasureweb.game.gameProg.constants as constants
 from Server import Server
 import traceback
 

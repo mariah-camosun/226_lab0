@@ -1,7 +1,7 @@
 import random
-from Tile import Tile
+from game.treasureweb.game.gameProg.Tile import Tile
 from typing import TYPE_CHECKING
-from Player import Player
+from game.treasureweb.game.gameProg.Player import Player
 
 class Board:
 # TODO
