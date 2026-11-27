@@ -20,3 +20,9 @@ class Player(models.Model):
 
     def __str__(self):
         return f'{self.name} @ ({self.row},{self.col})'
+
+    @classmethod
+    def create_player_at(cls, name, row, col):
+        model = cls(name=name, row=row, col=col, score=0)
+        model.full_clean()
+        return model

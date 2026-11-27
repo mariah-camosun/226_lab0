@@ -26,6 +26,15 @@ def get_all_players(request):
         result += str(player) + '<br>'
     return HttpResponse(result)
 
+def create_player_at(self, name, row, col ):
+    players = Player.objects.filter(name=name)
+    if (players):
+        return HttpResponse( 'Player already Exists')
+    else:
+        Player.create_player_at(name, row, col).save()
+        player = ( Player.objects.filter(name=name) )[0]
+        return HttpResponse( f'Player {player.name} created at row {player.row}, col {player.col} <br> score = {player.score}')
+
 class CreatePlayer(CreateView):
     model = Player
     fields = '__all__'
