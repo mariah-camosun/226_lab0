@@ -1,5 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse
+from django.urls import reverse_lazy
+from django.views.generic.edit import CreateView, UpdateView
 from .models import Tile, Player
 # Create your views here.
 
@@ -16,3 +18,21 @@ def get_player(request, player_id):
         return HttpResponse( f'Player {player.name} is at row {player.row} and col {player.col}')
     else:
         return HttpResponse( 'No such player')
+
+def get_all_players(request):
+    players = Player.objects.all()
+    result = ''
+    for player in players:
+        result += str(player) + '<br>'
+    return HttpResponse(result)
+
+class CreatePlayer(CreateView):
+    model = Player
+    fields = '__all__'
+    success_url = reverse_lazy('players')
+
+class UpdatePlayer(UpdateView):
+    model = Player
+    fields = ['row', 'col', 'score']
+    success_url = reverse_lazy('players')
+
