@@ -2,6 +2,9 @@ from django.db import models
 
 # Create your models here.
 
+class Game(models.Model):
+    board = models.TextField()
+
 # Tile Model : row, column, value
 class Tile(models.Model):
     row=models.IntegerField()
@@ -13,7 +16,8 @@ class Tile(models.Model):
 
 # Player Model : name, row, column, score
 class Player(models.Model):
-    name=models.CharField(max_length=1)
+    name=models.CharField(max_length=3)
+    # game=models.ForeignKey(Game, on_delete=models.CASCADE, related_name="players")
     row=models.IntegerField()
     col=models.IntegerField()
     score=models.IntegerField()

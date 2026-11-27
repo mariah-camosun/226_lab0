@@ -1,7 +1,7 @@
 import random
-from game.treasureweb.game.gameProg.Tile import Tile
+from .Tile import Tile
 from typing import TYPE_CHECKING
-from game.treasureweb.game.gameProg.Player import Player
+from .Player import Player
 
 class Board:
 # TODO
@@ -80,12 +80,12 @@ class Board:
 
         :return: str, current board state
         '''
-        output = "\n"
+        output = ""
         for row in self.grid:
             for tile in row:
                 output += tile.__str__()
                 output += "  "
-            output += "\n"
+            output += "<br>"
         # output += "\nnum treasures remaining: " + (str)(self.treasure_count) + "\n"
         # output += self.report_player_scores()
         return output
@@ -112,6 +112,7 @@ class Board:
 
         for item in range( size ):
             self.grid.append( [ Tile() for _ in range (size) ] )
+
     @classmethod
     def new_max_board( cls, size ):
         '''

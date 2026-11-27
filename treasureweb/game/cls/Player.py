@@ -2,9 +2,9 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from game.treasureweb.game.gameProg.Board import Board
-    from game.treasureweb.game.gameProg.Tile import Tile
-    from game.treasureweb.game.gameProg.Treasure import Treasure    
+    from .Board import Board
+    from .Tile import Tile
+    from .Treasure import Treasure    
 
 class Player:
     player_count = 0
